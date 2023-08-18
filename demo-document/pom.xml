@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.alinesno.infra.base</groupId>
-    <artifactId>demo-message</artifactId>
+    <artifactId>demo-document</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
@@ -19,7 +19,7 @@
         <!-- config-agent_start -->
         <dependency>
             <groupId>com.alinesno.infra.base</groupId>
-            <artifactId>alinesno-infra-base-message-agent</artifactId>
+            <artifactId>alinesno-infra-base-document-agent</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
