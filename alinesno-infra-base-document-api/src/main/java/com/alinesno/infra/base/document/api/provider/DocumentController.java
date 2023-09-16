@@ -1,8 +1,8 @@
 package com.alinesno.infra.base.document.api.provider;
 
+import com.alinesno.infra.common.facade.response.AjaxResult;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -34,7 +34,7 @@ public class DocumentController {
      * @return 保存结果信息
      */
     @PostMapping("/save")
-    public String saveToElasticSearch(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
+    public AjaxResult saveToElasticSearch(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
         String indexName = generateIndexName(indexBase, indexType);
         IndexRequest request = new IndexRequest(indexName);
         request.source(jsonObject, XContentType.JSON);
@@ -42,28 +42,28 @@ public class DocumentController {
             client.index(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
-            return "保存到Elasticsearch时发生错误";
+            return AjaxResult.error("保存到Elasticsearch时发生错误");
         }
-        return "保存到Elasticsearch成功";
+        return AjaxResult.success("保存到Elasticsearch成功");
     }
 
     /**
      * 根据查询文本进行搜索
      *
-     * @param indexBase  索引基础名称
-     * @param indexType  索引类型
-     * @param queryText  查询文本
+     * @param indexBase 索引基础名称
+     * @param indexType 索引类型
+     * @param queryText 查询文本
      * @return 搜索结果
      */
     @GetMapping("/search")
-    public SearchResponse search(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String queryText) {
+    public AjaxResult search(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String queryText) {
         String indexName = generateIndexName(indexBase, indexType);
         SearchRequest searchRequest = new SearchRequest(indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchQuery("_all", queryText));
         searchRequest.source(searchSourceBuilder);
         try {
-            return client.search(searchRequest, RequestOptions.DEFAULT);
+            return AjaxResult.success(client.search(searchRequest, RequestOptions.DEFAULT));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("在Elasticsearch中搜索时发生错误", e);
@@ -73,21 +73,21 @@ public class DocumentController {
     /**
      * 根据字段进行搜索
      *
-     * @param indexBase  索引基础名称
-     * @param indexType  索引类型
-     * @param fieldName  字段名称
-     * @param queryText  查询文本
+     * @param indexBase 索引基础名称
+     * @param indexType 索引类型
+     * @param fieldName 字段名称
+     * @param queryText 查询文本
      * @return 搜索结果
      */
     @GetMapping("/searchByField")
-    public SearchResponse searchByField(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String fieldName, @RequestParam String queryText) {
+    public AjaxResult searchByField(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String fieldName, @RequestParam String queryText) {
         String indexName = generateIndexName(indexBase, indexType);
         SearchRequest searchRequest = new SearchRequest(indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchQuery(fieldName, queryText));
         searchRequest.source(searchSourceBuilder);
         try {
-            return client.search(searchRequest, RequestOptions.DEFAULT);
+            return AjaxResult.success(client.search(searchRequest, RequestOptions.DEFAULT));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("在Elasticsearch中搜索时发生错误", e);
