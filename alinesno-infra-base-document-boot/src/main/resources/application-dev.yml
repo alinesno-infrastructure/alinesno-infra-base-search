@@ -18,3 +18,7 @@ spring:
   devtools:
     restart:
       enabled: true
+
+elasticsearch:
+  host: localhost
+  port: 9200
