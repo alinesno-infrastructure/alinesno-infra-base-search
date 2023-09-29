@@ -35,6 +35,17 @@
 			 <version>7.9.3</version>
 		 </dependency>
 
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<version>7.9.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>7.9.3</version>
+		</dependency>
+
 	</dependencies>
 
 </project>
