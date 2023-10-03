@@ -1,6 +1,7 @@
 <template>
   <div class="siderbar">
     <el-menu default-active="1" class="el-menu-vertical" :collapse="isCollapse" @open="handleOpen" @close="handleClose">
+
       <el-menu-item index="1" @click="jumpTo">
         <i class="fa-solid fa-desktop"></i>
       </el-menu-item>
@@ -10,6 +11,22 @@
       </el-menu-item>
 
       <el-menu-item index="3" @click="openSmartService">
+        <i class="fa-solid fa-user-shield"></i>
+      </el-menu-item>
+
+      <el-menu-item index="7" @click="openServiceList">
+        <i class="fa-solid fa-sailboat"></i>
+      </el-menu-item>
+
+      <el-menu-item index="4" @click="jumpTo">
+        <i class="fa-solid fa-desktop"></i>
+      </el-menu-item>
+
+      <el-menu-item index="5" @click="openServiceList">
+        <i class="fa-solid fa-sailboat"></i>
+      </el-menu-item>
+
+      <el-menu-item index="6" @click="openSmartService">
         <i class="fa-solid fa-user-shield"></i>
       </el-menu-item>
     </el-menu>
