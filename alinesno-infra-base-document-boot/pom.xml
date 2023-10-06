@@ -23,6 +23,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.alinesno.infra.base</groupId>
+			<artifactId>alinesno-infra-base-document-vector</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alinesno.infra.base</groupId>
 			<artifactId>alinesno-infra-base-document-domain</artifactId>
 			<version>${revision}</version>
 		</dependency>

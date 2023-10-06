@@ -23,6 +23,7 @@
     <modules>
         <!-- 应用服务 -->
         <module>alinesno-infra-base-document-facade</module>  <!-- 接口和引用 -->
+        <module>alinesno-infra-base-document-vector</module>  <!-- 向量数据库 -->
         <module>alinesno-infra-base-document-domain</module>  <!-- 领域服务 -->
         <module>alinesno-infra-base-document-adapter</module> <!-- 适配层 -->
         <module>alinesno-infra-base-document-api</module>  <!-- 接口服务 -->

@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ElasticsearchConfig {
 
-    @Value("${elasticsearch.host}")
+    @Value("${alinesno.base.document.elasticsearch.host}")
     private String elasticsearchHost;
 
-    @Value("${elasticsearch.port}")
+    @Value("${alinesno.base.document.elasticsearch.port}")
     private int elasticsearchPort;
 
     @Bean(destroyMethod = "close")

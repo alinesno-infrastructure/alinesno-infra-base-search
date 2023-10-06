@@ -32,6 +32,12 @@ sa-token:
   sign:
     secret-key:
 
-elasticsearch:
-  host: localhost
-  port: 9200
+alinesno:
+  base:
+    document:
+      elasticsearch:
+        host: localhost
+        port: 9200
+      milvus:
+        ip-addr: localhost
+        port: 19531

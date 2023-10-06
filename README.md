@@ -43,3 +43,7 @@ curl -X GET 'http://localhost:8080/api/searchByField?indexBase=myIndex&indexType
 请确保将`myIndex`替换为你的索引基础名称，将`daily`替换为你的索引类型（可以是`daily`或`monthly`），将`myFieldName`替换为你要搜索的字段名，将`mySearchText`替换为你的搜索文本。
 
 注意：在实际生产环境中，你可能需要对错误进行更详细的处理，并提供更详细的响应信息。这只是一个基础的示例，你可能需要根据你的具体需求进行修改。
+
+## 鸣谢
+
+- 此处集成[OpenSearch](#)进行搜索
