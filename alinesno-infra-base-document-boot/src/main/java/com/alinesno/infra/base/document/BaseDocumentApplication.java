@@ -1,6 +1,8 @@
 package com.alinesno.infra.base.document;
 
+import com.alinesno.infra.common.facade.enable.EnableActable;
 import com.alinesno.infra.common.web.adapter.sso.enable.EnableInfraSsoApi;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -10,8 +12,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @author LuoAnDong
  * @version 2023年8月3日 上午6:23:43
  */
+@EnableActable
 @EnableInfraSsoApi
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@MapperScan("com.alinesno.infra.base.document.mapper")
+@SpringBootApplication
 public class BaseDocumentApplication {
 
 	public static void main(String[] args) {
