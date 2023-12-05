@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.document.gateway.provider;
 
+
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
