@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.document.gateway.config;
 
+
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
