@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <groupId>com.alinesno.infra.base</groupId>
-    <artifactId>alinesno-infra-base-document-parent</artifactId>
+    <artifactId>alinesno-infra-base-search-parent</artifactId>
     <version>${revision}</version>
 
     <properties>
@@ -22,16 +22,16 @@
 
     <modules>
         <!-- 应用服务 -->
-        <module>alinesno-infra-base-document-facade</module>  <!-- 接口和引用 -->
-        <module>alinesno-infra-base-document-vector</module>  <!-- 向量数据库 -->
-        <module>alinesno-infra-base-document-domain</module>  <!-- 领域服务 -->
-        <module>alinesno-infra-base-document-adapter</module> <!-- 适配层 -->
-        <module>alinesno-infra-base-document-gateway</module>  <!-- 接口服务 -->
-        <module>alinesno-infra-base-document-client</module>  <!-- 对外引用 -->
-        <module>alinesno-infra-base-document-boot</module>  <!-- 启动服务 -->
+        <module>alinesno-infra-base-search-facade</module>  <!-- 接口和引用 -->
+        <module>alinesno-infra-base-search-vector</module>  <!-- 向量数据库 -->
+        <module>alinesno-infra-base-search-domain</module>  <!-- 领域服务 -->
+        <module>alinesno-infra-base-search-adapter</module> <!-- 适配层 -->
+        <module>alinesno-infra-base-search-gateway</module>  <!-- 接口服务 -->
+        <module>alinesno-infra-base-search-client</module>  <!-- 对外引用 -->
+        <module>alinesno-infra-base-search-boot</module>  <!-- 启动服务 -->
 
         <!-- 前端服务
-        <module>alinesno-infra-base-document-ui</module>
+        <module>alinesno-infra-base-search-ui</module>
         -->
     </modules>
 
