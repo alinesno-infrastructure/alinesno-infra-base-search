@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: demo-document
+    name: demo-search
   data:
     redis:
       host: 127.0.0.1
@@ -11,7 +11,7 @@ spring:
       password: aip@local
 
 alinesno.base:
-  document:
+  search:
     env: development
     kafkaServers: 192.168.101.18:9092
     user-key: aip@local

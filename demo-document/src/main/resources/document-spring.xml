@@ -19,15 +19,15 @@
     </appender>
 
     <springProperty scope="context" name="watcher.appName" source="spring.application.name"/>
-    <springProperty scope="context" name="watcher.kafkaServers" source="alinesno.base.document.kafkaServers"/>
-    <springProperty scope="context" name="watcher.env" source="alinesno.base.document.env"/>
-    <springProperty scope="context" name="watcher.userKey" source="alinesno.base.document.user-key"/>
+    <springProperty scope="context" name="watcher.kafkaServers" source="alinesno.base.search.kafkaServers"/>
+    <springProperty scope="context" name="watcher.env" source="alinesno.base.search.env"/>
+    <springProperty scope="context" name="watcher.userKey" source="alinesno.base.search.user-key"/>
 
     <!-- log configure -->
     <logger name="com.alinesno.infra" level="DEBUG" />
 
     <!-- 使用kafka队列配置 -->
-    <appender name="ALINESNO-CLOUD-WATCHER" class="com.alinesno.infra.base.document.core.document.KafkaAppender">
+    <appender name="ALINESNO-CLOUD-WATCHER" class="com.alinesno.infra.base.search.core.document.KafkaAppender">
         <appName>${watcher.appName}</appName>
         <kafkaHosts>${watcher.kafkaServers}</kafkaHosts>
         <env>${watcher.env}</env>

@@ -1,0 +1,54 @@
+server:
+  port: 30111
+
+# spring 配置
+spring:
+  application:
+    name: alinesno-infra-base-search-boot
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dev_alinesno_infra_base_search_v100?characterEncoding=UTF-8&serverTimezone=GMT%2B8&allowMultiQueries=true
+    username: root
+    password: adminer
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: aip@local
+  devtools:
+    restart:
+      enabled: true
+
+# sa-token配置
+sa-token:
+  token-name: satoken
+  host-path: http://alinesno-infra-base-identity-auth-application.beta.base.infra.linesno.com
+  sso:
+    auth-url: ${sa-token.host-path}/login
+    is-http: true
+    check-ticket-url: ${sa-token.host-path}/sso/checkTicket
+    slo-url: ${sa-token.host-path}/sso/signout
+    get-data-url: ${sa-token.host-path}/sso/getData
+  sign:
+    secret-key:
+
+alinesno:
+  base:
+    search:
+      elasticsearch:
+        host: localhost
+        port: 9200
+      milvus:
+        ip-addr: localhost
+        port: 19531
+
+actable:
+  table:
+    auto: update
+  model:
+    pack: com.alinesno.infra.base.search.entity;
+  database:
+    type: mysql
+  index:
+    prefix: alinesno_base_search_idx_
+  unique:
