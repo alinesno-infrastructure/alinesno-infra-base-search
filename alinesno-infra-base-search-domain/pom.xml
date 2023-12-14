@@ -28,12 +28,6 @@
 			<version>${revision}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.manbang</groupId>
-			<artifactId>ebatis-core</artifactId>
-			<version>7.5.1.4.RELEASE</version>
-		</dependency>
-
 	</dependencies>
 
 </project>

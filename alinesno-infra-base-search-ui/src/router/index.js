@@ -85,6 +85,14 @@ export const constantRoutes = [
         meta: { title: '学习手册', icon: 'dashboard', affix: true }
       },
 
+      // >>>>>>>>>>>>> 路由配置_start >>>>>>>>>>>>>>>>>>.
+      {
+        path: '/base/search/application/index',
+        component: () => import('@/views/learnPanel'),
+        path: '/base/search/application/index',
+        meta: { title: '学习手册', icon: 'dashboard', affix: true }
+      },
+
     ]
   },
   {

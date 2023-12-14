@@ -3,7 +3,7 @@
 //
 //import com.alinesno.infra.common.facade.response.AjaxResult;
 //import lombok.extern.slf4j.Slf4j;
-//import org.elasticsearch.action.index.IndexRequest;
+//import org..action.index.IndexRequest;
 //import org.elasticsearch.action.search.SearchRequest;
 //import org.elasticsearch.client.RequestOptions;
 //import org.elasticsearch.client.RestHighLevelClient;

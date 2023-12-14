@@ -23,12 +23,12 @@ const router = useRouter();
 
 // 菜单列表
 const menuItems = ref([
-  {id:'2' , icon:'fa-solid fa-feather' , link:'/brain/application/index' , desc:'应用管理'},
-  {id:'3' , icon:'fa-solid fa-masks-theater' , link:'/brain/prompt/index' , desc:'全文检索管理'},
-  {id:'5' , icon:'fa-brands fa-wordpress' , link:'/brain/task/index' , desc:'Stream实时日志'},
-  {id:'8' , icon:'fa-solid fa-file-pdf' , link:'/brain/loaderData/index' , desc:'知识库管理'},
-  {id:'4' , icon:'fa-brands fa-skype' , link:'/brain/catalog/index' , desc:'知识库请求'},
-  {id:'7' , icon:'fa-solid fa-chart-simple' , link:'/brain/record/index' , desc:'请求记录'},
+  {id:'2' , icon:'fa-solid fa-feather' , link:'/base/search/application/index' , desc:'应用管理'},
+  {id:'3' , icon:'fa-solid fa-masks-theater' , link:'/base/search/document/index' , desc:'全文检索管理'},
+  {id:'5' , icon:'fa-brands fa-wordpress' , link:'/base/search/stream/index' , desc:'Stream实时日志'},
+  {id:'8' , icon:'fa-solid fa-file-pdf' , link:'/base/search/vectorData/index' , desc:'知识库管理'},
+  {id:'4' , icon:'fa-brands fa-skype' , link:'/base/search/configuration/index' , desc:'服务配置管理'},
+  {id:'7' , icon:'fa-solid fa-chart-simple' , link:'/base/search/requestRecord/index' , desc:'请求记录'},
 ]);
 
 // 打开服务市场
