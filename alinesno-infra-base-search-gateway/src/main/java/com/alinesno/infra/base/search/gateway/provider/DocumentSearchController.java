@@ -2,6 +2,7 @@ package com.alinesno.infra.base.search.gateway.provider;
 
 
 import com.alinesno.infra.common.facade.response.AjaxResult;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -19,9 +20,10 @@ import java.time.format.DateTimeFormatter;
 /**
  * 文档控制器
  */
+@Slf4j
 @RestController
-@RequestMapping("/api")
-public class DocumentController {
+@RequestMapping("/api/base/search/document")
+public class DocumentSearchController {
 
     @Autowired
     private RestHighLevelClient client;
@@ -42,8 +44,7 @@ public class DocumentController {
         try {
             client.index(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            e.printStackTrace();
-            return AjaxResult.error("保存到Elasticsearch时发生错误");
+            return AjaxResult.error("保存到Elasticsearch时发生错误:{}" , e.getMessage());
         }
         return AjaxResult.success("保存到Elasticsearch成功");
     }

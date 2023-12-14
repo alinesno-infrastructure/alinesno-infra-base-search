@@ -39,7 +39,7 @@ alinesno:
         host: localhost
         port: 9200
       milvus:
-        ip-addr: localhost
+        host: localhost
         port: 19531
 
 actable:
