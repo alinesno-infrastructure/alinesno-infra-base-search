@@ -1,6 +1,6 @@
-package com.alinesno.infra.smart.brain.vector.utils;
+package com.alinesno.infra.base.search.vector.utils;
 
-import com.alinesno.infra.smart.brain.vector.config.MilvusConfiguration;
+import com.alinesno.infra.base.search.vector.config.MilvusConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.alinesno.infra.smart.brain.vector.service.impl;
+package com.alinesno.infra.base.search.vector.service.impl;
 
 import com.alinesno.infra.base.search.vector.dto.PDFDataDto;
 import com.alinesno.infra.base.search.vector.service.IMilvusSearchService;

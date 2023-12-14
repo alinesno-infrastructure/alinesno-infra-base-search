@@ -11,14 +11,9 @@
             <div class="title">
                   {{ currentEnvClusterObj.appName}}
               <div class="cluster-info">
-                <span
-                  ><i class="el-icon-monitor"></i>
-                  {{ currentEnvClusterObj.clusterName }}
-                  </span
-                >
                 <span>
-                  <i class="el-icon-link"></i> 
-                  应用地址: {{ currentEnvClusterObj.apiServerUrl }}
+                  <i class="el-icon-monitor"></i>
+                  {{ currentEnvClusterObj.clusterName }}
                 </span>
               </div>
             </div>
@@ -50,7 +45,7 @@ import OperationWorkspaceService from './operation-workspace/service.vue'
 
 const currentEnvClusterObj = ref({
   appName:'分布式全文检索服务',
-  clusterName: 'OpenSearch版本'  , 
+  clusterName: 'Clickhouse版本和向量库版本'  , 
   apiServerUrl: 'http://portal.infra.linesno.com'
 }) 
 

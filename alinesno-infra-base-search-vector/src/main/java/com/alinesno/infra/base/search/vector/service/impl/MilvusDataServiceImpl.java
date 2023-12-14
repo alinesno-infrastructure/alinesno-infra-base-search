@@ -1,9 +1,9 @@
-package com.alinesno.infra.smart.brain.vector.service.impl;
+package com.alinesno.infra.base.search.vector.service.impl;
 
 import com.alinesno.infra.base.search.vector.dto.CollectFieldType;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
-import com.alinesno.infra.smart.brain.vector.utils.EmbeddingClient;
+import com.alinesno.infra.base.search.vector.utils.EmbeddingClient;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.param.collection.CreateCollectionParam;
 import io.milvus.param.collection.FieldType;

@@ -1,4 +1,4 @@
-package com.alinesno.infra.smart.brain.vector.config;
+package com.alinesno.infra.base.search.vector.config;
 
 import io.milvus.client.MilvusServiceClient;
 import lombok.Data;
