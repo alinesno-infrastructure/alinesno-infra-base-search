@@ -247,10 +247,9 @@
         <template #tip>
           <div class="el-upload__tip text-center">
             <div class="el-upload__tip">
-              <el-checkbox v-model="upload.updateSupport"/>
-              是否更新已经存在的应用数据
+              多种数据类型支持 
             </div>
-            <span>支持 .txt, .doc, .docx, .pdf, .md 文件。</span>
+            <span>支持 .txt, .doc, .docx, .ppt, .pdf, .md 文件。</span>
             <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
                      @click="importTemplate">自定义文件内容模板下载
             </el-link>

@@ -137,26 +137,12 @@
     <el-dialog :title="upload.title" v-model="upload.open" width="800px" append-to-body>
         <el-row>
           <el-col :span="24">
-              <div style="margin-bottom:30px;">
+              <div style="margin-bottom:20px;">
                 <el-radio-group v-model="radio1">
-                  <el-radio label="1" size="large" border>
+                  <el-radio :label="item.type" size="large" v-for="(item,index) in splitterTextType" :key="index">
                     <div style="padding:10px;">
                       <div>
-                        <i class="fa-solid fa-file-word"></i> 数据集直接分段
-                      </div>
-                    </div>
-                 </el-radio>
-                  <el-radio label="2" size="large" border>
-                    <div style="padding:10px;">
-                      <div>
-                        <i class="fa-brands fa-wordpress"></i> 数据集QA拆分
-                      </div>
-                    </div>
-                 </el-radio>
-                  <el-radio label="3" size="large" border>
-                    <div style="padding:10px;">
-                      <div>
-                        <i class="fa-solid fa-file-import"></i> CSV直接导入
+                        <i :class="item.icon"></i> {{ item.name }} 
                       </div>
                     </div>
                  </el-radio>
@@ -167,7 +153,7 @@
       <el-upload
           ref="uploadRef"
           :limit="1"
-          accept=".xlsx, .xls"
+          accept=".xlsx,.xls,.ppt,.docx,.doc,.pdf,.md"
           :headers="upload.headers"
           :action="upload.url + '?updateSupport=' + upload.updateSupport"
           :disabled="upload.isUploading"
@@ -183,12 +169,13 @@
         <template #tip>
           <div class="el-upload__tip text-center">
             <div class="el-upload__tip">
-              <el-checkbox v-model="upload.updateSupport"/>
-              是否更新已经存在的应用数据
+                <el-checkbox v-model="upload.updateSupport"/> 
+                <span>
+                  是否更新已经存在的应用数据
+                </span>
             </div>
             <span>支持 .txt, .doc, .docx, .pdf, .md 文件。</span>
-            <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
-                     @click="importTemplate">自定义文件内容模板下载
+            <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">自定义文件内容模板下载
             </el-link>
           </div>
         </template>
@@ -233,6 +220,14 @@ const deptOptions = ref(undefined);
 const initPassword = ref(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
+
+const splitterTextType = ref([
+  {id:'1' , name:'数据集直接分段' , icon:'fa-solid fa-file-word' , type:'sp'} ,
+  {id:'2' , name:'数据集QA拆分' , icon:'fa-brands fa-wordpress' , type:'qa'} ,
+  {id:'3' , name:'CSV直接导入' , icon:'fa-solid fa-file-import' , type:'cvs'} ,
+  {id:'4' , name:'数据接口导入' , icon:'fa-solid fa-file-word' , type:'api'} ,
+])
+
 /*** 应用导入参数 */
 const upload = reactive({
   // 是否显示弹出层（应用导入）
@@ -246,7 +241,7 @@ const upload = reactive({
   // 设置上传的请求头部
   headers: {Authorization: "Bearer " + getToken()},
   // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + "/system/DatasetKnowledge/importData"
+  url: import.meta.env.VITE_APP_BASE_API + "/api/infra/base/search/datasetKnowledge/importData"
 });
 // 列显隐信息
 const columns = ref([

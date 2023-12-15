@@ -2,8 +2,7 @@
     <div class="app-container">
         <el-row>
             <el-col :span="6">
-                <el-input class="input-search-text" v-model="textarea" :rows="10" type="textarea" resize="none"
-                    placeholder="Please input" />
+                <el-input class="input-search-text" v-model="textarea" :rows="7" type="textarea" resize="none" placeholder="请输入测试查询的文本" />
                 <el-button type="primary" text bg icon="Link" style="float: right;margin-top: 20px;">提交查询</el-button>
             </el-col>
             <el-col :span="18">
@@ -28,6 +27,15 @@
                                 </div>
                             </template>
                         </el-table-column>
+                        <el-table-column label="查询结果" align="left" key="name" prop="name" v-if="columns[1].visible"
+                            :show-overflow-tooltip="true">
+                            <template #default="scope">
+                                <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
+                                    9.88342
+                                </div>
+                            </template>
+                        </el-table-column>
+
                         <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width"
                             v-if="columns[8].visible">
                             <template #default="scope">

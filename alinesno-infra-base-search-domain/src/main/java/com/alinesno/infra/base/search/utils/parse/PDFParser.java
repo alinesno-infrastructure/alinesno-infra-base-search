@@ -28,6 +28,7 @@ public class PDFParser extends TextParser {
                 String text = stripper.getText(document);
                 result.append(text);
             }
+            System.out.println(result);
         }catch(Exception e){
             log.error("服务运行异常:{}" , e.getMessage());
         }

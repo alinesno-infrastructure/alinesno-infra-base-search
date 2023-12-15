@@ -6,6 +6,8 @@ import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.vector.dto.CollectFieldType;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
+import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,7 @@ import java.util.Objects;
 /**
  * Milvus数据服务控制器，用于定义对Milvus数据库进行操作的REST API接口。
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/base/search/vectorData")
 public class VectorDataController {
@@ -44,7 +47,7 @@ public class VectorDataController {
         List<String> sentenceList = new ArrayList<>();
 
         // 新生成的文件名称
-        String fileSuffix = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
+        String fileSuffix = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf(".")+1);
         String fileName = IdUtil.getSnowflakeNextId() + "." + fileSuffix;
 
         // 复制文件
@@ -63,6 +66,8 @@ public class VectorDataController {
             case XMIND -> documentParserService.xmindToList(targetFile);
             default -> sentenceList;
         };
+
+        log.debug("sentenceList = {}" , new Gson().toJson(sentenceList));
 
         // 处理完成之后删除文件
         FileUtils.forceDeleteOnExit(targetFile);
