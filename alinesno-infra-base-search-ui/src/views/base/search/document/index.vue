@@ -142,7 +142,7 @@ import {
   getApplication,
   updateApplication,
   addApplication
-} from "@/api/brain/smart/application";
+} from "@/api/base/search/application";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();

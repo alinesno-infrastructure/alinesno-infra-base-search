@@ -88,9 +88,45 @@ export const constantRoutes = [
       // >>>>>>>>>>>>> 路由配置_start >>>>>>>>>>>>>>>>>>.
       {
         path: '/base/search/application/index',
-        component: () => import('@/views/learnPanel'),
+        component: () => import('@/views/base/search/application/index'),
         path: '/base/search/application/index',
         meta: { title: '学习手册', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/vectorData/index',
+        component: () => import('@/views/base/search/vectorData/index'),
+        path: '/base/search/vectorData/index',
+        meta: { title: '知识库管理', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/vectorData/parseDataset',
+        component: () => import('@/views/base/search/vectorData/parseDataset'),
+        path: '/base/search/vectorData/parseDataset',
+        meta: { title: '编辑库管理', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/document/index',
+        component: () => import('@/views/base/search/document/index'),
+        path: '/base/search/document/index',
+        meta: { title: '全文检索服务', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/stream/index',
+        component: () => import('@/views/base/search/stream/index'),
+        path: '/base/search/stream/index',
+        meta: { title: 'Stream实时日志', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/configuration/index',
+        component: () => import('@/views/base/search/configuration/index'),
+        path: '/base/search/configuration/index',
+        meta: { title: '配置管理服务', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/requestRecord/index',
+        component: () => import('@/views/base/search/requestRecord/index'),
+        path: '/base/search/requestRecord/index',
+        meta: { title: '接口请求记录', icon: 'dashboard', affix: true }
       },
 
     ]
