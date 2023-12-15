@@ -25,27 +25,20 @@ public class ExcelParser extends TextParser {
             for (Row row : sheet) {
                 for (Cell cell : row) {
                     switch (cell.getCellType()) {
-                        case STRING:
-                            sb.append(cell.getRichStringCellValue().getString());
-                            break;
-                        case NUMERIC:
+                        case STRING -> sb.append(cell.getRichStringCellValue().getString());
+                        case NUMERIC -> {
                             if (DateUtil.isCellDateFormatted(cell)) {
                                 sb.append(cell.getDateCellValue());
                             } else {
                                 sb.append(cell.getNumericCellValue());
                             }
-                            break;
-                        case BOOLEAN:
-                            sb.append(cell.getBooleanCellValue());
-                            break;
-                        case FORMULA:
-                            sb.append(cell.getCellFormula());
-                            break;
-                        case BLANK:
-                            // 空单元格处理
-                            break;
-                        default:
-                            sb.append("\r\n");
+                        }
+                        case BOOLEAN -> sb.append(cell.getBooleanCellValue());
+                        case FORMULA -> sb.append(cell.getCellFormula());
+                        case BLANK -> {
+                        }
+                        // 空单元格处理
+                        default -> sb.append("\r\n");
                     }
                     sb.append("\t");
                 }

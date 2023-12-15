@@ -1,6 +1,7 @@
 package com.alinesno.infra.base.search.utils.parse;
 
 import com.alinesno.infra.base.search.utils.TextParser;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.ooxml.POIXMLDocument;
 import org.apache.poi.ooxml.extractor.POIXMLTextExtractor;
@@ -18,6 +19,7 @@ import java.util.List;
 /**
  * 用于解析Word文件内容
  */
+@Slf4j
 public class WordParser extends TextParser {
 
     //读取word文档中，doc后缀的文件
@@ -32,7 +34,7 @@ public class WordParser extends TextParser {
             content = wex.getText();
             docList.add(content);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("解析异常:{}" , e.getMessage());
         }
         return docList;
     }
@@ -49,7 +51,7 @@ public class WordParser extends TextParser {
             content = poiText.getText();
             docxList.add(content);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("解析异常:{}" , e.getMessage());
         }
         return docxList;
     }
