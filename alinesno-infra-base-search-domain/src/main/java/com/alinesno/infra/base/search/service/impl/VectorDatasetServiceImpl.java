@@ -9,6 +9,7 @@ import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,24 +41,28 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
     @Override
     public void insertDatasetKnowledge(Long datasetId, List<String> sentenceList) {
 
-        String datasetIdStr = datasetId+"" ;
-
         VectorDatasetEntity vectorDatasetEntity = getById(datasetId) ;
         vectorDatasetEntity.setDatasetSize(sentenceList.size() + vectorDatasetEntity.getDatasetSize());
         update(vectorDatasetEntity) ;
 
+        String collectionName = vectorDatasetEntity.getCollectionName();
+
         for(String content : sentenceList){
             List<InsertField> insertFieldData = new ArrayList<>();
 
-            Object vectorData = embeddingConsumer.embeddings(gson.toJson(List.of(new EmbeddingText(content)))) ;
+            String vectorData = embeddingConsumer.embeddings(gson.toJson(List.of(new EmbeddingText(content)))) ;
+
+            Gson gson = new GsonBuilder().registerTypeAdapter(Float.class, (com.google.gson.JsonDeserializer<Float>) (json, typeOfT, context) -> json.getAsJsonPrimitive().getAsFloat()).create();
+            Float[] floatArray = gson.fromJson(vectorData, Float[].class);
 
             log.debug("vectorData = {}" , vectorData);
+            log.debug("vectorFloatData = {}" , new Gson().toJson(floatArray));
 
-            insertFieldData.add(new InsertField("id", IdUtil.getSnowflakeNextIdStr()));
-            insertFieldData.add(new InsertField("datasetId", datasetIdStr));
-            insertFieldData.add(new InsertField("documentContent", vectorData));
+            insertFieldData.add(new InsertField("id", IdUtil.getSnowflakeNextId())) ;
+            insertFieldData.add(new InsertField("dataset_id", datasetId));
+            insertFieldData.add(new InsertField("document_content", vectorData));
 
-            milvusDataService.insertData(datasetIdStr , "novel" , insertFieldData);
+            milvusDataService.insertData(collectionName , "novel" , insertFieldData);
         }
     }
 

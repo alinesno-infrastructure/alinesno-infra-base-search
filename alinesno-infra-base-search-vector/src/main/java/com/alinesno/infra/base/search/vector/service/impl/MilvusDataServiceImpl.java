@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.vector.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.vector.dto.CollectFieldType;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
@@ -31,22 +32,38 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
      * @param collectionName 集合名称。
      * @param description 集合描述。
      * @param shardsNum 分片数量。
-     * @param fieldType 字段类型列表。
      */
     @Override
     public void buildCreateCollectionParam(String collectionName,
                                            String description,
-                                           int shardsNum,
-                                           CollectFieldType fieldType) {
+                                           int shardsNum) {
 
-        FieldType ft = null ;
+        FieldType fieldType1 = FieldType.newBuilder()
+                .withName("id")
+                .withDataType(DataType.Int64)
+                .withPrimaryKey(true)
+                .withAutoID(false)
+                .build();
+
+        FieldType fieldType2 = FieldType.newBuilder()
+                .withName("dataset_id")
+                .withDataType(DataType.Int64)
+                .build();
+
+        FieldType fieldType3 = FieldType.newBuilder()
+                .withName("document_content")
+                .withDataType(DataType.FloatVector)
+                .withDimension(2)
+                .build();
 
         CreateCollectionParam createCollectionReq = CreateCollectionParam.newBuilder()
                 .withCollectionName(collectionName)
                 .withDescription(description)
                 .withShardsNum(shardsNum)
-                .addFieldType(ft)
-//                .withEnableDynamicField(true)
+                .addFieldType(fieldType1)
+                .addFieldType(fieldType2)
+                .addFieldType(fieldType3)
+                .withEnableDynamicField(true)
                 .build();
 
         milvusServiceClient.createCollection(createCollectionReq) ;

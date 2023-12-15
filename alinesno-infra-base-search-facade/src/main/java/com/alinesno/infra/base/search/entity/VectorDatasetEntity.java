@@ -32,6 +32,11 @@ public class VectorDatasetEntity extends InfraBaseEntity {
     @TableField(value = "owner_id")
     private Integer ownerId;
 
+    @ColumnComment("数据集标识")
+    @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 50)
+    @TableField
+    private String collectionName;
+
     @ColumnComment("导入时间")
     @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 50)
     @TableField(value = "import_time")

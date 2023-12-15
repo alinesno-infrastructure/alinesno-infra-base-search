@@ -17,9 +17,8 @@ public interface IMilvusDataService {
      * @param collectionName 集合名称。
      * @param description 集合描述。
      * @param shardsNum 分片数量。
-     * @param fieldType 字段类型。
      */
-    void buildCreateCollectionParam(String collectionName, String description, int shardsNum, CollectFieldType fieldType);
+    void buildCreateCollectionParam(String collectionName, String description, int shardsNum);
 
     /**
      * 插入数据到集合中。

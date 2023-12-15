@@ -80,14 +80,12 @@ public class VectorDataController {
      * @param collectionName 集合名称
      * @param description 集合描述
      * @param shardsNum 分片数量
-     * @param fieldType 字段类型
      */
     @PostMapping("/createCollection")
     public void createCollection(@RequestParam String collectionName,
                                  @RequestParam String description,
-                                 @RequestParam int shardsNum,
-                                 @RequestParam CollectFieldType fieldType) {
-        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum, fieldType);
+                                 @RequestParam int shardsNum) {
+        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
     }
 
     /**

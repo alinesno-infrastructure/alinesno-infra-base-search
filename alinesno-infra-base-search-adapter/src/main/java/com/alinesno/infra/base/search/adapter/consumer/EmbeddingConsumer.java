@@ -19,6 +19,6 @@ public interface EmbeddingConsumer {
      * @return
      */
     @Post(url = "/embeddings" , contentType = "application/x-www-form-urlencoded")
-    Object embeddings(@Body("text") String text) ;
+    String embeddings(@Body("text") String text) ;
 
 }

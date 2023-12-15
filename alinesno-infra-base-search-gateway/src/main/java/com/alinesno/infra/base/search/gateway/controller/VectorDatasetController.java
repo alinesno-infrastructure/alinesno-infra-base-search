@@ -2,8 +2,10 @@ package com.alinesno.infra.base.search.gateway.controller;
 
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
+import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
+import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
 import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,10 +14,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.SecureRandom;
 
 /**
  * 应用构建Controller
@@ -35,6 +36,9 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
     @Autowired
     private IVectorDatasetService service;
 
+    @Autowired
+    private IMilvusDataService milvusDataService;
+
     /**
      * 获取ApplicationEntity的DataTables数据
      * 
@@ -48,6 +52,35 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
         return this.toPage(model, this.getFeign(), page);
+    }
+
+    @Override
+    public AjaxResult save(Model model, @RequestBody VectorDatasetEntity entity) throws Exception {
+
+        String collectionName = generateUniqueString() ;
+        String description = entity.getDescription() ;
+        int shardsNum = 1 ;
+
+        entity.setCollectionName(collectionName);
+        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
+
+        log.debug("buildCreateCollectionParam = " + collectionName);
+
+        return super.save(model, entity);
+    }
+
+    public static String generateUniqueString() {
+        int length = 8;
+        String characters = "abcdefghijklmnopqrstuvwxyz";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(characters.length());
+            sb.append(characters.charAt(randomIndex));
+        }
+
+        return sb.toString();
     }
 
     @Override
