@@ -119,6 +119,16 @@
 			<artifactId>pdfbox-tools</artifactId>
 			<version>${pdfbox-tools.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.alinesno.infra.base</groupId>
+            <artifactId>alinesno-infra-base-search-adapter</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
 		<!-- PDF_end -->
 
 	</dependencies>

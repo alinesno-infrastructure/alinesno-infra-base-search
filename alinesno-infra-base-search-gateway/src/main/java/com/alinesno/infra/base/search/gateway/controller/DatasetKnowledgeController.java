@@ -6,6 +6,8 @@ import com.alinesno.infra.base.search.constants.FileTypeEnums;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
+import com.alinesno.infra.base.search.service.IVectorDatasetService;
+import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
 import com.alinesno.infra.common.facade.enums.HasStatusEnums;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
@@ -48,6 +50,12 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
     private IDatasetKnowledgeService service;
 
     @Autowired
+    private IVectorDatasetService vectorDatasetService ;
+
+    @Autowired
+    private IMilvusDataService milvusDataService;
+
+    @Autowired
     private IDocumentParserService documentParserService ;
 
     @Value("${alinesno.file.local.path}")
@@ -74,7 +82,7 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
      * @param file 导入文件
      */
     @PostMapping(value = "/importData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public AjaxResult importData(@RequestPart("file") MultipartFile file, Long channelId) throws Exception {
+    public AjaxResult importData(@RequestPart("file") MultipartFile file, Long datasetId) throws Exception {
 
         // 获取原始文件名
         String fileName = file.getOriginalFilename();
@@ -104,6 +112,11 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
 
         // 处理完成之后删除文件
         FileUtils.forceDeleteOnExit(targetFile);
+
+        sentenceList = documentParserService.documentParser( sentenceList.get(0) , 500) ;
+
+        // 保存到知识库中
+        vectorDatasetService.insertDatasetKnowledge(datasetId , sentenceList) ;
 
         return AjaxResult.success(fileName) ;
     }

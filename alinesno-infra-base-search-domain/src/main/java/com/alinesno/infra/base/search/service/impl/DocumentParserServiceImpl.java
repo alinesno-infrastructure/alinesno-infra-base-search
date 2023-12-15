@@ -1,6 +1,7 @@
 package com.alinesno.infra.base.search.service.impl;
 
 import com.alinesno.infra.base.search.service.IDocumentParserService;
+import com.alinesno.infra.base.search.utils.DocumentParser;
 import com.alinesno.infra.base.search.utils.parse.ExcelParser;
 import com.alinesno.infra.base.search.utils.parse.MarkdownParser;
 import com.alinesno.infra.base.search.utils.parse.PDFParser;
@@ -22,6 +23,11 @@ import java.util.List;
 @Slf4j
 @Component
 public class DocumentParserServiceImpl implements IDocumentParserService {
+
+    @Override
+    public List<String> documentParser(String text, int maxLength) {
+        return DocumentParser.parseDocument(text , maxLength);
+    }
 
     /**
      * 解析PDF文档并返回文本内容列表

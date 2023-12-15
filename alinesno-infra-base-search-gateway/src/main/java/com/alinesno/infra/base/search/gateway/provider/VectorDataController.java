@@ -71,7 +71,7 @@ public class VectorDataController {
         // 处理完成之后删除文件
         FileUtils.forceDeleteOnExit(targetFile);
 
-        milvusDataService.save(sentenceList);
+//        milvusDataService.save(sentenceList);
     }
 
 

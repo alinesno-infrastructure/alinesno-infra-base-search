@@ -80,7 +80,7 @@
           <el-table-column label="数据集名称" align="left" width="150" key="name" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true">
             <template #default="scope">
               <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
-                <router-link to="/base/search/vectorData/parseDataset">
+                <router-link :to="'/base/search/vectorData/parseDataset?datasetId=' + scope.row.id" >
                   {{ scope.row.name }}
                 </router-link>
               </div>

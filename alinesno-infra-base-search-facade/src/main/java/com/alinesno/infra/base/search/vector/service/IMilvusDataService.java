@@ -36,12 +36,12 @@ public interface IMilvusDataService {
      */
     void deleteData(String collectionName, String deleteExpr);
 
-    /**
-     * 调用python的M3E接口服务，返回问句的向量化数据
-     * @param msg
-     */
-    void doEmbedding(String msg) ;
-
-    void save(List<String> sentenceList);
+//    /**
+//     * 调用python的M3E接口服务，返回问句的向量化数据
+//     * @param msg
+//     */
+//    void doEmbedding(String msg) ;
+//
+//    void save(List<String> sentenceList);
 
 }

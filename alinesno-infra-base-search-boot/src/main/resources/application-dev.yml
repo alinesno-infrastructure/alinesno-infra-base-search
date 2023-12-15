@@ -40,11 +40,12 @@ sa-token:
   sign:
     secret-key:
 
+
 alinesno:
   base:
     search:
       milvus:
-        host: localhost
+        host: 192.168.101.18
         port: 19531
 
 actable:

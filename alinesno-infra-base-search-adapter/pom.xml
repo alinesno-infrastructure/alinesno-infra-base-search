@@ -22,6 +22,14 @@
 			<version>${revision}</version>
 		</dependency>
 
+		<!-- 引入forest_starter_start -->
+		<dependency>
+			<groupId>com.dtflys.forest</groupId>
+			<artifactId>forest-spring-boot3-starter</artifactId>
+			<version>${forest.version}</version>
+		</dependency>
+		<!-- 引入forest_starter_end -->
+
 	</dependencies>
 
 </project>

@@ -10,6 +10,15 @@ import java.util.List;
 public interface IDocumentParserService {
 
     /**
+     * 解析文档内容并将其分割为指定长度的段落
+     *
+     * @param documentContent   待分割的文档内容
+     * @param maxSegmentLength  每个段落的最大长度
+     * @return 分割后的段落列表
+     */
+    List<String> documentParser(String documentContent , int maxSegmentLength) ;
+
+    /**
      * 解析PDF文档并返回文本内容列表
      */
     List<String> parsePDF(File file);

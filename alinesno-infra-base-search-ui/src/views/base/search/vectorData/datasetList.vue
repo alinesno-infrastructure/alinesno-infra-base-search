@@ -155,7 +155,7 @@
           :limit="1"
           accept=".xlsx,.xls,.ppt,.docx,.doc,.pdf,.pptx,.md"
           :headers="upload.headers"
-          :action="upload.url + '?updateSupport=' + upload.updateSupport"
+          :action="upload.url + '?updateSupport=' + upload.updateSupport + '&datasetId=' + currentDatasetId"
           :disabled="upload.isUploading"
           :on-progress="handleFileUploadProgress"
           :on-success="handleFileSuccess"
@@ -199,12 +199,15 @@ import {
   updateDatasetKnowledge,
   addDatasetKnowledge,
 } from "@/api/base/search/datasetKnowledge";
+
 import {reactive} from "vue";
+import { getParam } from "@/utils/ruoyi"
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 // const { sys_normal_disable, sys_DatasetKnowledge_sex } = proxy.useDict("sys_normal_disable", "sys_DatasetKnowledge_sex");
 
+const currentDatasetId = getParam("datasetId");
 const DatasetKnowledgeList = ref([]);
 const open = ref(false);
 const loading = ref(true);
@@ -215,6 +218,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
+
 const deptName = ref("");
 const deptOptions = ref(undefined);
 const initPassword = ref(undefined);
@@ -289,6 +293,9 @@ const {queryParams, form, rules} = toRefs(data);
 
 /** 查询应用列表 */
 function getList() {
+
+  console.log('currentDatasetId = ' + currentDatasetId);
+
   loading.value = true;
   listDatasetKnowledge(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
     loading.value = false;
