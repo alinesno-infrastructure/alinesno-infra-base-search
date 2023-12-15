@@ -153,7 +153,7 @@
       <el-upload
           ref="uploadRef"
           :limit="1"
-          accept=".xlsx,.xls,.ppt,.docx,.doc,.pdf,.md"
+          accept=".xlsx,.xls,.ppt,.docx,.doc,.pdf,.pptx,.md"
           :headers="upload.headers"
           :action="upload.url + '?updateSupport=' + upload.updateSupport"
           :disabled="upload.isUploading"

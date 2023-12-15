@@ -54,9 +54,6 @@ public class ExcelParser extends TextParser {
         } catch (Exception e) {
             log.error("文件解析异常:{}" , e.getMessage());
         }
-
-        System.out.println(sb.toString());
-
         return sb.toString();
     }
 

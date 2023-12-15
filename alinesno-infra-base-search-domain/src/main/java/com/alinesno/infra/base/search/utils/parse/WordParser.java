@@ -30,9 +30,6 @@ public class WordParser extends TextParser {
             input = new FileInputStream(new File(filePath));
             WordExtractor wex = new WordExtractor(input);
             content = wex.getText();
-
-            System.out.println(content);
-
             docList.add(content);
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,9 +48,6 @@ public class WordParser extends TextParser {
             POIXMLTextExtractor poiText = new XWPFWordExtractor(xwpf);
             content = poiText.getText();
             docxList.add(content);
-
-            System.out.println(content);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

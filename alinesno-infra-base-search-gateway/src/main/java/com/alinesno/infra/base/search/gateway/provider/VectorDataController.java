@@ -63,7 +63,6 @@ public class VectorDataController {
             case EXCEL -> documentParserService.parseExcel(targetFile);
             case DOCX -> documentParserService.getContentDocx(targetFile);
             case DOC -> documentParserService.getContentDoc(targetFile);
-            case XMIND -> documentParserService.xmindToList(targetFile);
             default -> sentenceList;
         };
 

@@ -11,7 +11,6 @@ public enum FileTypeEnums {
     PDF("pdf", "PDF文件"),
     DOCX("docx", "Word文档"),
     DOC("doc", "旧版Word文档"),
-    XMIND("xmind", "XMind文件"),
     MD("md", "Markdown文件"),
     EXCEL("xlsx", "Excel文件");
 

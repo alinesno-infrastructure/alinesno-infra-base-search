@@ -13,6 +13,7 @@ import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -91,14 +92,15 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
         assert constants != null;
 
         sentenceList = switch (constants) {
-            case PDF -> documentParserService.parsePDF(targetFile);
+            case PDF ->  documentParserService.parsePDF(targetFile);
             case MD -> documentParserService.parseMD(targetFile);
             case EXCEL -> documentParserService.parseExcel(targetFile);
             case DOCX -> documentParserService.getContentDocx(targetFile);
             case DOC -> documentParserService.getContentDoc(targetFile);
-            case XMIND -> documentParserService.xmindToList(targetFile);
             default -> sentenceList;
         };
+
+        log.debug("sentenceList = {}" , new Gson().toJson(sentenceList));
 
         // 处理完成之后删除文件
         FileUtils.forceDeleteOnExit(targetFile);
