@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -103,22 +104,32 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
         Assert.notEmpty(vectors, "vectors is empty");
         Assert.notNull(topK, "topK is null");
 
-        int nprobeVectorSize = vectors.get(0).size();
+        final Integer SEARCH_K = 2;                       // TopK
+        final String SEARCH_PARAM = "{\"nprobe\":10, \"offset\":0}";    // Params
 
-        String paramsInJson = "{'nprobe': " + nprobeVectorSize + "}";
-        SearchParam searchParam =
-                SearchParam.newBuilder().withCollectionName(collectionName)
-                        .withParams(paramsInJson)
-                        .withMetricType(MetricType.IP)
-                        .withVectors(vectors)
-                        .withVectorFieldName("document_content")
-                        .withTopK(topK)
-                        .build();
+        List<String> search_output_fields = List.of("dataset_id");
 
-        R<SearchResults> searchResultsR = milvusServiceClient.search(searchParam);
-        SearchResults searchResultsRData = searchResultsR.getData();
-        List<Long> topksList = searchResultsRData.getResults().getIds().getIntId().getDataList();
-        return topksList;
+        SearchParam searchParam = SearchParam.newBuilder()
+                .withCollectionName("book")
+                .withConsistencyLevel(ConsistencyLevelEnum.STRONG)
+                .withMetricType(MetricType.L2)
+                .withOutFields(search_output_fields)
+                .withTopK(SEARCH_K)
+                .withVectors(vectors)
+                .withVectorFieldName("book_intro")
+                .withParams(SEARCH_PARAM)
+                .build();
+        R<SearchResults> respSearch = milvusServiceClient.search(searchParam);
+
+        log.debug("searchResultsR = {}" , respSearch);
+
+        SearchResults searchResultsRData = respSearch.getData();
+        SearchResultsWrapper wrapperSearch = new SearchResultsWrapper(respSearch.getData().getResults());
+
+        System.out.println(wrapperSearch.getIDScore(0));
+        System.out.println(wrapperSearch.getFieldData("dataset_id", 0));
+
+        return searchResultsRData.getResults().getIds().getIntId().getDataList();
     }
 
 
@@ -141,22 +152,29 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
         Assert.notNull(exp, "exp is null");
 
         int nprobeVectorSize = vectors.get(0).size();
-        String paramsInJson = "{'nprobe': " + nprobeVectorSize + "}";
+//        String paramsInJson = "{'nprobe': " + nprobeVectorSize + "}";
 
-        SearchParam searchParam =
-                SearchParam.newBuilder().withCollectionName(collectionName)
-                        .withParams(paramsInJson)
-                        .withMetricType(MetricType.IP)
-                        .withVectors(vectors)
-                        .withExpr(exp)
-                        .withVectorFieldName("embedding")
-                        .withTopK(topK)
-                        .build();
+        final Integer SEARCH_K = 2;                       // TopK
+        final String SEARCH_PARAM = "{\"nprobe\":10, \"offset\":0}";    // Params
 
-        R<SearchResults> searchResultsR = milvusServiceClient.search(searchParam);
-        log.debug("searchResultsR = {}" , searchResultsR);
+        List<String> search_output_fields = List.of("dataset_id");
+        List<List<Float>> search_vectors = List.of(Arrays.asList(0.1f, 0.2f));
 
-        SearchResults searchResultsRData = searchResultsR.getData();
+        SearchParam searchParam = SearchParam.newBuilder()
+                .withCollectionName("book")
+                .withConsistencyLevel(ConsistencyLevelEnum.STRONG)
+                .withMetricType(MetricType.L2)
+                .withOutFields(search_output_fields)
+                .withTopK(SEARCH_K)
+                .withVectors(search_vectors)
+                .withVectorFieldName("book_intro")
+                .withParams(SEARCH_PARAM)
+                .build();
+        R<SearchResults> respSearch = milvusServiceClient.search(searchParam);
+
+        log.debug("searchResultsR = {}" , respSearch);
+
+        SearchResults searchResultsRData = respSearch.getData();
 
         return searchResultsRData.getResults().getIds().getIntId().getDataList();
     }

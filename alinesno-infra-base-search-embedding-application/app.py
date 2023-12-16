@@ -43,11 +43,8 @@ def embeddings():
     download_and_extract_model()
 
     # 加载本地模型
-    # model = SentenceTransformer(os.path.join(MODEL_LOCAL_PATH, MODEL_NAME))
-    # embeddings = model.encode(sentences)
-
-    model = SentenceTransformer("moka-ai/m3e-base")
-    embeddings = model.encode(['Hello World!', '你好,世界!'])
+    model = SentenceTransformer(os.path.join(MODEL_LOCAL_PATH, MODEL_NAME))
+    embeddings = model.encode(sentences)
 
     print(embeddings)
 
