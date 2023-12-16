@@ -195,6 +195,6 @@ jobs:
 
             export INFRA_GATEWAY_PROXY=${{ secrets.DEV_INFRA_GATEWAY_PROXY }}
             export MILVUS_HOST=${{ secrets.DEV_MILVUS_HOST }}
-            export MILVUS_PORT=${{ secrets.DEV_MILVUS_HOST }}
+            export MILVUS_PORT=${{ secrets.DEV_MILVUS_PORT }}
 
             envsubst < /home/github-action/${{ env.PROJECT_NAME }}/kubernetes-${{ env.CURRENT_PROFIRE }}.yml | kubectl apply -f -
