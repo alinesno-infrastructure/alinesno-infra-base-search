@@ -1,19 +1,15 @@
 package com.alinesno.infra.base.search.vector.service.impl;
 
-import cn.hutool.core.util.IdUtil;
-import com.alinesno.infra.base.search.vector.dto.CollectFieldType;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.grpc.DataType;
-import io.milvus.param.ConnectParam;
 import io.milvus.param.collection.CreateCollectionParam;
 import io.milvus.param.collection.FieldType;
 import io.milvus.param.dml.DeleteParam;
 import io.milvus.param.dml.InsertParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -109,39 +105,5 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
                 .build();
         milvusServiceClient.delete(deleteParam);
     }
-
-//    @Override
-//    public void doEmbedding(String msg) {
-//
-//        List<String> sentenceList = new ArrayList<>();
-//        sentenceList.add(msg);
-//
-//        this.save(sentenceList);
-//    }
-//
-//    @Override
-//    public void save(List<String> sentenceList){
-//
-//        List<Integer> contentWordCount = new ArrayList<>();
-//        List<List<Float>> contentVector;
-//
-//        for(String str : sentenceList){
-//            contentWordCount.add(str.length());
-//        }
-//        contentVector = embeddingClient.doEmbedding(sentenceList);
-//
-//        List<InsertParam.Field> fields = new ArrayList<>();
-//        fields.add(new InsertParam.Field("content", sentenceList));
-//        fields.add(new InsertParam.Field("content_word_count", contentWordCount));
-//        fields.add(new InsertParam.Field("content_vector", contentVector));
-//
-//        InsertParam insertParam = InsertParam.newBuilder()
-//                .withCollectionName("pdf_data")
-//                .withFields(fields)
-//                .build();
-//
-//        //插入数据
-//        milvusServiceClient.insert(insertParam);
-//    }
 
 }
