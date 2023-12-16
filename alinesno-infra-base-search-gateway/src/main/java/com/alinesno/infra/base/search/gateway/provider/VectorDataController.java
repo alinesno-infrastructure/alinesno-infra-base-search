@@ -3,7 +3,6 @@ package com.alinesno.infra.base.search.gateway.provider;
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.constants.FileTypeEnums;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
-import com.alinesno.infra.base.search.vector.dto.CollectFieldType;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.google.gson.Gson;
@@ -98,7 +97,7 @@ public class VectorDataController {
     public void insertData(@RequestParam String collectionName,
                            @RequestParam String partitionName,
                            @RequestBody List<InsertField> fields) {
-        milvusDataService.insertData(collectionName, partitionName, fields);
+        milvusDataService.insertData(collectionName, partitionName, null);
     }
 
     /**

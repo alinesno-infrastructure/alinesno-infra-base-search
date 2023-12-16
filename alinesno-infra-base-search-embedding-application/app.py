@@ -17,6 +17,7 @@ MODEL_NAME = 'm3e-base'
 MODEL_ZIP_URL = 'http://s4j8c97ta.hn-bkt.clouddn.com/moka-ai/m3e-base.zip'
 MODEL_LOCAL_PATH = os.path.join(MODEL_CACHE_PATH, MODEL_NAME)
 
+
 def download_and_extract_model():
     # 检查模型是否存在
     if not os.path.exists(MODEL_LOCAL_PATH):
@@ -33,6 +34,7 @@ def download_and_extract_model():
         os.remove(model_zip_path)
         logging.info("模型已下载并解压到本地")
 
+
 @app.route('/api/ai/embeddings', methods=['post'])
 def embeddings():
     sentences = flask.request.form['text']
@@ -41,12 +43,17 @@ def embeddings():
     download_and_extract_model()
 
     # 加载本地模型
-    model = SentenceTransformer(os.path.join(MODEL_LOCAL_PATH, MODEL_NAME))
-    embeddings = model.encode(sentences)
+    # model = SentenceTransformer(os.path.join(MODEL_LOCAL_PATH, MODEL_NAME))
+    # embeddings = model.encode(sentences)
+
+    model = SentenceTransformer("moka-ai/m3e-base")
+    embeddings = model.encode(['Hello World!', '你好,世界!'])
 
     print(embeddings)
 
-    return embeddings.tolist()
+    # return embeddings.tolist()
+    return embeddings
+
 
 if __name__ == '__main__':
     app.debug = False
@@ -57,4 +64,3 @@ if __name__ == '__main__':
     download_and_extract_model()
 
     app.run(port=5001, debug=False, host='0.0.0.0')
-

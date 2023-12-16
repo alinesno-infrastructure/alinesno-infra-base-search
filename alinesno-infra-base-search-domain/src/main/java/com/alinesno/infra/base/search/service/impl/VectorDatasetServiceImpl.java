@@ -5,19 +5,15 @@ import com.alinesno.infra.base.search.adapter.consumer.EmbeddingConsumer;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.mapper.VectorDatasetMapper;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
-import com.alinesno.infra.base.search.vector.dto.InsertField;
+import com.alinesno.infra.base.search.vector.dto.EmbeddingBean;
+import com.alinesno.infra.base.search.vector.dto.EmbeddingText;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,27 +44,18 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
         String collectionName = vectorDatasetEntity.getCollectionName();
 
         for(String content : sentenceList){
-            List<InsertField> insertFieldData = new ArrayList<>();
 
             String vectorData = embeddingConsumer.embeddings(gson.toJson(List.of(new EmbeddingText(content)))) ;
-
-            Gson gson = new GsonBuilder().registerTypeAdapter(Float.class, (com.google.gson.JsonDeserializer<Float>) (json, typeOfT, context) -> json.getAsJsonPrimitive().getAsFloat()).create();
-            Float[] floatArray = gson.fromJson(vectorData, Float[].class);
-
             log.debug("vectorData = {}" , vectorData);
-            log.debug("vectorFloatData = {}" , new Gson().toJson(floatArray));
 
-            insertFieldData.add(new InsertField("id", IdUtil.getSnowflakeNextId())) ;
-            insertFieldData.add(new InsertField("dataset_id", datasetId));
-            insertFieldData.add(new InsertField("document_content", vectorData));
+            EmbeddingBean embeddingBean = new EmbeddingBean() ;
 
-            milvusDataService.insertData(collectionName , "novel" , insertFieldData);
+            embeddingBean.setId(IdUtil.getSnowflakeNextId());
+            embeddingBean.setDatasetId(datasetId);
+            embeddingBean.setDocumentContent(vectorData);
+
+            milvusDataService.insertData(collectionName , "novel" , embeddingBean);
         }
     }
 
-    @Data
-    @AllArgsConstructor
-    private static class EmbeddingText{
-        String text ;
-    }
 }

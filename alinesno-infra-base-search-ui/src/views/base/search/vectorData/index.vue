@@ -72,7 +72,7 @@
           <el-table-column label="图标" align="center" width="60px" prop="icon" v-if="columns[0].visible">
             <template #default="scope">
               <div class="role-icon">
-                <img :src="'http://data.linesno.com/icons/dataset/dataset_' + (scope.$index + 19) + '.png'" />
+                <img :src="'http://data.linesno.com/icons/dataset/dataset_' + (scope.$index + 2) + '.png'" />
               </div>
             </template>
           </el-table-column>

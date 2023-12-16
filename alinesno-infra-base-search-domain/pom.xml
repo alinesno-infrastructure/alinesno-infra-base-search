@@ -16,7 +16,7 @@
 	<properties>
 		<commonmark.version>0.18.0</commonmark.version>
 		<jxl.version>2.6.10</jxl.version>
-		<pdfbox.version>2.0.24</pdfbox.version>
+		<pdfbox.version>2.0.1</pdfbox.version>
 		<fontbox.version>2.0.0</fontbox.version>
 		<jempbox.version>1.8.11</jempbox.version>
 		<xmpbox.version>2.0.0</xmpbox.version>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>com.alinesno.infra.base</groupId>
             <artifactId>alinesno-infra-base-search-adapter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${revision}</version>
             <scope>compile</scope>
         </dependency>
 		<dependency>

@@ -15,6 +15,7 @@ import io.milvus.param.collection.ReleaseCollectionParam;
 import io.milvus.param.dml.SearchParam;
 import io.milvus.param.partition.ShowPartitionsParam;
 import io.milvus.response.SearchResultsWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -26,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * 此处功能代码参考 <a href="https://juejin.cn/post/7251501842986762301">SpringBoot整合Milvus</a>
  */
+@Slf4j
 @Service
 public class MilvusSearchServiceImpl implements IMilvusSearchService {
 
@@ -100,6 +102,7 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
         Assert.notNull(vectors, "vectors is null");
         Assert.notEmpty(vectors, "vectors is empty");
         Assert.notNull(topK, "topK is null");
+
         int nprobeVectorSize = vectors.get(0).size();
 
         String paramsInJson = "{'nprobe': " + nprobeVectorSize + "}";
@@ -108,7 +111,7 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
                         .withParams(paramsInJson)
                         .withMetricType(MetricType.IP)
                         .withVectors(vectors)
-                        .withVectorFieldName("embedding")
+                        .withVectorFieldName("document_content")
                         .withTopK(topK)
                         .build();
 
@@ -130,13 +133,16 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
      */
     @Override
     public List<Long> search(String collectionName, List<List<Float>> vectors, Integer topK, String exp) {
+
         Assert.notNull(collectionName, "collectionName  is null");
         Assert.notNull(vectors, "vectors is null");
         Assert.notEmpty(vectors, "vectors is empty");
         Assert.notNull(topK, "topK is null");
         Assert.notNull(exp, "exp is null");
+
         int nprobeVectorSize = vectors.get(0).size();
         String paramsInJson = "{'nprobe': " + nprobeVectorSize + "}";
+
         SearchParam searchParam =
                 SearchParam.newBuilder().withCollectionName(collectionName)
                         .withParams(paramsInJson)
@@ -148,9 +154,11 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
                         .build();
 
         R<SearchResults> searchResultsR = milvusServiceClient.search(searchParam);
+        log.debug("searchResultsR = {}" , searchResultsR);
+
         SearchResults searchResultsRData = searchResultsR.getData();
-        List<Long> topksList = searchResultsRData.getResults().getIds().getIntId().getDataList();
-        return topksList;
+
+        return searchResultsRData.getResults().getIds().getIntId().getDataList();
     }
 
 
@@ -205,5 +213,6 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
         });
         return partitionList;
     }
+
 
 }

@@ -1,10 +1,8 @@
 package com.alinesno.infra.base.search.adapter.consumer;
 
-import com.alinesno.infra.common.facade.response.AjaxResult;
-import com.alinesno.infra.common.facade.response.AjaxResult;
-import com.dtflys.forest.annotation.*;
-
-import java.util.List;
+import com.dtflys.forest.annotation.BaseRequest;
+import com.dtflys.forest.annotation.Body;
+import com.dtflys.forest.annotation.Post;
 
 @BaseRequest(
         baseURL = "#{alinesno.infra.gateway.host}" ,
@@ -18,7 +16,7 @@ public interface EmbeddingConsumer {
      * @param text
      * @return
      */
-    @Post(url = "/embeddings" , contentType = "application/x-www-form-urlencoded")
+    @Post(url = "/api/ai/embeddings" , contentType = "application/x-www-form-urlencoded")
     String embeddings(@Body("text") String text) ;
 
 }

@@ -55,4 +55,5 @@ public interface IMilvusSearchService {
      * @return 一个String值列表，表示集合中分区的名称。
      */
     List<String> getPartitionsList(String collectionName);
+
 }
