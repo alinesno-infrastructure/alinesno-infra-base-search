@@ -2,9 +2,11 @@ package com.alinesno.infra.base.search.gateway.provider;
 
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.constants.FileTypeEnums;
+import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
+import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -30,6 +32,9 @@ public class VectorDataController {
     private IDocumentParserService documentParserService ;
 
     @Autowired
+    private IDatasetKnowledgeService service;
+
+    @Autowired
     private IMilvusDataService milvusDataService;
 
     @Value("${alinesno.file.local.path}")
@@ -37,27 +42,31 @@ public class VectorDataController {
 
     /**
      * 文件上传，支持PDF、Word、Xmind
+     *
      * @param file
+     * @return
      * @throws Exception
      */
     @PostMapping("/upload")
-    public void upload(MultipartFile file) throws Exception {
+    public AjaxResult importData(@RequestPart("file") MultipartFile file, Long datasetId) throws Exception {
 
+        // 获取原始文件名
+        String fileName = file.getOriginalFilename();
         List<String> sentenceList = new ArrayList<>();
 
         // 新生成的文件名称
         String fileSuffix = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf(".")+1);
-        String fileName = IdUtil.getSnowflakeNextId() + "." + fileSuffix;
+        String newFileName = IdUtil.getSnowflakeNextId() + "." + fileSuffix;
 
         // 复制文件
-        File targetFile = new File(localPath , fileName);
+        File targetFile = new File(localPath , newFileName);
         FileUtils.writeByteArrayToFile(targetFile, file.getBytes());
 
         FileTypeEnums constants = FileTypeEnums.getByValue(fileSuffix.toLowerCase()) ;
         assert constants != null;
 
         sentenceList = switch (constants) {
-            case PDF -> documentParserService.parsePDF(targetFile);
+            case PDF ->  documentParserService.parsePDF(targetFile);
             case MD -> documentParserService.parseMD(targetFile);
             case EXCEL -> documentParserService.parseExcel(targetFile);
             case DOCX -> documentParserService.getContentDocx(targetFile);
@@ -70,7 +79,13 @@ public class VectorDataController {
         // 处理完成之后删除文件
         FileUtils.forceDeleteOnExit(targetFile);
 
-//        milvusDataService.save(sentenceList);
+        if(sentenceList.isEmpty()){
+            return AjaxResult.error(fileName + " 文档解析失败.") ;
+        }
+
+        service.extracted(datasetId, sentenceList, fileName);
+
+        return AjaxResult.success(fileName) ;
     }
 
 
