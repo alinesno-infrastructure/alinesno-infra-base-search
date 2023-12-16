@@ -34,31 +34,33 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
                                            String description,
                                            int shardsNum) {
 
-        FieldType fieldType1 = FieldType.newBuilder()
+        FieldType primaryIdType = FieldType.newBuilder()
                 .withName("id")
                 .withDataType(DataType.Int64)
                 .withPrimaryKey(true)
                 .withAutoID(false)
                 .build();
 
-        FieldType fieldType2 = FieldType.newBuilder()
+        FieldType contentType = FieldType.newBuilder()
                 .withName("dataset_id")
                 .withDataType(DataType.Int64)
                 .build();
 
-        FieldType fieldType3 = FieldType.newBuilder()
+        FieldType embeddingsType = FieldType.newBuilder()
                 .withName("document_content")
                 .withDataType(DataType.FloatVector)
-                .withDimension(2)
+                .withDimension(1536)
                 .build();
 
         CreateCollectionParam createCollectionReq = CreateCollectionParam.newBuilder()
                 .withCollectionName(collectionName)
                 .withDescription(description)
                 .withShardsNum(shardsNum)
-                .addFieldType(fieldType1)
-                .addFieldType(fieldType2)
-                .addFieldType(fieldType3)
+
+                .addFieldType(primaryIdType)
+                .addFieldType(contentType)
+                .addFieldType(embeddingsType)
+
                 .withEnableDynamicField(true)
                 .build();
 

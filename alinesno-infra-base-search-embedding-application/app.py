@@ -33,7 +33,7 @@ def download_and_extract_model():
         os.remove(model_zip_path)
         logging.info("模型已下载并解压到本地")
 
-@app.route('/embeddings', methods=['post'])
+@app.route('/api/ai/embeddings', methods=['post'])
 def embeddings():
     sentences = flask.request.form['text']
 
