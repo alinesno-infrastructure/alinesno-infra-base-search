@@ -1,6 +1,5 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.constants.FileTypeEnums;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
@@ -9,12 +8,11 @@ import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
-import com.alinesno.infra.common.facade.enums.HasStatusEnums;
+import com.alinesno.infra.common.facade.pageable.ConditionDto;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +71,18 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
     @PostMapping("/datatables")
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
+
+        String datasetId = request.getParameter("datasetId") ;
+
+        List<ConditionDto> conditionList = new ArrayList<>() ;
+
+        ConditionDto conditionDto = new ConditionDto() ;
+        conditionDto.setColumn("dataset_id");
+        conditionDto.setValue(datasetId);
+
+        conditionList.add(conditionDto) ;
+        page.setConditionList(conditionList);
+
         return this.toPage(model, this.getFeign(), page);
     }
 
@@ -113,13 +123,16 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
         // 处理完成之后删除文件
         FileUtils.forceDeleteOnExit(targetFile);
 
-        sentenceList = documentParserService.documentParser( sentenceList.get(0) , 500) ;
+        if(sentenceList.isEmpty()){
+            return AjaxResult.error(fileName + " 文档解析失败.") ;
+        }
 
-        // 保存到知识库中
-        vectorDatasetService.insertDatasetKnowledge(datasetId , sentenceList) ;
+        service.extracted(datasetId, sentenceList, fileName);
 
         return AjaxResult.success(fileName) ;
     }
+
+
 
     @Override
     public IDatasetKnowledgeService getFeign() {

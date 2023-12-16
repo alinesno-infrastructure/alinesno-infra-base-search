@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.vector.service;
 
+import com.alinesno.infra.base.search.vector.dto.EmbeddingBean;
 import com.alinesno.infra.base.search.vector.dto.PDFDataDto;
 
 import java.util.List;
@@ -20,12 +21,13 @@ public interface IMilvusSearchService {
 
     /**
      * 在指定的集合中搜索相似向量，并返回前K个最近邻居的ID列表。
+     *
      * @param collectionName 要搜索的集合的名称。
-     * @param vectors 要搜索的向量列表。
-     * @param topK 要检索的最近邻居的数量。
+     * @param vectors        要搜索的向量列表。
+     * @param topK           要检索的最近邻居的数量。
      * @return 一个Long值列表，表示最近邻居的ID。
      */
-    List<Long> search(String collectionName, List<List<Float>> vectors, Integer topK);
+    List<EmbeddingBean> search(String collectionName, List<List<Float>> vectors, Integer topK);
 
     /**
      * 在指定的集合中搜索相似向量，并返回前K个最近邻居的ID列表，可以指定搜索表达式。

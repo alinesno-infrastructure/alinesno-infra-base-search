@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+  <div style="padding-bottom: 30px;">
         <div style="width:700px;margin:auto">
             <el-form :model="form" label-position="top" label-width="120px">
                 <el-form-item label="频道图标" prop="icon">

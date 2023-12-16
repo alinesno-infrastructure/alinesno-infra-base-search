@@ -9,14 +9,21 @@ import com.google.gson.GsonBuilder;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.grpc.DataType;
 import io.milvus.grpc.MutationResult;
+import io.milvus.param.IndexType;
+import io.milvus.param.MetricType;
 import io.milvus.param.R;
 import io.milvus.param.RpcStatus;
 import io.milvus.param.collection.CreateCollectionParam;
 import io.milvus.param.collection.FieldType;
 import io.milvus.param.dml.DeleteParam;
 import io.milvus.param.dml.InsertParam;
+import io.milvus.param.index.CreateIndexParam;
+import io.milvus.param.partition.CreatePartitionParam;
+import io.milvus.param.partition.HasPartitionParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,13 +58,19 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
                 .withAutoID(false)
                 .build();
 
-        FieldType contentType = FieldType.newBuilder()
+        FieldType datasetIdType= FieldType.newBuilder()
                 .withName("dataset_id")
                 .withDataType(DataType.Int64)
                 .build();
 
-        FieldType embeddingsType = FieldType.newBuilder()
+        FieldType contentType = FieldType.newBuilder()
                 .withName("document_content")
+                .withDataType(DataType.VarChar)
+                .withMaxLength(4096)
+                .build();
+
+        FieldType embeddingsType = FieldType.newBuilder()
+                .withName("document_embedding")
                 .withDataType(DataType.FloatVector)
                 .withDimension(768)
                 .build();
@@ -68,6 +81,7 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
                 .withShardsNum(shardsNum)
 
                 .addFieldType(primaryIdType)
+                .addFieldType(datasetIdType)
                 .addFieldType(contentType)
                 .addFieldType(embeddingsType)
 
@@ -88,16 +102,32 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
     @Override
     public void insertData(String collectionName, String partitionName, EmbeddingBean embeddingBean) {
 
+        R<Boolean> respHasPartition = milvusServiceClient.hasPartition(
+                HasPartitionParam.newBuilder()
+                        .withCollectionName(collectionName)
+                        .withPartitionName(partitionName)
+                        .build()
+        );
+        if (respHasPartition.getData() != Boolean.TRUE) {
+            System.out.println("Partition exists.");
+            milvusServiceClient.createPartition(
+                    CreatePartitionParam.newBuilder()
+                            .withCollectionName(collectionName)
+                            .withPartitionName(partitionName)
+                            .build());
+        }
+
         List<InsertParam.Field> insertField = new ArrayList<>();
 
         // 将测试数据转换为插入参数
-        List<List<Float>> embeddings = populateEmbeddings(embeddingBean.getDocumentContent());
+        List<List<Float>> embeddings = populateEmbeddings(embeddingBean.getDocumentVector() );
 
         log.debug("embeddings = {}" , embeddings);
 
         insertField.add(new InsertParam.Field("id" , Collections.singletonList(embeddingBean.getId()))) ;
         insertField.add(new InsertParam.Field("dataset_id" , Collections.singletonList(embeddingBean.getDatasetId()))) ;
-        insertField.add(new InsertParam.Field("document_content" , embeddings)) ;
+        insertField.add(new InsertParam.Field("document_embedding" , embeddings)) ;
+        insertField.add(new InsertParam.Field("document_content" , Collections.singletonList(embeddingBean.getDocumentContent()))) ;
 
         // 插入数据到数据集中
         InsertParam insertParam = InsertParam.newBuilder()
@@ -166,6 +196,34 @@ public class MilvusDataServiceImpl implements IMilvusDataService {
         log.debug("vectorData = {}" , vectorData);
 
         return populateEmbeddings(vectorData) ;
+    }
+
+    @Async
+    @Override
+    public void buildIndexByCollection(String collectionName) {
+        StopWatch stopWatch = StopWatch.createStarted(); // 创建并启动计时器
+
+        final IndexType INDEX_TYPE = IndexType.IVF_FLAT;   // IndexType
+        final String INDEX_PARAM = "{\"nlist\":1024}";     // ExtraParam
+
+        R<RpcStatus> indexR =  milvusServiceClient.createIndex(
+                CreateIndexParam.newBuilder()
+                        .withCollectionName(collectionName)
+                        .withFieldName("document_embedding")
+                        .withIndexType(INDEX_TYPE)
+                        .withMetricType(MetricType.L2)
+                        .withExtraParam(INDEX_PARAM)
+                        .withSyncMode(Boolean.FALSE)
+                        .build());
+
+        log.debug("indexR = {}", indexR);
+
+        stopWatch.stop(); // 停止计时器
+
+        long executionTime = stopWatch.getTime(); // 获取执行时间，以毫秒为单位
+
+        // 将执行时间以中文形式输出
+        log.debug("方法执行时间为: {} 毫秒", executionTime);
     }
 
 }

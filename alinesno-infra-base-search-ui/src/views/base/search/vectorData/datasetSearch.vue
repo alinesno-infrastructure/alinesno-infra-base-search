@@ -1,17 +1,24 @@
 <template>
-    <div class="app-container">
-        <el-row>
-            <el-col :span="6">
-                <el-input class="input-search-text" v-model="textarea" :rows="7" type="textarea" resize="none" placeholder="请输入测试查询的文本" />
-                <el-button type="primary" text bg icon="Link" style="float: right;margin-top: 20px;">提交查询</el-button>
-            </el-col>
-            <el-col :span="18">
-                <div style="margin-left: 30px;">
+  <div style="padding-bottom: 30px;">
+        <el-row :gutter="20">
+            <el-col :span="24">
+                    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
+
+<el-form-item label="数据集名称" prop="name">
+  <el-input v-model="queryParams['condition[name|like]']" placeholder="请输入应用名称" clearable style="width: 540px"
+    @keyup.enter="handleQuery" />
+</el-form-item>
+
+<el-form-item>
+  <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+  <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+</el-form-item>
+</el-form>
 
                     <el-table v-loading="loading" :data="ApplicationList" @selection-change="handleSelectionChange">
-                        <el-table-column type="selection" width="50" align="center" />
+                        <el-table-column type="index" width="30" align="center" />
 
-                        <el-table-column label="类型" align="center" width="80px" prop="icon" v-if="columns[0].visible">
+                        <el-table-column label="类型" align="center" width="50px" prop="icon" v-if="columns[0].visible">
                             <template #default="scope">
                                 <div class="role-icon" style="font-size: 20px;">
                                     <i class="fa-solid fa-file-pdf" />
@@ -19,15 +26,17 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="查询结果" align="left" key="name" prop="name" v-if="columns[1].visible"
-                            :show-overflow-tooltip="true">
+                        <el-table-column label="查询结果" align="left" key="name" prop="name" v-if="columns[1].visible">
                             <template #default="scope">
-                                <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
+                                <!-- <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
                                     {{ scope.row.name }}
+                                </div> -->
+                                <div style="font-size: 13px;color: rgb(59, 89, 152);height: 43px;overflow: hidden;text-overflow: ellipsis;">
+                                    数据安全防护系统保障数据的保密性、完整性和可用性，按照信息系统安全保 护等级，具有对数据安全从三方面进行防护——对敏感数据进行加密、保障数据传输安全和建立安全分 级身份认证。\n10.2  信息安全防护要求\n\n10.2.1 结构安全保障\nGB/T XXXXX—XXXX\n21\n\n信息网络分域分级， 按用户业务划分安全域， 并根据安全域支撑的业务，通过有效的路由控制、带 宽控制，保障关键业务对网络资源的需求。\n10.2.2 网络行为审计\n\n提供可视化管理，对信息网络关键节点上的业务访问进行深度识别与全面审计， 提供基于用户、访 问行为、系统资源等实施监控措施， 提升信息网络的透明度。\n10.2.3 边界完整性保护\n\n系统具备与第三方终端系统整合功能，对非法接入的终端进行识别与阻断。\n\n10.2.4 攻击和入侵防范要求\n\n提供基于应用的入侵防范，在实现对攻击行为的深度检测同时， 通过应用识别来锁定真实的应用， 并以此为基础进行深度的攻击分析， 准确、快捷地定位攻击的类型。
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="查询结果" align="left" key="name" prop="name" v-if="columns[1].visible"
+                        <el-table-column label="评分" width="100px" align="center" key="name" prop="name" v-if="columns[1].visible"
                             :show-overflow-tooltip="true">
                             <template #default="scope">
                                 <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
@@ -36,7 +45,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width"
+                        <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width"
                             v-if="columns[8].visible">
                             <template #default="scope">
                                 <el-tooltip content="修改" placement="top" v-if="scope.row.applicationId !== 1">
@@ -52,7 +61,6 @@
                         </el-table-column>
                     </el-table>
                     <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
-                </div>
             </el-col>
 
         </el-row>

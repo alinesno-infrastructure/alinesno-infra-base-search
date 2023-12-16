@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.vector.service.impl;
 
+import com.alinesno.infra.base.search.vector.dto.EmbeddingBean;
 import com.alinesno.infra.base.search.vector.dto.PDFDataDto;
 import com.alinesno.infra.base.search.vector.service.IMilvusSearchService;
 import com.google.common.collect.Lists;
@@ -10,6 +11,7 @@ import io.milvus.common.clientenum.ConsistencyLevelEnum;
 import io.milvus.grpc.SearchResults;
 import io.milvus.param.MetricType;
 import io.milvus.param.R;
+import io.milvus.param.RpcStatus;
 import io.milvus.param.collection.LoadCollectionParam;
 import io.milvus.param.collection.ReleaseCollectionParam;
 import io.milvus.param.dml.SearchParam;
@@ -91,45 +93,75 @@ public class MilvusSearchServiceImpl implements IMilvusSearchService {
 
     /**
      * 同步搜索milvus
+     *
      * @param collectionName 表名
-     * @param vectors 查询向量
-     * @param topK 最相似的向量个数
+     * @param vectors        查询向量
+     * @param topK           最相似的向量个数
      * @return
      */
     @Override
-    public List<Long> search(String collectionName, List<List<Float>> vectors, Integer topK) {
+    public List<EmbeddingBean> search(String collectionName, List<List<Float>> vectors, Integer topK) {
 
         Assert.notNull(collectionName, "collectionName  is null");
         Assert.notNull(vectors, "vectors is null");
         Assert.notEmpty(vectors, "vectors is empty");
         Assert.notNull(topK, "topK is null");
 
-        final Integer SEARCH_K = 2;                       // TopK
+
+        R<RpcStatus> r =  milvusServiceClient.loadCollection(
+                LoadCollectionParam.newBuilder()
+                        .withCollectionName(collectionName)
+                        .build());
+        log.debug("RpcStatus = {}" , r);
+
+        final int SEARCH_K = 2;                       // TopK
         final String SEARCH_PARAM = "{\"nprobe\":10, \"offset\":0}";    // Params
 
-        List<String> search_output_fields = List.of("dataset_id");
+        List<String> search_output_fields = List.of("id" , "dataset_id" , "document_content");
 
         SearchParam searchParam = SearchParam.newBuilder()
-                .withCollectionName("book")
+                .withCollectionName(collectionName)
+                .withPartitionNames(List.of("novel"))
                 .withConsistencyLevel(ConsistencyLevelEnum.STRONG)
                 .withMetricType(MetricType.L2)
                 .withOutFields(search_output_fields)
                 .withTopK(SEARCH_K)
                 .withVectors(vectors)
-                .withVectorFieldName("book_intro")
+                .withVectorFieldName("document_embedding")
                 .withParams(SEARCH_PARAM)
                 .build();
         R<SearchResults> respSearch = milvusServiceClient.search(searchParam);
 
-        log.debug("searchResultsR = {}" , respSearch);
-
         SearchResults searchResultsRData = respSearch.getData();
         SearchResultsWrapper wrapperSearch = new SearchResultsWrapper(respSearch.getData().getResults());
 
-        System.out.println(wrapperSearch.getIDScore(0));
-        System.out.println(wrapperSearch.getFieldData("dataset_id", 0));
+        List<EmbeddingBean> embeddingBeans = new ArrayList<>() ;
+        for(int i = 0 ; i < SEARCH_K ; i ++){
+            EmbeddingBean embeddingBean = new EmbeddingBean() ;
 
-        return searchResultsRData.getResults().getIds().getIntId().getDataList();
+            System.out.println("--->>>>>wrapperSearch = " + wrapperSearch.getIDScore(0).get(i).getScore());
+            System.out.println("--->>>>>wrapperSearch = " + wrapperSearch.getIDScore(0).get(i).getFieldValues().get("id"));
+
+            float score = wrapperSearch.getIDScore(0).get(i).getScore() ;
+            Object id = wrapperSearch.getIDScore(0).get(i).getFieldValues().get("id") ;
+            List<?> datasetId = wrapperSearch.getFieldData("dataset_id", 0);
+            List<?> documentCount = wrapperSearch.getFieldData("document_content", 0);
+
+            // 设置 EmbeddingBean 的属性
+            embeddingBean.setScore(score) ;
+            embeddingBean.setId(Long.parseLong(id+""));
+            embeddingBean.setDatasetId((Long) datasetId.get(i));
+            embeddingBean.setDocumentContent((String) documentCount.get(i));
+
+            embeddingBeans.add(embeddingBean)  ;
+        }
+
+        milvusServiceClient.releaseCollection(
+                ReleaseCollectionParam.newBuilder()
+                        .withCollectionName(collectionName)
+                        .build());
+
+        return embeddingBeans ; // searchResultsRData.getResults().getIds().getIntId().getDataList();
     }
 
 

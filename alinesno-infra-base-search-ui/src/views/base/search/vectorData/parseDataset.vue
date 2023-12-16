@@ -7,11 +7,11 @@
         </el-page-header>
 
         <div style="margin-top:20px">
-            <el-tabs :tab-position="tabPosition" style="height: 100vh" class="demo-tabs">
-                <el-tab-pane label="数据来源管理">
+            <el-tabs :tab-position="tabPosition" style="height: calc(100vh - 150px)" class="demo-tabs">
+                <el-tab-pane style="height: 100%;" label="数据源管理">
                     <DatasetList />
                 </el-tab-pane>
-                <el-tab-pane label="搜索测试">
+                <el-tab-pane label="向量性测试">
                     <DatasetSearch />
                 </el-tab-pane>
                 <el-tab-pane label="知识库配置">
@@ -29,7 +29,7 @@ import DatasetList from './datasetList';
 import DatasetConfig from './datasetConfig';
 import DatasetSearch from './datasetSearch';
 
-const tabPosition = ref('left')
+const tabPosition = ref('top')
 const router = useRouter();
 
 const goBack = () => {

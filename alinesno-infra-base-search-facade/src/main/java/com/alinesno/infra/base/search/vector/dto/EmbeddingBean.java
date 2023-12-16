@@ -9,7 +9,10 @@ import lombok.Data;
 public class EmbeddingBean {
 
     private Long id ;
+    private float score ;
+    private Long idScore ;
     private Long datasetId ;
     private String documentContent ;
+    private String documentVector ;
 
 }

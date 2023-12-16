@@ -39,17 +39,10 @@ def download_and_extract_model():
 def embeddings():
     sentences = flask.request.form['text']
 
-    # 检查并下载模型
-    download_and_extract_model()
-
-    # 加载本地模型
-    model = SentenceTransformer(os.path.join(MODEL_LOCAL_PATH, MODEL_NAME))
     embeddings = model.encode(sentences)
-
     print(embeddings)
 
-    # return embeddings.tolist()
-    return embeddings
+    return embeddings.tolist()
 
 
 if __name__ == '__main__':
@@ -59,5 +52,8 @@ if __name__ == '__main__':
 
     # 检查并下载模型
     download_and_extract_model()
+
+    # 加载本地模型
+    model = SentenceTransformer(os.path.join(MODEL_LOCAL_PATH, MODEL_NAME))
 
     app.run(port=5001, debug=False, host='0.0.0.0')

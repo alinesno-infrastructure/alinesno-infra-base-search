@@ -12,6 +12,7 @@ import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
     @Autowired
     private EmbeddingConsumer embeddingConsumer ;
 
+    @Async
     @Override
     public void insertDatasetKnowledge(Long datasetId, List<String> sentenceList) {
 
@@ -52,10 +54,14 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
 
             embeddingBean.setId(IdUtil.getSnowflakeNextId());
             embeddingBean.setDatasetId(datasetId);
-            embeddingBean.setDocumentContent(vectorData);
+            embeddingBean.setDocumentContent(content);
+            embeddingBean.setDocumentVector(vectorData);
 
             milvusDataService.insertData(collectionName , "novel" , embeddingBean);
         }
+
+        milvusDataService.buildIndexByCollection(collectionName) ;
+
     }
 
 }

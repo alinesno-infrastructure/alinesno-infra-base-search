@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
+import com.alinesno.infra.base.search.vector.dto.EmbeddingBean;
 import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.base.search.vector.service.IMilvusSearchService;
@@ -24,14 +25,15 @@ public class VectorSearchController {
 
     /**
      * 处理搜索Milvus集合的HTTP POST请求，并返回最近邻居的ID列表。
+     *
      * @param dto 要搜索的集合名称。
      * @return 包含最近邻居ID列表的ResponseEntity对象。
      */
     @PostMapping("/search")
-    public ResponseEntity<List<Long>> searchMilvus(@RequestBody VectorSearchDto dto) {
+    public ResponseEntity<List<EmbeddingBean>> searchMilvus(@RequestBody VectorSearchDto dto) {
 
         List<List<Float>> vectors = milvusDataService.textToVector(dto.getSearchText()) ;
-        List<Long> topksList = milvusService.search(dto.getCollectionName(), vectors, dto.getTopK());
+        List<EmbeddingBean> topksList = milvusService.search(dto.getCollectionName(), vectors, dto.getTopK());
 
         return ResponseEntity.ok(topksList);
     }

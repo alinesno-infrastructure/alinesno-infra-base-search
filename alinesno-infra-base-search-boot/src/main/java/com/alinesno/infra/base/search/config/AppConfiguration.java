@@ -7,8 +7,10 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.unit.DataSize;
 
+@EnableScheduling
 @EnableActable
 @EnableInfraSsoApi
 @MapperScan("com.alinesno.infra.base.search.mapper")

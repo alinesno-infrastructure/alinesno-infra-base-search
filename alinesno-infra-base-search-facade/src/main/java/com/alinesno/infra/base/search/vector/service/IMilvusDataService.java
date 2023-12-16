@@ -40,4 +40,10 @@ public interface IMilvusDataService {
      * @return
      */
     List<List<Float>> textToVector(String searchText);
+
+    /**
+     * 创建索引服务
+     * @param collectionName
+     */
+    void buildIndexByCollection(String collectionName);
 }
