@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 /**
  * 此处功能代码参考 <a href="https://juejin.cn/post/7251501842986762301">SpringBoot整合Milvus</a>
@@ -37,8 +36,6 @@ public class MilvusConfiguration {
 
     @Bean(initMethod = "init", destroyMethod = "close")
     public MilvusRestClientFactory getMilvusFactory() {
-        ipAddr = "192.168.101.18" ;
-        port = 19530 ;
         return  MilvusRestClientFactory.build(ipAddr, port);
     }
 }

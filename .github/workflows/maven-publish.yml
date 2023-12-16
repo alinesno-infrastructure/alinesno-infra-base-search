@@ -193,4 +193,8 @@ jobs:
             export DB_MYSQL_USRENAME=${{ secrets.DEV_DB_MYSQL_USRENAME }}
             export DB_MYSQL_PASSWORD=${{ secrets.DEV_DB_MYSQL_PASSWORD }}
 
+            export INFRA_GATEWAY_PROXY=${{ secrets.DEV_INFRA_GATEWAY_PROXY }}
+            export MILVUS_HOST=${{ secrets.DEV_MILVUS_HOST }}
+            export MILVUS_PORT=${{ secrets.DEV_MILVUS_HOST }}
+
             envsubst < /home/github-action/${{ env.PROJECT_NAME }}/kubernetes-${{ env.CURRENT_PROFIRE }}.yml | kubectl apply -f -
