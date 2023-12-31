@@ -18,7 +18,7 @@
     <properties>
         <revision>1.0.0-SNAPSHOT</revision>
         <alinesno.infra.version>${revision}</alinesno.infra.version>
-        <poi.version>4.1.2</poi.version>
+        <poi.version>5.2.1</poi.version>
     </properties>
 
     <modules>
