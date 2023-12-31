@@ -5,7 +5,7 @@ import com.dtflys.forest.annotation.Body;
 import com.dtflys.forest.annotation.Post;
 
 @BaseRequest(
-        baseURL = "#{alinesno.infra.gateway.host}" ,
+        baseURL = "#{alinesno.infra.gateway.host}/smart-embedding" ,
         connectTimeout = 30*1000 ,
         readTimeout = 60*1000
 )

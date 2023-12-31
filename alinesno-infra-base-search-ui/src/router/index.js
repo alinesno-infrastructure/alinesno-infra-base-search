@@ -111,10 +111,10 @@ export const constantRoutes = [
         meta: { title: '全文检索服务', icon: 'dashboard', affix: true }
       },
       {
-        path: '/base/search/stream/index',
-        component: () => import('@/views/base/search/stream/index'),
-        path: '/base/search/stream/index',
-        meta: { title: 'Stream实时日志', icon: 'dashboard', affix: true }
+        path: '/base/search/indexes/index',
+        component: () => import('@/views/base/search/indexes/index'),
+        path: '/base/search/indexes/index',
+        meta: { title: '索引管理', icon: 'dashboard', affix: true }
       },
       {
         path: '/base/search/configuration/index',

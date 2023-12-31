@@ -78,4 +78,4 @@ curl -X GET 'http://localhost:8080/api/searchByField?indexBase=myIndex&indexType
 
 ## 鸣谢
 
-- 此处集成[OpenSearch](#)进行搜索
+- 日志系统设计参考[把ES换成ClickHouse，B站的日志系统像开挂了一样](https://www.51cto.com/article/719248.html)
