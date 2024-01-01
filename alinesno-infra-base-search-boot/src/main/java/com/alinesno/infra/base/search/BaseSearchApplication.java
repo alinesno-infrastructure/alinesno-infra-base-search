@@ -1,6 +1,5 @@
 package com.alinesno.infra.base.search;
 
-import okhttp3.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
