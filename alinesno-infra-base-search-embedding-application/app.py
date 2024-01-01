@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 MODEL_CACHE_PATH = os.path.expanduser("~/cache/model/")
 MODEL_NAME = 'm3e-base'
-MODEL_ZIP_URL = 'http://s4j8c97ta.hn-bkt.clouddn.com/moka-ai/m3e-base.zip'
+MODEL_ZIP_URL = 'http://data.linesno.com/moka-ai/m3e-base.zip'
 MODEL_LOCAL_PATH = os.path.join(MODEL_CACHE_PATH, MODEL_NAME)
 
 
