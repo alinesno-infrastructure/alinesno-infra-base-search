@@ -35,6 +35,8 @@ public class VectorSearchController {
         List<List<Float>> vectors = milvusDataService.textToVector(dto.getSearchText()) ;
         List<EmbeddingBean> topksList = milvusService.search(dto.getCollectionName(), vectors, dto.getTopK());
 
+        log.debug("topksList = {}" , topksList);
+
         return ResponseEntity.ok(topksList);
     }
 
