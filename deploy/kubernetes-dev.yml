@@ -8,6 +8,7 @@ spec:
   selector:
     app: ${PROJECT_NAME}
     release: canary
+  type: NodePort
   ports:
     - name: http
       targetPort: 8080
@@ -68,10 +69,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-spec:
-  template:
-    spec:
-      hostNetwork: true
+spec: 
   rules:
     - host: "${PROJECT_NAME}.${INFRA_DEV_DOMAIN}"
       http:
