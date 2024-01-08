@@ -7,13 +7,11 @@ metadata:
 spec:
   selector:
     app: ${PROJECT_NAME}
-    release: canary
-  type: NodePort
+    release: canary 
   ports:
     - name: http
       targetPort: 8080
-      port: 8080
-      nodePort: 28456
+      port: 8080 
 
 ---
 # 创建后端服务的pod
