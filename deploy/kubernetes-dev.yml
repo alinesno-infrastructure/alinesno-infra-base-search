@@ -69,6 +69,9 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
 spec:
+  template:
+    spec:
+      hostNetwork: true
   rules:
     - host: "${PROJECT_NAME}.${INFRA_DEV_DOMAIN}"
       http:
