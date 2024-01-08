@@ -38,7 +38,6 @@ public class VectorSearchController {
 
         log.debug("topksList = {}" , topksList);
 
-        topksList = new ArrayList<>();
         return ResponseEntity.ok(topksList);
     }
 

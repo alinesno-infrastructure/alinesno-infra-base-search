@@ -3,29 +3,29 @@
 
 ## 接口
 
-### DocumentSearch API 
+### DocumentSearch API
 
-|序号|接口名称|接口地址|完成状态|备注|
-|---|---|---|---|---|
-|1|将数据保存到Elasticsearch|POST /api/base/search/document/save|未完成|需要传入JSON对象、索引基础名称和索引类型|
-|2|根据查询文本进行搜索|GET /api/base/search/document/search|未完成|需要传入索引基础名称、索引类型和查询文本|
-|3|根据字段进行搜索|GET /api/base/search/document/searchByField|未完成|需要传入索引基础名称、索引类型、字段名称和查询文本|
+| 序号 | 接口名称                  | 接口地址                                    | 完成状态 | 备注                                               |
+|------|---------------------------|---------------------------------------------|----------|----------------------------------------------------|
+| 1    | 将数据保存到Elasticsearch | POST /api/base/search/document/save         | 未完成   | 需要传入JSON对象、索引基础名称和索引类型           |
+| 2    | 根据查询文本进行搜索      | GET /api/base/search/document/search        | 未完成   | 需要传入索引基础名称、索引类型和查询文本           |
+| 3    | 根据字段进行搜索          | GET /api/base/search/document/searchByField | 未完成   | 需要传入索引基础名称、索引类型、字段名称和查询文本 |
 
 ### VectorAPI
 
-|序号|接口名称|接口地址|完成状态|备注|
-|---|---|---|---|---|
-|1|文件上传|POST /api/base/search/vectorData/upload|未完成|支持PDF、Word、Xmind文件上传|
-|2|创建集合的REST API接口|POST /api/base/search/vectorData/createCollection|未完成|需要传入集合名称、集合描述、分片数量和字段类型|
-|3|插入数据的REST API接口|POST /api/base/search/vectorData/insertData|未完成|需要传入集合名称、分区名称和插入参数字段列表|
-|4|删除数据的REST API接口|DELETE /api/base/search/vectorData/deleteData|未完成|需要传入集合名称和删除表达式|
+| 序号 | 接口名称               | 接口地址                                          | 完成状态 | 备注                                           |
+|------|------------------------|---------------------------------------------------|----------|------------------------------------------------|
+| 1    | 文件上传               | POST /api/base/search/vectorData/upload           | 未完成   | 支持PDF、Word、Xmind文件上传                   |
+| 2    | 创建集合的REST API接口 | POST /api/base/search/vectorData/createCollection | 未完成   | 需要传入集合名称、集合描述、分片数量和字段类型 |
+| 3    | 插入数据的REST API接口 | POST /api/base/search/vectorData/insertData       | 未完成   | 需要传入集合名称、分区名称和插入参数字段列表   |
+| 4    | 删除数据的REST API接口 | DELETE /api/base/search/vectorData/deleteData     | 未完成   | 需要传入集合名称和删除表达式                   |
 
-|序号|接口名称|接口地址|完成状态|备注|
-|---|---|---|---|---|
-|1|处理搜索Milvus集合的HTTP POST请求|POST /api/base/search/vectorSearch/search|未完成|需要传入集合名称、要搜索的向量列表和要返回的最近邻居数量|
-|2|处理带有过滤条件的搜索Milvus集合的HTTP POST请求|POST /api/base/search/vectorSearch/searchWithFilter|未完成|需要传入集合名称、要搜索的向量列表、要返回的最近邻居数量和搜索表达式|
-|3|处理异步搜索Milvus集合的HTTP POST请求|POST /api/base/search/vectorSearch/searchAsync|未完成|需要传入集合名称、要搜索的向量列表、要包括在搜索中的分区列表和要返回的最近邻居数量，可能会抛出ExecutionException和InterruptedException|
-|4|处理获取Milvus集合分区列表的HTTP GET请求|GET /api/base/search/vectorSearch/partitions|未完成|需要传入要获取分区列表的集合名称|
+| 序号 | 接口名称                                        | 接口地址                                            | 完成状态 | 备注                                                                                                                                   |
+|------|-------------------------------------------------|-----------------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | 处理搜索Milvus集合的HTTP POST请求               | POST /api/base/search/vectorSearch/search           | 未完成   | 需要传入集合名称、要搜索的向量列表和要返回的最近邻居数量                                                                               |
+| 2    | 处理带有过滤条件的搜索Milvus集合的HTTP POST请求 | POST /api/base/search/vectorSearch/searchWithFilter | 未完成   | 需要传入集合名称、要搜索的向量列表、要返回的最近邻居数量和搜索表达式                                                                   |
+| 3    | 处理异步搜索Milvus集合的HTTP POST请求           | POST /api/base/search/vectorSearch/searchAsync      | 未完成   | 需要传入集合名称、要搜索的向量列表、要包括在搜索中的分区列表和要返回的最近邻居数量，可能会抛出ExecutionException和InterruptedException |
+| 4    | 处理获取Milvus集合分区列表的HTTP GET请求        | GET /api/base/search/vectorSearch/partitions        | 未完成   | 需要传入要获取分区列表的集合名称                                                                                                       |
 
 ### 接口列表更新
 
