@@ -33,12 +33,14 @@ public class VectorSearchController {
     @PostMapping("/search")
     public ResponseEntity<List<EmbeddingBean>> searchMilvus(@RequestBody VectorSearchDto dto) {
 
-        List<List<Float>> vectors = milvusDataService.textToVector(dto.getSearchText()) ;
-        List<EmbeddingBean> topksList = milvusService.search(dto.getCollectionName(), vectors, dto.getTopK());
+        // List<List<Float>> vectors = milvusDataService.textToVector(dto.getSearchText()) ;
+        // List<EmbeddingBean> topksList = milvusService.search(dto.getCollectionName(), vectors, dto.getTopK());
 
-        log.debug("topksList = {}" , topksList);
+        // log.debug("topksList = {}" , topksList);
 
-        return ResponseEntity.ok(topksList);
+        // return ResponseEntity.ok(topksList);
+
+        return ResponseEntity.ok("this is a test");
     }
 
     /**
