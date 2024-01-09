@@ -40,7 +40,11 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
     public void insertDatasetKnowledge(Long datasetId, List<String> sentenceList) {
 
         VectorDatasetEntity vectorDatasetEntity = getById(datasetId) ;
-        vectorDatasetEntity.setDatasetSize(sentenceList.size() + vectorDatasetEntity.getDatasetSize());
+
+        int datasetSize = sentenceList.size() + vectorDatasetEntity.getDatasetSize() ;
+        log.debug("datasetSize = {}" , datasetSize);
+
+        vectorDatasetEntity.setDatasetSize(datasetSize);
         update(vectorDatasetEntity) ;
 
         String collectionName = vectorDatasetEntity.getCollectionName();

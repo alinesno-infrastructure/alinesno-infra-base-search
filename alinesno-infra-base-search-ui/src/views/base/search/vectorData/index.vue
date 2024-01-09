@@ -151,21 +151,23 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+
+        <!-- <el-row>
           <el-col :span="24">
             <el-form-item label="所有者" prop="ownerId">
               <el-input v-model="form.ownerId" placeholder="请输入显示名称" maxlength="50"/>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row> -->
 
-        <el-row>
+        <!-- <el-row>
           <el-col :span="24">
             <el-form-item label="状态" prop="datasetStatus">
               <el-input v-model="form.datasetStatus" placeholder="请输入域名" maxlength="100"/>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row> -->
+
         <el-row>
           <el-col :span="24">
             <el-form-item label="描述信息" prop="description">
@@ -174,20 +176,22 @@
           </el-col>
         </el-row>
 
-        <el-row>
+        <!-- <el-row>
           <el-col :span="24">
             <el-form-item label="访问权限" prop="accessPermission">
               <el-input v-model="form.accessPermission" placeholder="请输入安全存储路径" maxlength="200"/>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
+        </el-row> -->
+
+        <!-- <el-row>
           <el-col :span="24">
             <el-form-item label="数据总量" prop="datasetSize">
               <el-input v-model="form.datasetSize" placeholder="请输入应用目标" maxlength="20"/>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row> -->
+
       </el-form>
       <template #footer>
         <div class="dialog-footer">

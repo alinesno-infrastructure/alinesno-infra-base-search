@@ -1,5 +1,7 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
+import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
+import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.dto.EmbeddingBean;
 import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
@@ -24,6 +26,9 @@ public class VectorSearchController {
     @Autowired
     private IMilvusDataService milvusDataService ;
 
+    @Autowired
+    private IVectorDatasetService datasetService ;
+
     /**
      * 处理搜索Milvus集合的HTTP POST请求，并返回最近邻居的ID列表。
      *
@@ -33,12 +38,15 @@ public class VectorSearchController {
     @PostMapping("/search")
     public ResponseEntity<List<EmbeddingBean>> searchMilvus(@RequestBody VectorSearchDto dto) {
 
+        long datasetId = dto.getDatesetId() ;
+        VectorDatasetEntity datasetEntity = datasetService.getById(datasetId) ;
+        dto.setCollectionName(datasetEntity.getCollectionName());
+
         List<List<Float>> vectors = milvusDataService.textToVector(dto.getSearchText()) ;
         List<EmbeddingBean> topksList = milvusService.search(dto.getCollectionName(), vectors, dto.getTopK());
 
         log.debug("topksList = {}" , topksList);
 
-        topksList = new ArrayList<>() ;
         return ResponseEntity.ok(topksList);
  
     }

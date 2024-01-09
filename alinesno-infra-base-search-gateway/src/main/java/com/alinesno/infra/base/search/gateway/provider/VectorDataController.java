@@ -1,9 +1,13 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.constants.FileTypeEnums;
+import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
+import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
+import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.dto.InsertField;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
@@ -12,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +37,9 @@ public class VectorDataController {
     private IDocumentParserService documentParserService ;
 
     @Autowired
+    private IVectorDatasetService vectorDatasetService;
+
+    @Autowired
     private IDatasetKnowledgeService service;
 
     @Autowired
@@ -39,6 +47,42 @@ public class VectorDataController {
 
     @Value("${alinesno.file.local.path}")
     private String localPath  ;
+
+    /**
+     * 创建数据集
+     * @return
+     */
+    @PostMapping("/createDataset")
+    public AjaxResult createDataset(String datasetName , String datasetDesc){
+
+        log.debug("datasetName = {} , datasetDesc = {}" , datasetName , datasetDesc);
+
+        Assert.hasLength(datasetDesc , "数据集描述为空");
+        Assert.hasLength(datasetName, "数据集名称为空");
+
+        VectorDatasetEntity entity = new VectorDatasetEntity() ;
+        entity.setName(datasetName);
+        entity.setDescription(datasetDesc);
+
+        // 生成唯一的标识
+        String collectionName = CollectionUtils.generateUniqueString() ;
+        String description = entity.getDescription() ;
+        int shardsNum = 1 ;
+
+        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
+        log.debug("currentUserId = {}" , currentUserId);
+
+        entity.setDatasetSize(0);
+        entity.setAccessPermission("person");
+        entity.setOwnerId(currentUserId);
+        entity.setCollectionName(collectionName);
+        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
+
+        log.debug("buildCreateCollectionParam = " + collectionName);
+        vectorDatasetService.save(entity);
+
+        return AjaxResult.success("创建数据集成功." , entity.getId()) ;
+    }
 
     /**
      * 文件上传，支持PDF、Word、Xmind

@@ -1,6 +1,8 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
+import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
@@ -57,30 +59,23 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
     @Override
     public AjaxResult save(Model model, @RequestBody VectorDatasetEntity entity) throws Exception {
 
-        String collectionName = generateUniqueString() ;
+        // 生成唯一的标识
+        String collectionName = CollectionUtils.generateUniqueString() ;
         String description = entity.getDescription() ;
         int shardsNum = 1 ;
 
+        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
+        log.debug("currentUserId = {}" , currentUserId);
+
+        entity.setDatasetSize(0);
+        entity.setAccessPermission("person");
+        entity.setOwnerId(currentUserId);
         entity.setCollectionName(collectionName);
         milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
 
         log.debug("buildCreateCollectionParam = " + collectionName);
 
         return super.save(model, entity);
-    }
-
-    public static String generateUniqueString() {
-        int length = 8;
-        String characters = "abcdefghijklmnopqrstuvwxyz";
-        SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < length; i++) {
-            int randomIndex = random.nextInt(characters.length());
-            sb.append(characters.charAt(randomIndex));
-        }
-
-        return sb.toString();
     }
 
     @Override

@@ -38,6 +38,8 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
         e.setDocumentDesc(fileName);
         e.setDocumentCount(sentenceList.size());
 
+        log.debug("document count = {}" , e.getDocumentCount());
+
         save(e) ;
 
         // 保存到知识库中
