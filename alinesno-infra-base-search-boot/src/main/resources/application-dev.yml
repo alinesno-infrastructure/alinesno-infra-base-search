@@ -17,7 +17,7 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
-#      password: aip@local
+      password: aip@local
   devtools:
     restart:
       enabled: true
@@ -35,16 +35,22 @@ sa-token:
   sign:
     secret-key:
 
+#-Dalinesno.base.search.dashscope.api-key=xxxxx
+#-Dalinesno.base.search.elasticsearch.host=192.168.101.18
+#-Dalinesno.base.search.elasticsearch.port=9092
+#-Dalinesno.base.search.elasticsearch.username=elastic
+#-Dalinesno.base.search.elasticsearch.password=123456
 
 alinesno:
   base:
     search:
+      dashscope:
+        api-key: xxxxx
       elasticsearch:
         host: 192.168.101.18
         port: 9092
-      milvus:
-        host: 192.168.101.18
-        port: 19531
+        username: elastic
+        password: 123456
 
 actable:
   table:
