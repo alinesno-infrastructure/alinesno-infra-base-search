@@ -13,10 +13,6 @@
 	<artifactId>alinesno-infra-base-search-adapter</artifactId>
 	<packaging>jar</packaging>
 
-	<properties>
-		<dashscope.version>2.16.3</dashscope.version>
-	</properties>
-
 	<dependencies>
 
 		<!-- 引用公共门面服务 -->
@@ -24,13 +20,6 @@
 			<groupId>com.alinesno.infra.base</groupId>
 			<artifactId>alinesno-infra-base-search-facade</artifactId>
 			<version>${revision}</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.alibaba/dashscope-sdk-java -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>dashscope-sdk-java</artifactId>
-			<version>${dashscope.version}</version>
 		</dependency>
 
 		<!-- 引入forest_starter_start -->
