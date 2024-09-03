@@ -10,7 +10,6 @@ import com.alinesno.infra.base.search.vector.service.IElasticsearchVectorService
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
