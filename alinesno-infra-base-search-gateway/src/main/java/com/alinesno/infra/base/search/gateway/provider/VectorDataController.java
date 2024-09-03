@@ -1,17 +1,16 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
-import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.util.IdUtil;
-import com.alinesno.infra.base.search.constants.FileTypeEnums;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
+import com.alinesno.infra.base.search.enums.FileTypeEnums;
 import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
-import com.alinesno.infra.base.search.vector.dto.InsertField;
-import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.google.gson.Gson;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,53 +35,14 @@ public class VectorDataController {
     @Autowired
     private IDocumentParserService documentParserService ;
 
-    @Autowired
+    @Resource
     private IVectorDatasetService vectorDatasetService;
 
     @Autowired
     private IDatasetKnowledgeService service;
 
-    @Autowired
-    private IMilvusDataService milvusDataService;
-
-    @Value("${alinesno.file.local.path}")
+    @Value("${alinesno.file.local.path:${java.io.tmpdir}}")
     private String localPath  ;
-
-    /**
-     * 创建数据集
-     * @return
-     */
-    @PostMapping("/createDataset")
-    public AjaxResult createDataset(String datasetName , String datasetDesc){
-
-        log.debug("datasetName = {} , datasetDesc = {}" , datasetName , datasetDesc);
-
-        Assert.hasLength(datasetDesc , "数据集描述为空");
-        Assert.hasLength(datasetName, "数据集名称为空");
-
-        VectorDatasetEntity entity = new VectorDatasetEntity() ;
-        entity.setName(datasetName);
-        entity.setDescription(datasetDesc);
-
-        // 生成唯一的标识
-        String collectionName = CollectionUtils.generateUniqueString() ;
-        String description = entity.getDescription() ;
-        int shardsNum = 1 ;
-
-        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
-        log.debug("currentUserId = {}" , currentUserId);
-
-        entity.setDatasetSize(0);
-        entity.setAccessPermission("person");
-        entity.setOwnerId(currentUserId);
-        entity.setCollectionName(collectionName);
-        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
-
-        log.debug("buildCreateCollectionParam = " + collectionName);
-        vectorDatasetService.save(entity);
-
-        return AjaxResult.success("创建数据集成功." , entity.getId()) ;
-    }
 
     /**
      * 文件上传，支持PDF、Word、Xmind
@@ -92,7 +52,8 @@ public class VectorDataController {
      * @throws Exception
      */
     @PostMapping("/upload")
-    public AjaxResult importData(@RequestPart("file") MultipartFile file, Long datasetId) throws Exception {
+    public AjaxResult importData(@RequestPart("file") MultipartFile file,
+                                 @RequestParam Long datasetId) throws Exception {
 
         // 获取原始文件名
         String fileName = file.getOriginalFilename();
@@ -105,6 +66,8 @@ public class VectorDataController {
         // 复制文件
         File targetFile = new File(localPath , newFileName);
         FileUtils.writeByteArrayToFile(targetFile, file.getBytes());
+
+        String fileType = FileTypeUtil.getType(targetFile);
 
         FileTypeEnums constants = FileTypeEnums.getByValue(fileSuffix.toLowerCase()) ;
         assert constants != null;
@@ -127,46 +90,44 @@ public class VectorDataController {
             return AjaxResult.error(fileName + " 文档解析失败.") ;
         }
 
-        service.extracted(datasetId, sentenceList, fileName);
+        service.extracted(datasetId, sentenceList, fileName , fileType);
 
-        return AjaxResult.success(fileName) ;
-    }
-
-
-    /**
-     * 创建集合的REST API接口
-     * @param collectionName 集合名称
-     * @param description 集合描述
-     * @param shardsNum 分片数量
-     */
-    @PostMapping("/createCollection")
-    public void createCollection(@RequestParam String collectionName,
-                                 @RequestParam String description,
-                                 @RequestParam int shardsNum) {
-        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
+        return AjaxResult.success("上传成功",fileName) ;
     }
 
     /**
-     * 插入数据的REST API接口
-     * @param collectionName 集合名称
-     * @param partitionName 分区名称
-     * @param fields 插入参数字段列表
+     * 创建数据集
+     * @return
      */
-    @PostMapping("/insertData")
-    public void insertData(@RequestParam String collectionName,
-                           @RequestParam String partitionName,
-                           @RequestBody List<InsertField> fields) {
-        milvusDataService.insertData(collectionName, partitionName, null);
+    @PostMapping("/createDataset")
+    public AjaxResult createDataset(@RequestParam String datasetName ,
+                                    @RequestParam String datasetDesc){
+
+        log.debug("datasetName = {} , datasetDesc = {}" , datasetName , datasetDesc);
+
+        VectorDatasetEntity entity = new VectorDatasetEntity() ;
+        entity.setName(datasetName);
+        entity.setDescription(datasetDesc);
+
+        // 生成唯一的标识
+        String collectionName = CollectionUtils.generateUniqueString() ;
+        String description = entity.getDescription() ;
+        int shardsNum = 1 ;
+
+        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
+        log.debug("currentUserId = {}" , currentUserId);
+
+        entity.setDatasetSize(0);
+        entity.setAccessPermission("person");
+        entity.setOwnerId(currentUserId);
+        entity.setCollectionName(collectionName);
+
+        vectorDatasetService.buildCreateCollectionParam(collectionName, description, shardsNum);
+
+        log.debug("buildCreateCollectionParam = " + collectionName);
+        vectorDatasetService.save(entity);
+
+        return AjaxResult.success("创建数据集成功." , entity.getId()) ;
     }
 
-    /**
-     * 删除数据的REST API接口
-     * @param collectionName 集合名称
-     * @param deleteExpr 删除表达式
-     */
-    @DeleteMapping("/deleteData")
-    public void deleteData(@RequestParam String collectionName,
-                           @RequestParam String deleteExpr) {
-        milvusDataService.deleteData(collectionName, deleteExpr);
-    }
 }
