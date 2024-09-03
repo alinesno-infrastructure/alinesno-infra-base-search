@@ -1,7 +1,8 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
+import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.util.IdUtil;
-import com.alinesno.infra.base.search.constants.FileTypeEnums;
+import com.alinesno.infra.base.search.enums.FileTypeEnums;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
@@ -106,6 +107,8 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
         File targetFile = new File(localPath , newFileName);
         FileUtils.writeByteArrayToFile(targetFile, file.getBytes());
 
+        String fileType = FileTypeUtil.getType(targetFile);
+
         FileTypeEnums constants = FileTypeEnums.getByValue(fileSuffix.toLowerCase()) ;
         assert constants != null;
 
@@ -127,7 +130,7 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
             return AjaxResult.error(fileName + " 文档解析失败.") ;
         }
 
-        service.extracted(datasetId, sentenceList, fileName);
+        service.extracted(datasetId, sentenceList, fileName, fileType);
 
         return AjaxResult.success(fileName) ;
     }
