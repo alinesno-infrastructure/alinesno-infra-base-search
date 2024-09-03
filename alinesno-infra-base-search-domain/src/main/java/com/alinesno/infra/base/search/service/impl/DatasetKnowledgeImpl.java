@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.service.impl;
 
+import com.alinesno.infra.base.search.constants.SearchConstants;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
 import com.alinesno.infra.base.search.mapper.DatasetKnowledgeMapper;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
@@ -29,8 +30,11 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
     private IVectorDatasetService vectorDatasetService ;
 
     @Override
-    public void extracted(Long datasetId, List<String> sentenceList, String fileName) {
-        sentenceList = documentParserService.documentParser( sentenceList.get(0) , 500) ;
+    public void extracted(Long datasetId, List<String> sentenceList, String fileName, String fileType) {
+
+        // 从DataSet里面获取到长度
+
+        sentenceList = documentParserService.documentParser( sentenceList.get(0) , SearchConstants.MAX_SEGMENT_LENGTH) ;
 
         DatasetKnowledgeEntity e = new DatasetKnowledgeEntity() ;
         e.setDocumentName(fileName);
@@ -43,6 +47,6 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
         save(e) ;
 
         // 保存到知识库中
-        vectorDatasetService.insertDatasetKnowledge(datasetId, sentenceList) ;
+        vectorDatasetService.insertDatasetKnowledge(datasetId, sentenceList , fileName , fileType) ;
     }
 }
