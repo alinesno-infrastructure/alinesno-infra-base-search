@@ -5,8 +5,10 @@ import com.alinesno.infra.base.search.adapter.consumer.EmbeddingConsumer;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.mapper.VectorDatasetMapper;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
+import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.dto.EmbeddingBean;
 import com.alinesno.infra.base.search.vector.dto.EmbeddingText;
+import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import com.google.gson.Gson;
@@ -37,7 +39,7 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
 
     @Async
     @Override
-    public void insertDatasetKnowledge(Long datasetId, List<String> sentenceList) {
+    public void insertDatasetKnowledge(Long datasetId, List<String> sentenceList, String fileName, String fileType) {
 
         VectorDatasetEntity vectorDatasetEntity = getById(datasetId) ;
 
@@ -65,6 +67,16 @@ public class VectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEnti
         }
 
         milvusDataService.buildIndexByCollection(collectionName) ;
+
+    }
+
+    @Override
+    public List<DocumentVectorBean> search(VectorSearchDto dto) {
+        return null;
+    }
+
+    @Override
+    public void buildCreateCollectionParam(String collectionName, String description, int shardsNum) {
 
     }
 
