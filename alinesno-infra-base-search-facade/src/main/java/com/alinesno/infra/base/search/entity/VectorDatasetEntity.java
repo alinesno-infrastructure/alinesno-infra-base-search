@@ -10,8 +10,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.Date;
-
 /**
  *
  * 向量数据集实体类
