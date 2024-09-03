@@ -40,6 +40,9 @@ sa-token:
 #-Dalinesno.base.search.elasticsearch.port=9092
 #-Dalinesno.base.search.elasticsearch.username=elastic
 #-Dalinesno.base.search.elasticsearch.password=123456
+#-Dalinesno.base.search.pgvector.jdbc-url=jdbc:postgresql://192.168.101.18:5432/postgres
+#-Dalinesno.base.search.pgvector.username=postgres
+#-Dalinesno.base.search.pgvector.password=123456
 
 alinesno:
   base:
@@ -50,6 +53,10 @@ alinesno:
         host: 192.168.101.18
         port: 9092
         username: elastic
+        password: 123456
+      pgvector:
+        jdbc-url: jdbc:postgresql://192.168.101.18:5432/postgres
+        username: postgres
         password: 123456
 
 actable:
