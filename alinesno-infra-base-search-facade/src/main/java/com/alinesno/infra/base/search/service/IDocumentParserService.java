@@ -1,7 +1,6 @@
 package com.alinesno.infra.base.search.service;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 /**
