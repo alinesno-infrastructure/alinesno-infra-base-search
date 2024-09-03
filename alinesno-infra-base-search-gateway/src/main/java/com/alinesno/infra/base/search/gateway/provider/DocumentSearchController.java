@@ -7,7 +7,6 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/api/base/search/document")
 public class DocumentSearchController {
 
-    @Autowired
+//    @Autowired
     private RestHighLevelClient client;
 
     /**
@@ -40,7 +39,7 @@ public class DocumentSearchController {
     public AjaxResult saveToElasticSearch(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
         String indexName = generateIndexName(indexBase, indexType);
         IndexRequest request = new IndexRequest(indexName);
-        request.source(jsonObject, XContentType.JSON);
+        request.source(jsonObject) ; //, XContentType.JSON);
         try {
             client.index(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
