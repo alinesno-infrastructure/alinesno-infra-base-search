@@ -1,6 +1,5 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
@@ -17,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.SecureRandom;
 
 /**
  * 应用构建Controller
