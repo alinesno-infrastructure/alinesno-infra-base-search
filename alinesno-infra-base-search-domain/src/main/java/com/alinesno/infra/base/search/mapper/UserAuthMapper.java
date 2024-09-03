@@ -1,8 +1,8 @@
 package com.alinesno.infra.base.search.mapper;
 
 import com.alinesno.infra.base.search.entity.UserAuthEntity;
-import org.apache.ibatis.annotations.Mapper;
 import com.alinesno.infra.common.facade.mapper.repository.IBaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户身份验证和权限控制Mapper接口
