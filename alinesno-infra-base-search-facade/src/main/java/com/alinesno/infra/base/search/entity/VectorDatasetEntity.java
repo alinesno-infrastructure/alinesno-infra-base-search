@@ -63,7 +63,7 @@ public class VectorDatasetEntity extends InfraBaseEntity {
     private String description;
 
     @ColumnComment("数据集大小")
-    @ColumnType(value = MySqlTypeConstant.INT, length = 11)
+    @ColumnType(value = MySqlTypeConstant.INT)
     @TableField(value = "dataset_size")
     private int datasetSize;
 
