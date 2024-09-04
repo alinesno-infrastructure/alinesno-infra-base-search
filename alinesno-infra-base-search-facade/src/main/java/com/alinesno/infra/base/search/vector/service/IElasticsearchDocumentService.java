@@ -9,6 +9,13 @@ import java.util.Map;
 public interface IElasticsearchDocumentService {
 
     /**
+     * 创建文档索引
+     * @param indexBase
+     * @param indexType
+     */
+    void createDocumentIndex(String indexBase , String indexType) ;
+
+    /**
      * 保存JSON对象
      * @param indexBase
      * @param indexType
@@ -34,4 +41,10 @@ public interface IElasticsearchDocumentService {
      */
     List<Map<String, Object>> search(String indexBase, String indexType, String fieldName, String queryText);
 
+    /**
+     * 删除索引
+     * @param indexBase
+     * @param documentId
+     */
+    void deleteDocument(String indexBase, Long documentId);
 }
