@@ -21,7 +21,7 @@
         <poi.version>4.1.2</poi.version>
 
         <elasticsearch-rest-high-level-client.version>7.17.23</elasticsearch-rest-high-level-client.version>
-        <elasticsearch.version>8.15.0</elasticsearch.version>
+        <elasticsearch.version>8.1.0</elasticsearch.version>
     </properties>
 
     <modules>
@@ -41,6 +41,7 @@
 
     <dependencyManagement>
         <dependencies>
+
             <!-- word_start -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
@@ -69,7 +70,12 @@
             </dependency>
             <!-- word_end -->
 
-            <!-- elasticsearch_start -->
+            <!-- elasticsearch_java_start -->
+            <dependency>
+                <groupId>co.elastic.clients</groupId>
+                <artifactId>elasticsearch-java</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>elasticsearch-rest-high-level-client</artifactId>
@@ -85,7 +91,8 @@
                 <artifactId>elasticsearch</artifactId>
                 <version>${elasticsearch.version}</version>
             </dependency>
-            <!-- elasticsearch_end -->
+            <!-- elasticsearch_java_end -->
+
         </dependencies>
     </dependencyManagement>
 
