@@ -180,24 +180,39 @@ jobs:
           pass: ${{ secrets.SERVER_BATA_KEY_01 }}
           connect_timeout: 30s
           script: |
-            export PROJECT_NAME=${{ env.PROJECT_NAME }}
-            export VERSION=${{ env.PRO_VERSION }}.${{ env.BUILD_NUMBER }}
+            export PROJECT_NAME=${{ env.PROJECT_NAME }}  # 导出项目名称变量
+            export VERSION=${{ env.PRO_VERSION }}.${{ env.BUILD_NUMBER }} # 根据环境变量构建版本号
 
-            export ALIYUN_CR_REGISTORY=${{ env.ALIYUN_CR_REGISTORY }}
-            export ALIYUN_CR_NAMESPACE=${{ env.ALIYUN_CR_NAMESPACE }}
-            export NAMESPACE=${{ secrets.K8S_NAMESPACE }}
+            export ALIYUN_CR_REGISTORY=${{ env.ALIYUN_CR_REGISTORY }} # 设置阿里云容器镜像仓库地址
+            export ALIYUN_CR_NAMESPACE=${{ env.ALIYUN_CR_NAMESPACE }} # 设置阿里云容器镜像命名空间
+            export NAMESPACE=${{ secrets.K8S_NAMESPACE }} # 导出Kubernetes命名空间（安全敏感信息）
 
-            export REDIS_HOST=${{ secrets.DEV_REDIS_HOST }}
-            export REDIS_KEY=${{ secrets.DEV_REDIS_KEY }}
+            export REDIS_HOST=${{ secrets.DEV_REDIS_HOST }} # 导出Redis服务的主机地址（安全敏感信息）
+            export REDIS_KEY=${{ secrets.DEV_REDIS_KEY }} # 导出Redis服务的密钥（安全敏感信息）
 
-            export INFRA_DEV_DOMAIN=${{ secrets.INFRA_BETA_BASE_DOMAIN }}
+            export INFRA_DEV_DOMAIN=${{ secrets.INFRA_BETA_BASE_DOMAIN }} # 设置开发环境的域名
+            export INFRA_GATEWAY_PROXY=${{ secrets.DEV_INFRA_GATEWAY_PROXY }} # 设置开发环境的网关代理（安全敏感信息）
 
+            # 导出千问密钥（安全敏感信息）
+            export QIANWEN_SK=${{ secrets.DEV_QIANWEN_SK}}
+
+            # 导出MySQL数据库连接信息（安全敏感信息）
             export DB_MYSQL_URL=${{ secrets.DEV_DB_MYSQL_URL }}
             export DB_MYSQL_USRENAME=${{ secrets.DEV_DB_MYSQL_USRENAME }}
             export DB_MYSQL_PASSWORD=${{ secrets.DEV_DB_MYSQL_PASSWORD }}
 
-            export INFRA_GATEWAY_PROXY=${{ secrets.DEV_INFRA_GATEWAY_PROXY }}
-            export MILVUS_HOST=${{ secrets.DEV_MILVUS_HOST }}
-            export MILVUS_PORT=${{ secrets.DEV_MILVUS_PORT }}
+            # 导出Elasticsearch数据库连接信息（安全敏感信息）
+            export DB_ELASITCSEARCH_URL=${{ secrets.DEV_ELASITCSEARCH_URL }}
+            export DB_ELASTICSEARCH_USERNAME=${{ secrets.DEV_ELASTICSEARCH_USERNAME }}
+            export DB_ELASTICSEARCH_PASSWORD=${{ secrets.DEV_ELASTICSEARCH_PASSWORD }}
 
+            # 导出PGVector数据库连接信息（安全敏感信息）
+            export DB_PGVECTOR_URL=${{ secrets.DEV_PGVECTOR_URL }}
+            export DB_PGVECTOR_USERNAME=${{ secrets.DEV_PGVECTOR_USERNAME }}
+            export DB_PGVECTOR_PASSWORD=${{ secrets.DEV_PGVECTOR_PASSWORD }}
+
+            # 使用envsubst处理Kubernetes配置文件中的环境变量，并应用配置
             envsubst < /home/github-action/${{ env.PROJECT_NAME }}/kubernetes-${{ env.CURRENT_PROFIRE }}.yml | kubectl apply -f -
+
+            # 删除项目文件夹以清理环境
+            rm -rf /home/github-action/${{ env.PROJECT_NAME }}/
