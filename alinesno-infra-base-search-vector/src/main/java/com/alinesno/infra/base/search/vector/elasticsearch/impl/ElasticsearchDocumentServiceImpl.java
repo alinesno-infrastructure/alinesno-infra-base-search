@@ -1,162 +1,127 @@
 package com.alinesno.infra.base.search.vector.elasticsearch.impl;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.alinesno.infra.base.search.vector.elasticsearch.ElasticsearchHandle;
+import com.alinesno.infra.base.search.vector.elasticsearch.HttpCode;
+import com.alinesno.infra.base.search.vector.elasticsearch.exception.ExploException;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
 public class ElasticsearchDocumentServiceImpl implements IElasticsearchDocumentService {
+
+    @Autowired
+    private ElasticsearchClient client;
+
+    @Autowired
+    private ElasticsearchHandle elasticsearchHandle ;
+
     @Override
     public void createDocumentIndex(String indexBase, String indexType) {
-
+        String indexName = generateIndexName(indexBase, indexType) ;
+        elasticsearchHandle.createIndex(indexName) ;
     }
 
     @Override
-    public void saveJsonObject(String indexBase, String indexType) {
+    public void saveJsonObject(String indexBase, String indexType, List<String> jsonArr) {
+        String indexName = generateIndexName(indexBase, indexType) ;
 
+        try {
+            List<BulkOperation> bulkOperationArrayList = new ArrayList<>();
+            for (String json : jsonArr) {
+                bulkOperationArrayList.add(BulkOperation.of(o -> o.index(i -> i.document(json))));
+            }
+
+            BulkResponse bulkResponse = client.bulk(b -> b.index(indexName).operations(bulkOperationArrayList));
+            log.debug("bulkResponse = " + bulkResponse) ;
+        } catch (IOException e) {
+            log.error("数据插入ES异常：{}", e.getMessage());
+            throw new ExploException(HttpCode.ES_INSERT_ERROR, "ES新增数据失败");
+        }
     }
 
     @Override
-    public List<Map<String, Object>> search(String indexBase, String indexType, String queryText) {
-        return null;
+    public List<Map<String, Object>> search(String indexName, String indexType, String queryText, int top) {
+        return search(indexName, indexType, "content", queryText, top) ;
     }
 
     @Override
-    public List<Map<String, Object>> search(String indexBase, String indexType, String fieldName, String queryText) {
-        return null;
+    public List<Map<String, Object>> search(String indexName, String indexType, String fieldName, String queryText , int top) {
+        List<Map<String, Object>> documentParagraphs = Lists.newArrayList();
+        try {
+            SearchResponse<Map> search = client.search(s -> s
+                            .index(indexName)
+                            .query(q -> q
+                                    .match(t -> t
+                                            .field(fieldName)
+                                            .query(queryText)
+                                    ))
+                            .from(0)
+                            .size(top)
+                    , Map.class
+            );
+            for (Hit<Map> hit : search.hits().hits()) {
+                Map pd = hit.source();
+                documentParagraphs.add(pd);
+            }
+        } catch (IOException e) {
+            log.error("查询ES异常：{}", e.getMessage());
+            throw new ExploException(HttpCode.ES_SEARCH_ERROR, "查询ES数据失败");
+        }
+        return documentParagraphs;
     }
 
     @Override
-    public void deleteDocument(String indexBase, Long documentId) {
-
+    public void deleteDocument(String indexName , Long documentId) {
+        try {
+            client.deleteByQuery(d -> d
+                    .index(indexName)
+                    .query(q -> q
+                            .term(t -> t
+                                    .field("id")
+                                    .value(documentId)
+                            )
+                    )
+            );
+        } catch (IOException e) {
+            log.error("查询ES异常：{}", e.getMessage());
+        }
     }
 
-//    @Autowired
-//    private RestClient restClient ;
-//
-//    @SneakyThrows
-//    @Override
-//    public void createDocumentIndex(String indexBase, String indexType) {
-//        String indexName = generateIndexName(indexBase , indexType) ;
-//
-//        // 检测索引名称为books的是否存在
-//        Request request = new Request("HEAD", "/" + indexName);
-//        boolean indexExists = restClient.performRequest(request).getStatusLine().getStatusCode() == 200;
-//        log.debug("Index '" + indexName + "' exists: " + indexExists);
-//
-//        // 如果索引不存在则创建索引
-//        if (!indexExists) {
-//
-//            // json 使用XContentBuilder创建
-//            XContentBuilder xContentBuilder = XContentFactory.jsonBuilder()
-//                    .startObject()
-//                    .startObject("mappings")
-//                    .startObject("properties")
-//                    .startObject("id")
-//                    .field("type", "long")
-//                    .endObject()
-//                    .endObject()  // properties
-//                    .endObject()  // mappings
-//                    .endObject();  // outermost object
-//
-//            String createIndexJson = Strings.toString(xContentBuilder) ; // xContentBuilder.string();
-//            log.debug("createIndexJson = " + createIndexJson);
-//
-//            Request createIndexRequest = new Request("PUT", "/" +indexName);
-//            createIndexRequest.setJsonEntity(createIndexJson);
-//            restClient.performRequest(createIndexRequest);
-//            log.debug("Created index '" + indexName + "'");
-//        }
-//
-//    }
-//
-//    @SneakyThrows
-//    @Override
-//    public void saveJsonObject(String indexBase, String json) {
-//
-//        String indexName = generateIndexName(indexBase , "daily")  ;
-//
-//        Request insertRequest = new Request("POST", "/" + indexName + "/_doc");
-//        insertRequest.setJsonEntity(json) ;
-//        Response response = restClient.performRequest(insertRequest);
-//        System.out.println("Document inserted with status code: " + response.getStatusLine().getStatusCode());
-//
-//    }
-//
-//    @Override
-//    public List<Map<String, Object>> search(String indexBase, String indexType, String queryText) {
-//        return search(indexBase, indexType, "content", queryText);
-//    }
-//
-//    @Override
-//    public List<Map<String, Object>> search(String indexBase, String indexType, String fieldName, String queryText) {
-//
-//        String indexName = generateIndexName(indexBase , indexType) ;
-//
-//        SearchRequest request = new SearchRequest.Builder()
-//                .index("products")
-//                .query(query._toQuery())
-//                .build();
-//
-//
-////        // 使用Jackson映射器创建传输层
-////        ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-////        ElasticsearchClient client = new ElasticsearchClient(transport);
-////
-////        // 分页查询es
-////        List<Map<String, Object>> results = new ArrayList<>();
-////
-////        SearchResponse<Product> search = client.search(s -> s
-////                        .index("products")
-////                        .query(q -> q
-////                                .term(t -> t
-////                                        .field("name")
-////                                        .value(v -> v.stringValue("testname"))
-////                                )),
-////                Product.class);
-////
-////        for (Hit<Product> hit: search.hits().hits()) {
-////            processProduct(hit.source());
-////        }
-////
-////        return results;
-//
-//        return null ;
-//    }
-//
-//    @SneakyThrows
-//    @Override
-//    public void deleteDocument(String indexBase, Long documentId) {
-//
-//        String indexName = generateIndexName(indexBase , "daily")  ;
-//        Request deleteRequest = new Request("DELETE", "/" + indexName + "/_doc/" + documentId);
-//        Response response = restClient.performRequest(deleteRequest);
-//        System.out.println("Document deleteRequest with status code: " + response.getStatusLine().getStatusCode());
-//    }
-//
-//    /**
-//     * 生成索引名称
-//     *
-//     * @param indexBase  索引基础名称
-//     * @param indexType  索引类型
-//     * @return 生成的索引名称
-//     */
-//    private String generateIndexName(String indexBase, String indexType) {
-//        String indexName = indexBase;
-//        DateTimeFormatter formatter;
-//        if ("daily".equalsIgnoreCase(indexType)) {
-//            formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-//        } else if ("monthly".equalsIgnoreCase(indexType)) {
-//            formatter = DateTimeFormatter.ofPattern("yyyy.MM");
-//        } else {
-//            throw new IllegalArgumentException("无效的索引类型。只支持 'daily' 和 'monthly'。");
-//        }
-//        indexName += "-" + LocalDate.now().format(formatter);
-//        return indexName;
-//    }
+    /**
+     * 生成索引名称
+     *
+     * @param indexBase  索引基础名称
+     * @param indexType  索引类型
+     * @return 生成的索引名称
+     */
+    private String generateIndexName(String indexBase, String indexType) {
+        String indexName = indexBase;
+        DateTimeFormatter formatter;
+        if ("daily".equalsIgnoreCase(indexType)) {
+            formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        } else if ("monthly".equalsIgnoreCase(indexType)) {
+            formatter = DateTimeFormatter.ofPattern("yyyy.MM");
+        } else {
+            throw new IllegalArgumentException("无效的索引类型。只支持 'daily' 和 'monthly'。");
+        }
+        indexName += "-" + LocalDate.now().format(formatter);
+        return indexName;
+    }
 
 }
