@@ -1,11 +1,10 @@
-import os
-import shutil
-import requests
-from zipfile import ZipFile
 import flask
-from flask import Flask
 import logging
+import os
+import requests
+from flask import Flask
 from sentence_transformers import SentenceTransformer
+from zipfile import ZipFile
 
 app = Flask(__name__)
 
