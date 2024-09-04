@@ -6,6 +6,7 @@ import com.alinesno.infra.common.facade.response.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -63,30 +64,42 @@ public class DocumentSearchController {
         return AjaxResult.success(data) ;
     }
 
-    // 删除对象信息
+    /**
+     * 删除对象信息
+     * @param indexBase
+     * @param documentId
+     * @return
+     */
     @DeleteMapping("/delete")
     public AjaxResult deleteObject(@RequestParam String indexBase, @RequestParam Long documentId) {
-
         // TODO 实现删除逻辑
-
+        elasticsearchService.deleteDocument(indexBase, documentId);
         return AjaxResult.success("删除成功");
     }
 
-    // 更新对象信息
+    /**
+     * 更新对象信息
+     * @param jsonObject
+     * @param indexBase
+     * @param indexType
+     * @return
+     */
     @PutMapping("/update")
     public AjaxResult updateObject(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
-
         // TODO 实现更新逻辑
 
         return AjaxResult.success("更新成功");
     }
 
-    // 创建索引
+    /**
+     * 创建索引
+     * @param indexName
+     * @return
+     */
     @PostMapping("/createIndex")
     public AjaxResult createIndex(@RequestParam String indexName) {
-
-        // TODO 实现创建索引逻辑
-
+        String indexType = "day";
+        elasticsearchService.createDocumentIndex(indexName , indexType);
         return AjaxResult.success("创建索引成功");
     }
 
