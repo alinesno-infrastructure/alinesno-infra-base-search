@@ -4,7 +4,6 @@ package com.alinesno.infra.base.search.vector.service;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IElasticsearchVectorService {
 
