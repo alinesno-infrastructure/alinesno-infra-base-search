@@ -6,7 +6,6 @@ import com.alinesno.infra.base.search.mapper.VectorDatasetMapper;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
-import com.alinesno.infra.base.search.vector.service.IElasticsearchVectorService;
 import com.alinesno.infra.base.search.vector.service.IPgVectorService;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
