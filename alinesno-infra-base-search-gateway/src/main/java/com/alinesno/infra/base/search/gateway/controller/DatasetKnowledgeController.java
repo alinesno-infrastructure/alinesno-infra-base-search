@@ -2,8 +2,8 @@ package com.alinesno.infra.base.search.gateway.controller;
 
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.util.IdUtil;
-import com.alinesno.infra.base.search.enums.FileTypeEnums;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
+import com.alinesno.infra.base.search.enums.FileTypeEnums;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
@@ -49,15 +49,9 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
     private IDatasetKnowledgeService service;
 
     @Autowired
-    private IVectorDatasetService vectorDatasetService ;
-
-    @Autowired
-    private IMilvusDataService milvusDataService;
-
-    @Autowired
     private IDocumentParserService documentParserService ;
 
-    @Value("${alinesno.file.local.path}")
+    @Value("${alinesno.file.local.path:${java.io.tmpdir}")
     private String localPath  ;
 
     /**
@@ -80,6 +74,7 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
         ConditionDto conditionDto = new ConditionDto() ;
         conditionDto.setColumn("dataset_id");
         conditionDto.setValue(datasetId);
+        conditionDto.setType("eq");
 
         conditionList.add(conditionDto) ;
         page.setConditionList(conditionList);
