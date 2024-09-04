@@ -40,6 +40,9 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: |
+                -Dserver.port=8080
+                -Dalinesno.infra.gateway.host=${INFRA_GATEWAY_PROXY}
+
                 -Dspring.data.redis.host=${REDIS_HOST}
                 -Dspring.data.redis.password=${REDIS_KEY}
 
@@ -47,11 +50,14 @@ spec:
                 -Dspring.datasource.dynamic.datasource.mysql.username=${DB_MYSQL_USRENAME}
                 -Dspring.datasource.dynamic.datasource.mysql.password=${DB_MYSQL_PASSWORD}
 
-                -Dserver.port=8080
+                -Dalinesno.base.search.dashscope.api-key=${QIANWEN_SK}
+                -Dalinesno.base.search.elasticsearch.host=${DB_ELASITCSEARCH_URL}
+                -Dalinesno.base.search.elasticsearch.username=${DB_ELASTICSEARCH_USERNAME}
+                -Dalinesno.base.search.elasticsearch.password=${DB_MYSQL_PASSWORD}
 
-                -Dalinesno.infra.gateway.host=${INFRA_GATEWAY_PROXY}
-                -Dalinesno.base.search.milvus.host=${MILVUS_HOST}
-                -Dalinesno.base.search.milvus.port=${MILVUS_PORT}
+                -Dalinesno.base.search.pgvector.jdbc-url=jdbc:postgresql://${DB_PGVECTOR_URL}/dev_alinesno_infra_base_search_vector_v100
+                -Dalinesno.base.search.pgvector.username=${DB_PGVECTOR_USERNAME}
+                -Dalinesno.base.search.pgvector.password=${DB_PGVECTOR_PASSWORD}
           ports:
             - name: http
               containerPort: 8080
