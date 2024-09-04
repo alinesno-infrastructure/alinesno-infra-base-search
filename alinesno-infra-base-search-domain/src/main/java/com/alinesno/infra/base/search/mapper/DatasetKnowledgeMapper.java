@@ -1,6 +1,5 @@
 package com.alinesno.infra.base.search.mapper;
 
-import com.alinesno.infra.base.search.entity.ApplicationEntity;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
 import com.alinesno.infra.common.facade.mapper.repository.IBaseMapper;
 
