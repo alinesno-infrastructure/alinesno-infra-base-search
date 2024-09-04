@@ -10,15 +10,9 @@
           <div class="icon">
             <div class="title">
                   {{ currentEnvClusterObj.appName}}
-              <div class="cluster-info">
-                <span>
-                  <i class="el-icon-monitor"></i>
-                  {{ currentEnvClusterObj.clusterName }}
-                </span>
-              </div>
             </div>
             <div class="title-desc">
-              集群状态展示集群资源的概览和详情，您可以查看集群资源的监控数据和用量排行情况。
+              {{ currentEnvClusterObj.clusterName }}
             </div>
           </div>
         </div>
@@ -45,7 +39,7 @@ import OperationWorkspaceService from './operation-workspace/service.vue'
 
 const currentEnvClusterObj = ref({
   appName:'分布式全文检索服务',
-  clusterName: 'Clickhouse版本和向量库版本'  , 
+  clusterName: '海量全文检索和向量检索服务，数据资产和知识库管理'  , 
   apiServerUrl: 'http://portal.infra.linesno.com'
 }) 
 
