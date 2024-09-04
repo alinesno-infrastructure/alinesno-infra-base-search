@@ -7,7 +7,6 @@ import com.alinesno.infra.base.search.vector.elasticsearch.EsConfiguration;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchVectorService;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
-import com.alinesno.infra.base.search.vector.utils.EsClientBuilder;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.EntityUtils;
@@ -21,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,11 +30,13 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
     @Autowired
     private EsConfiguration esConfiguration;
 
+    @Autowired
+    private RestClient restClient ;
+
     @SneakyThrows
     @Override
     public List<DocumentVectorBean> queryDocument(String indexName, String fileName , String queryText, int size) {
 
-        RestClient restClient = getRestClient() ;
         Request request = new Request("POST", "/" + indexName + "/_search");
 
         XContentBuilder queryBuilder = XContentFactory.jsonBuilder().startObject()
@@ -63,7 +65,6 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
     @Override
     public List<DocumentVectorBean> queryVectorDocument(String indexName, String queryText, int size) {
 
-        RestClient restClient = getRestClient() ;
         List<Double> embeddingVector = getDashScopeEmbedding().getEmbeddingDoubles(queryText);
 
         // 查询文档
@@ -151,18 +152,12 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
         return new DashScopeEmbeddingUtils(esConfiguration.getApiKey());
     }
 
-    private RestClient getRestClient() {
-        return EsClientBuilder.getRestClientInstance(
-                esConfiguration.getHost(),
-                esConfiguration.getPort(),
-                esConfiguration.getUsername(),
-                esConfiguration.getPassword());
-    }
+
 
     @SneakyThrows
     @Override
     public void createVectorIndex(String indexName) {
-        RestClient restClient = getRestClient() ;
+        
 
         // 检测索引名称为books的是否存在
         Request request = new Request("HEAD", "/" + indexName);
@@ -229,7 +224,7 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
     @SneakyThrows
     @Override
     public void insertVector(DocumentVectorBean documentVectorBean) {
-        RestClient restClient = getRestClient() ;
+        
         String indexName = documentVectorBean.getIndexName() ;
 
         List<Double> embeddingVector = getDashScopeEmbedding().getEmbeddingDoubles(documentVectorBean.getDocument_content());
@@ -265,7 +260,7 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
     @Override
     public void updateVector(DocumentVectorBean documentVectorBean) {
         // 更新文档内容
-        RestClient restClient = getRestClient() ;
+        
         String indexName = documentVectorBean.getIndexName() ;
 
         XContentBuilder document = XContentFactory.jsonBuilder().startObject()
@@ -293,11 +288,11 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
     @Override
     public void deleteVectorIndex(String indexName, long documentId) {
         // 根据DocumentVectorBean的字段id删除文档内容
-        RestClient restClient = getRestClient() ;
-
+        
         // TODO 待处理成业务id
         Request deleteRequest = new Request("DELETE", "/" + indexName + "/_doc/" + documentId);
         Response response = restClient.performRequest(deleteRequest);
         log.debug("Document deleted with status code: " + response.getStatusLine().getStatusCode());
     }
+
 }
