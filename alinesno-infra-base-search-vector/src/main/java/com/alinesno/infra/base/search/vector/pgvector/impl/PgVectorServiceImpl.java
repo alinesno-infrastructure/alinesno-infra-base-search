@@ -2,8 +2,8 @@ package com.alinesno.infra.base.search.vector.pgvector.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
-import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
 import com.alinesno.infra.base.search.vector.service.IPgVectorService;
+import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
 import com.pgvector.PGvector;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
