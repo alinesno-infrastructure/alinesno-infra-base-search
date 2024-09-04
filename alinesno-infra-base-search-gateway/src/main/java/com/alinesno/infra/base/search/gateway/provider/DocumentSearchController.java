@@ -1,20 +1,13 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
 
+import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 文档控制器
@@ -24,8 +17,8 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/api/base/search/document")
 public class DocumentSearchController {
 
-//    @Autowired
-    private RestHighLevelClient client;
+    @Autowired
+    private IElasticsearchDocumentService elasticsearchService ;
 
     /**
      * 将数据保存到Elasticsearch
@@ -37,14 +30,7 @@ public class DocumentSearchController {
      */
     @PostMapping("/save")
     public AjaxResult saveToElasticSearch(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
-        String indexName = generateIndexName(indexBase, indexType);
-        IndexRequest request = new IndexRequest(indexName);
-        request.source(jsonObject) ; //, XContentType.JSON);
-        try {
-            client.index(request, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            return AjaxResult.error("保存到Elasticsearch时发生错误:{}" , e.getMessage());
-        }
+        elasticsearchService.saveJsonObject(indexBase , indexType) ;
         return AjaxResult.success("保存到Elasticsearch成功");
     }
 
@@ -58,16 +44,8 @@ public class DocumentSearchController {
      */
     @GetMapping("/search")
     public AjaxResult search(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String queryText) {
-        String indexName = generateIndexName(indexBase, indexType);
-        SearchRequest searchRequest = new SearchRequest(indexName);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.matchQuery("_all", queryText));
-        searchRequest.source(searchSourceBuilder);
-        try {
-            return AjaxResult.success(client.search(searchRequest, RequestOptions.DEFAULT));
-        } catch (IOException e) {
-            throw new RuntimeException("在Elasticsearch中搜索时发生错误", e);
-        }
+        List<Map<String , Object>> data = elasticsearchService.search(indexBase , indexType , queryText)  ;
+        return AjaxResult.success(data) ;
     }
 
     /**
@@ -81,36 +59,35 @@ public class DocumentSearchController {
      */
     @GetMapping("/searchByField")
     public AjaxResult searchByField(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String fieldName, @RequestParam String queryText) {
-        String indexName = generateIndexName(indexBase, indexType);
-        SearchRequest searchRequest = new SearchRequest(indexName);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.matchQuery(fieldName, queryText));
-        searchRequest.source(searchSourceBuilder);
-        try {
-            return AjaxResult.success(client.search(searchRequest, RequestOptions.DEFAULT));
-        } catch (IOException e) {
-            throw new RuntimeException("在Elasticsearch中搜索时发生错误", e);
-        }
+        List<Map<String , Object>> data = elasticsearchService.search(indexBase , indexType , fieldName , queryText)  ;
+        return AjaxResult.success(data) ;
     }
 
-    /**
-     * 生成索引名称
-     *
-     * @param indexBase  索引基础名称
-     * @param indexType  索引类型
-     * @return 生成的索引名称
-     */
-    private String generateIndexName(String indexBase, String indexType) {
-        String indexName = indexBase;
-        DateTimeFormatter formatter;
-        if ("daily".equalsIgnoreCase(indexType)) {
-            formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        } else if ("monthly".equalsIgnoreCase(indexType)) {
-            formatter = DateTimeFormatter.ofPattern("yyyy.MM");
-        } else {
-            throw new IllegalArgumentException("无效的索引类型。只支持 'daily' 和 'monthly'。");
-        }
-        indexName += "-" + LocalDate.now().format(formatter);
-        return indexName;
+    // 删除对象信息
+    @DeleteMapping("/delete")
+    public AjaxResult deleteObject(@RequestParam String indexBase, @RequestParam Long documentId) {
+
+        // TODO 实现删除逻辑
+
+        return AjaxResult.success("删除成功");
     }
+
+    // 更新对象信息
+    @PutMapping("/update")
+    public AjaxResult updateObject(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
+
+        // TODO 实现更新逻辑
+
+        return AjaxResult.success("更新成功");
+    }
+
+    // 创建索引
+    @PostMapping("/createIndex")
+    public AjaxResult createIndex(@RequestParam String indexName) {
+
+        // TODO 实现创建索引逻辑
+
+        return AjaxResult.success("创建索引成功");
+    }
+
 }
