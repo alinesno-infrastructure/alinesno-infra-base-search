@@ -3,8 +3,8 @@ package com.alinesno.infra.base.search.service.impl;
 import com.alinesno.infra.base.search.entity.SearchLogEntity;
 import com.alinesno.infra.base.search.mapper.SearchLogMapper;
 import com.alinesno.infra.base.search.service.ISearchLogService;
-import org.springframework.stereotype.Service;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
+import org.springframework.stereotype.Service;
 
 /**
  * 搜索日志Service业务层处理
