@@ -77,16 +77,16 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="数据集名称" align="left" width="150" key="name" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true">
+          <el-table-column label="数据集名称" align="left" width="200" key="name" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true">
             <template #default="scope">
               <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
                 <router-link :to="'/base/search/vectorData/parseDataset?datasetId=' + scope.row.id" >
                   {{ scope.row.name }}
                 </router-link>
               </div>
-              <div style="font-size: 13px;color: #a5a5a5;">
-                 {{ scope.row.name }}
-              </div>
+              <div style="font-size: 13px;color: #a5a5a5;cursor: pointer;" v-copyText="scope.row.id">
+                  标识: {{ scope.row.id }} <el-icon><CopyDocument /></el-icon>
+               </div>
             </template>
           </el-table-column>
           <el-table-column label="所有者" align="center" width="130" key="ownerId" prop="ownerId" v-if="columns[2].visible" :show-overflow-tooltip="true"/>
