@@ -3,9 +3,9 @@ package com.alinesno.infra.base.search.service.impl;
 import com.alinesno.infra.base.search.entity.DocumentsEntity;
 import com.alinesno.infra.base.search.mapper.DocumentsMapper;
 import com.alinesno.infra.base.search.service.IDocumentsService;
+import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 
 /**
  * 文档Service业务层处理
