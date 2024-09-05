@@ -7,6 +7,7 @@ import com.gitee.sunchenbin.mybatis.actable.annotation.ColumnComment;
 import com.gitee.sunchenbin.mybatis.actable.annotation.ColumnType;
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.Timestamp;
 
@@ -23,6 +24,7 @@ import java.sql.Timestamp;
  * @version 1.0.0
  */
 
+@EqualsAndHashCode(callSuper = true)
 @TableName("documents")
 @Data
 public class DocumentsEntity extends InfraBaseEntity {
