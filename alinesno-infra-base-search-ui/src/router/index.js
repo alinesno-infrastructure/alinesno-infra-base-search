@@ -59,19 +59,6 @@ export const constantRoutes = [
         name: '/index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       },
-
-      // {
-      //   path: '/dashboard/smartService',
-      //   component: () => import('@/views/smartService'),
-      //   name: '/dashboard/smartService',
-      //   meta: { title: '智能客服', icon: 'dashboard', affix: true }
-      // },
-      // {
-      //   path: '/dashboard/serviceList',
-      //   component: () => import('@/views/serviceList'),
-      //   name: '/dashboard/serviceList',
-      //   meta: { title: '服务列表', icon: 'dashboard', affix: true }
-      // },
       {
         path: '/dashboard/suportTechnique',
         component: () => import('@/views/suportTechnique'),
@@ -87,10 +74,10 @@ export const constantRoutes = [
 
       // >>>>>>>>>>>>> 路由配置_start >>>>>>>>>>>>>>>>>>.
       {
-        path: '/base/search/application/index',
-        component: () => import('@/views/base/search/application/index'),
-        path: '/base/search/application/index',
-        meta: { title: '学习手册', icon: 'dashboard', affix: true }
+        path: '/base/search/project/index',
+        component: () => import('@/views/base/search/project/index'),
+        path: '/base/search/project/index',
+        meta: { title: '项目管理', icon: 'dashboard', affix: true }
       },
       {
         path: '/base/search/vectorData/index',
