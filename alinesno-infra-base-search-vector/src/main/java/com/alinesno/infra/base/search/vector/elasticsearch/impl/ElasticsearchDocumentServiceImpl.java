@@ -1,23 +1,28 @@
 package com.alinesno.infra.base.search.vector.elasticsearch.impl;
 
+import cn.hutool.core.util.IdUtil;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
+import com.alibaba.fastjson.JSONObject;
+import com.alinesno.infra.base.search.api.SearchRequestDto;
 import com.alinesno.infra.base.search.vector.elasticsearch.ElasticsearchHandle;
 import com.alinesno.infra.base.search.vector.elasticsearch.HttpCode;
 import com.alinesno.infra.base.search.vector.elasticsearch.exception.ExploException;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.google.common.collect.Lists;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,41 +42,46 @@ public class ElasticsearchDocumentServiceImpl implements IElasticsearchDocumentS
         elasticsearchHandle.createIndex(indexName) ;
     }
 
+    @SneakyThrows
     @Override
-    public void saveJsonObject(String indexBase, String indexType, List<String> jsonArr) {
+    public void saveJsonObject(String indexBase, String indexType, String jsonObject) {
         String indexName = generateIndexName(indexBase, indexType) ;
 
-        try {
-            List<BulkOperation> bulkOperationArrayList = new ArrayList<>();
-            for (String json : jsonArr) {
-                bulkOperationArrayList.add(BulkOperation.of(o -> o.index(i -> i.document(json))));
-            }
+        Reader input = new StringReader(jsonObject) ;
+        IndexRequest<JsonData> request = IndexRequest.of(i -> i
+                .index(indexName)
+                .withJson(input)
+        );
 
-            BulkResponse bulkResponse = client.bulk(b -> b.index(indexName).operations(bulkOperationArrayList));
-            log.debug("bulkResponse = " + bulkResponse) ;
-        } catch (IOException e) {
-            log.error("数据插入ES异常：{}", e.getMessage());
-            throw new ExploException(HttpCode.ES_INSERT_ERROR, "ES新增数据失败");
-        }
+        IndexResponse response = client.index(request);
+        log.info("Indexed with version " + response.version());
     }
 
     @Override
-    public List<Map<String, Object>> search(String indexName, String indexType, String queryText, int top) {
-        return search(indexName, indexType, "content", queryText, top) ;
+    public List<Map<String, Object>> searchByPage(SearchRequestDto dto) {
+        dto.setFieldName("content");
+        return searchFieldByPage(dto) ;
     }
 
     @Override
-    public List<Map<String, Object>> search(String indexName, String indexType, String fieldName, String queryText , int top) {
+    public List<Map<String, Object>> searchFieldByPage(SearchRequestDto dto) {
+
+        String indexName = dto.getIndexBase() ;
+        String fieldName = dto.getFieldName() ;
+        String queryText = dto.getQueryText() ;
+        int currentPage = dto.getCurrentPage() ;
+        int top = dto.getPageSize() ;
+
         List<Map<String, Object>> documentParagraphs = Lists.newArrayList();
         try {
             SearchResponse<Map> search = client.search(s -> s
-                            .index(indexName)
+                            .index(indexName+"*")
                             .query(q -> q
                                     .match(t -> t
                                             .field(fieldName)
                                             .query(queryText)
                                     ))
-                            .from(0)
+                            .from(currentPage)
                             .size(top)
                     , Map.class
             );
@@ -101,6 +111,38 @@ public class ElasticsearchDocumentServiceImpl implements IElasticsearchDocumentS
         } catch (IOException e) {
             log.error("查询ES异常：{}", e.getMessage());
         }
+    }
+
+    @SneakyThrows
+    @Override
+    public void saveBatchJsonObject(String indexBase, String indexType, List<String> objects) {
+
+        BulkRequest.Builder br = new BulkRequest.Builder();
+        String indexName = generateIndexName(indexBase , indexType) ;
+
+        for (String doc : objects) {
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index(indexName)
+                            .id(IdUtil.getSnowflakeNextIdStr())
+                            .document(JSONObject.parseObject(doc))
+                    )
+            );
+        }
+
+        BulkResponse result = client.bulk(br.build());
+        log.debug("saveBatch = {}" , result);
+
+        // Log errors, if any
+        if (result.errors()) {
+            log.error("Bulk had errors");
+            for (BulkResponseItem item: result.items()) {
+                if (item.error() != null) {
+                    log.error(item.error().reason());
+                }
+            }
+        }
+
     }
 
     /**
