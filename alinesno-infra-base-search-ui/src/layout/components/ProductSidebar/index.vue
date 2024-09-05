@@ -23,7 +23,7 @@ const router = useRouter();
 
 // 菜单列表
 const menuItems = ref([
-  {id:'2' , icon:'fa-solid fa-feather' , link:'/base/search/application/index' , desc:'应用管理'},
+  {id:'2' , icon:'fa-solid fa-feather' , link:'/base/search/project/index' , desc:'项目管理'},
   {id:'3' , icon:'fa-solid fa-masks-theater' , link:'/base/search/document/index' , desc:'全文检索查询'},
   {id:'5' , icon:'fa-brands fa-wordpress' , link:'/base/search/indexes/index' , desc:'数据索引管理'},
   {id:'8' , icon:'fa-solid fa-file-pdf' , link:'/base/search/vectorData/index' , desc:'知识库管理'},
