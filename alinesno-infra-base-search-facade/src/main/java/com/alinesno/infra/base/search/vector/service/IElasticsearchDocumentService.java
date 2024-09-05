@@ -20,26 +20,26 @@ public interface IElasticsearchDocumentService {
      * @param indexBase
      * @param indexType
      */
-    void saveJsonObject(String indexBase, String indexType);
+    void saveJsonObject(String indexBase, String indexType, List<String> jsonArr);
 
     /**
      * 查询对象并返回List信息
-     * @param indexBase
+     * @param indexName
      * @param indexType
      * @param queryText
      * @return
      */
-    List<Map<String, Object>> search(String indexBase, String indexType, String queryText);
+    List<Map<String, Object>> search(String indexName, String indexType, String queryText, int top);
 
     /**
      * 精确查询对象字段并返回List信息
-     * @param indexBase
+     * @param indexName
      * @param indexType
      * @param fieldName
      * @param queryText
      * @return
      */
-    List<Map<String, Object>> search(String indexBase, String indexType, String fieldName, String queryText);
+    List<Map<String, Object>> search(String indexName, String indexType, String fieldName, String queryText, int top);
 
     /**
      * 删除索引
