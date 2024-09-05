@@ -25,11 +25,8 @@ import java.util.List;
 @Component
 public class EsConfiguration {
 
-    @Value("${alinesno.base.search.elasticsearch.host:127.0.0.1}")
+    @Value("${alinesno.base.search.elasticsearch.host:127.0.0.1:9200}")
     private String host;
-
-    @Value("${alinesno.base.search.elasticsearch.port:9200}")
-    private int port;
 
     @Value("${alinesno.base.search.elasticsearch.username:}")
     private String username;
