@@ -30,7 +30,7 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
     private IVectorDatasetService vectorDatasetService ;
 
     @Override
-    public void extracted(Long datasetId, List<String> sentenceList, String fileName, String fileType) {
+    public void parserDocument(Long datasetId, List<String> sentenceList, String fileName, String fileType) {
 
         // 从DataSet里面获取到长度
 
