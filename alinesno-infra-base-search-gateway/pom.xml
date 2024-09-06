@@ -28,21 +28,11 @@
 			<version>${revision}</version>
 		</dependency>
 
-		<!-- elasticsearch_start -->
-<!--		<dependency>-->
-<!--			<groupId>org.elasticsearch.client</groupId>-->
-<!--			<artifactId>elasticsearch-rest-high-level-client</artifactId>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>org.elasticsearch.client</groupId>-->
-<!--			<artifactId>elasticsearch-rest-client</artifactId>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.elasticsearch</groupId>-->
-<!--			<artifactId>elasticsearch</artifactId>-->
-<!--		</dependency>-->
-		<!-- elasticsearch_end -->
+		<dependency>
+			<groupId>com.alinesno.infra.common</groupId>
+			<artifactId>alinesno-infra-common-extend-excel</artifactId>
+			<version>${revision}</version>
+		</dependency>
 
 	</dependencies>
 
