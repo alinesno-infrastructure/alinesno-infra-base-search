@@ -28,7 +28,8 @@ const menuItems = ref([
   {id:'5' , icon:'fa-brands fa-wordpress' , link:'/base/search/indexes/index' , desc:'数据索引管理'},
   {id:'8' , icon:'fa-solid fa-file-pdf' , link:'/base/search/vectorData/index' , desc:'知识库管理'},
   {id:'4' , icon:'fa-brands fa-skype' , link:'/base/search/configuration/index' , desc:'服务配置管理'},
-  {id:'7' , icon:'fa-solid fa-chart-simple' , link:'/base/search/requestRecord/index' , desc:'接口请求记录'},
+  {id:'7' , icon:'fa-solid fa-computer' , link:'/base/search/analyse/index' , desc:'监控管理'},
+  {id:'9' , icon:'fa-solid fa-code-pull-request' , link:'/base/search/apiRecord/index' , desc:'请求记录'},
 ]);
 
 // 打开服务市场
