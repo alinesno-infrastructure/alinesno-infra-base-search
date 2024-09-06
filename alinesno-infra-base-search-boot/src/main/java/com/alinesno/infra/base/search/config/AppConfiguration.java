@@ -3,6 +3,7 @@ package com.alinesno.infra.base.search.config;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.facade.enable.EnableActable;
 import com.alinesno.infra.common.web.adapter.sso.enable.EnableInfraSsoApi;
+import com.alinesno.infra.common.web.log.aspect.LogAspect;
 import jakarta.servlet.MultipartConfigElement;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
@@ -37,6 +38,11 @@ public class AppConfiguration implements CommandLineRunner {
         factory.setMaxRequestSize(DataSize.ofMegabytes(100));
 
         return factory.createMultipartConfig();
+    }
+
+    @Bean
+    public LogAspect getLogAspect(){
+        return new LogAspect() ;
     }
 
     @Override
