@@ -49,17 +49,17 @@ public class ElasticsearchHandle {
      * 创建索引
      *
      * @param indexName
-     * @return
      * @throws IOException
      */
-    public boolean createIndex(String indexName) {
+    public void createIndex(String indexName) {
         try {
-            CreateIndexResponse indexResponse = client.indices().create(c -> c.index(indexName));
+            if(!hasIndex(indexName)){
+                CreateIndexResponse indexResponse = client.indices().create(c -> c.index(indexName));
+            }
         } catch (IOException e) {
             log.error("索引创建失败：{}", e.getMessage());
             throw new ExploException(HttpCode.INDEX_CREATE_ERROR, "创建索引失败");
         }
-        return true;
     }
 
     /**
