@@ -6,8 +6,6 @@ import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
 import com.alinesno.infra.base.search.enums.FileTypeEnums;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
-import com.alinesno.infra.base.search.service.IVectorDatasetService;
-import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
 import com.alinesno.infra.common.facade.pageable.ConditionDto;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
@@ -125,7 +123,7 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
             return AjaxResult.error(fileName + " 文档解析失败.") ;
         }
 
-        service.extracted(datasetId, sentenceList, fileName, fileType);
+        service.parserDocument(datasetId, sentenceList, fileName, fileType);
 
         return AjaxResult.success(fileName) ;
     }
