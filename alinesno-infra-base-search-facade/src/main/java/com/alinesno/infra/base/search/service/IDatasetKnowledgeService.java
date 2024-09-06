@@ -14,5 +14,5 @@ import java.util.List;
  */
 public interface IDatasetKnowledgeService extends IBaseService<DatasetKnowledgeEntity> {
 
-    void extracted(Long datasetId, List<String> sentenceList, String fileName, String fileType);
+    void parserDocument(Long datasetId, List<String> sentenceList, String fileName, String fileType);
 }
