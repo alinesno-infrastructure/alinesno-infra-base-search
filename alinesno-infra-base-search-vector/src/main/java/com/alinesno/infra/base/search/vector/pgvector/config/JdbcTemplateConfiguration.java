@@ -13,16 +13,16 @@ import java.sql.Driver;
 @Configuration
 public class JdbcTemplateConfiguration {
 
-    @Value("${alinesno.base.search.pgvector.jdbc-url}")
+    @Value("${alinesno.base.search.pgvector.jdbc-url:}")
     private String jdbcUrl;
 
-    @Value("${alinesno.base.search.pgvector.username}")
+    @Value("${alinesno.base.search.pgvector.username:}")
     private String username;
 
-    @Value("${alinesno.base.search.pgvector.password}")
+    @Value("${alinesno.base.search.pgvector.password:}")
     private String password;
 
-    @Value("${alinesno.base.search.dashscope.api-key}")
+    @Value("${alinesno.base.search.dashscope.api-key:}")
     private String apiKey; // 注意：这个API密钥看起来与数据库配置无关，你可能需要根据实际情况处理它
 
     // 获取JdbcTemplate Bean对象
