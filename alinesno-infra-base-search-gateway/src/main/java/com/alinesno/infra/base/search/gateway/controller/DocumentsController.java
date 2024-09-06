@@ -1,10 +1,14 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
 import com.alinesno.infra.base.search.entity.DocumentsEntity;
+import com.alinesno.infra.base.search.gateway.utils.search.DataGenerator;
+import com.alinesno.infra.base.search.gateway.utils.search.DocumentSearchUtils;
+import com.alinesno.infra.base.search.gateway.utils.search.TimeSplitBean;
 import com.alinesno.infra.base.search.service.IDocumentsService;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
+import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
 import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,10 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 处理与DocumentEntity相关的请求的Controller。
@@ -29,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Document")
 @RestController
 @Scope(SpringInstanceScope.PROTOTYPE)
-@RequestMapping("/api/infra/base/search/search")
+@RequestMapping("/api/infra/base/search/documents")
 public class DocumentsController extends BaseController<DocumentsEntity, IDocumentsService> {
     // 日志记录
     private static final Logger log = LoggerFactory.getLogger(DocumentsController.class);
@@ -50,6 +53,31 @@ public class DocumentsController extends BaseController<DocumentsEntity, IDocume
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
         return this.toPage(model, this.getFeign(), page);
+    }
+
+    /**
+     * 获取DocumentEntity的分页数据。
+     * @return
+     */
+    @GetMapping("/searchHits")
+    public AjaxResult searchHits() {
+
+        DocumentSearchUtils utils = new DocumentSearchUtils() ;
+
+        String startTime = "2024-01-12 10:12";
+        String endTime = "2024-01-12 12:12";
+
+        List<TimeSplitBean> timeSegments = utils.timeSplit(startTime , endTime ,  1) ;
+
+        List<String> strList = timeSegments.stream().map(TimeSplitBean::getMiddleTime).toList() ;
+        List<DataGenerator.ItemObject> dataObjects = DataGenerator.generateItemObjects(strList) ;
+
+        AjaxResult ajaxResult = ok() ;
+
+        ajaxResult.put("dataItems", dataObjects) ;
+        ajaxResult.put("timeSegments", strList) ;
+
+        return ajaxResult ;
     }
 
     @Override
