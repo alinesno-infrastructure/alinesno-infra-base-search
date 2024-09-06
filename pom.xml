@@ -21,7 +21,8 @@
         <poi.version>4.1.2</poi.version>
 
         <elasticsearch-rest-high-level-client.version>7.17.23</elasticsearch-rest-high-level-client.version>
-        <elasticsearch.version>8.1.0</elasticsearch.version>
+        <elasticsearch.version>8.7.0</elasticsearch.version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
     <modules>
@@ -69,6 +70,13 @@
                 <version>${poi.version}</version>
             </dependency>
             <!-- word_end -->
+
+            <!-- httpclient -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
 
             <!-- elasticsearch_java_start -->
             <dependency>
