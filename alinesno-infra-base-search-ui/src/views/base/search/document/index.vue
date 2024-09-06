@@ -1,10 +1,15 @@
 <template>
   <div class="app-container">
      <el-row :gutter="20">
+          <!--类型数据-->
+         <el-col :span="4" :xs="24">
+            <DocumentField /> 
+         </el-col>
+
         <!--应用数据-->
-        <el-col :span="24" :xs="24">
+        <el-col :span="20" :xs="24">
            <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
-              <el-form-item label="应用名称" prop="name">
+              <el-form-item label="索引名称" prop="name">
                  <el-input v-model="queryParams.name" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
               </el-form-item>
               <el-form-item label="应用名称" prop="name">
@@ -16,34 +21,32 @@
               </el-form-item>
            </el-form>
 
-           <el-row :gutter="10" class="mb8">
+               <SearchHits />
 
-              <el-col :span="1.5">
-                 <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                 <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate">修改</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                 <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
-              </el-col>
-
-              <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
-           </el-row>
-
-           <el-table v-loading="loading" :data="ApplicationList" @selection-change="handleSelectionChange">
+           <el-table v-loading="loading" :data="DocumentList" @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="50" align="center" />
 
-              <el-table-column label="图标" align="center" width="80px" prop="icon" v-if="columns[0].visible">
-                 <template #default="scope">
-                 <div class="role-icon">
-                    <img :src="'http://data.linesno.com/icons/dataset/dataset_' + (scope.$index + 8) + '.png'" style="width:40px;height:40px;border-radius: 50%;" />
-                 </div>
-                 </template>
-              </el-table-column>
+              <el-table-column type="expand">
+               <template #default="props">
+                  <div m="4">
+                     <p m="t-0 b-2">State: {{ props.row.state }}</p>
+                     <p m="t-0 b-2">City: {{ props.row.city }}</p>
+                     <p m="t-0 b-2">Address: {{ props.row.address }}</p>
+                     <p m="t-0 b-2">Zip: {{ props.row.zip }}</p>
+                     <h3>Family</h3>
+                     <el-table :data="props.row.family" :border="childBorder">
+                        <el-table-column label="Name" prop="name" />
+                        <el-table-column label="State" prop="state" />
+                        <el-table-column label="City" prop="city" />
+                        <el-table-column label="Address" prop="address" />
+                        <el-table-column label="Zip" prop="zip" />
+                     </el-table>
+                  </div>
+                  </template>
+               </el-table-column>
 
               <!-- 业务字段-->
-              <el-table-column label="应用名称" align="left" key="name" prop="name" v-if="columns[0].visible" >
+              <el-table-column label="时间" align="left" width="200" key="name" prop="name" v-if="columns[0].visible" >
                  <template #default="scope">
                     <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
                        {{ scope.row.showName }}
@@ -53,34 +56,18 @@
                     </div>
                  </template>
               </el-table-column>
-              <el-table-column label="所属领域" align="center" key="domain" prop="domain" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-              <el-table-column label="应用密钥" align="center" key="appKey" prop="appKey" v-if="columns[1].visible" :show-overflow-tooltip="true" >
-                 <template #default="scope">
-                    {{ scope.row.appKey }} &nbsp;&nbsp; <el-button type="primary" text bg icon="CopyDocument">复制</el-button>
-                 </template>
-              </el-table-column>
-              <el-table-column label="状态" align="center" key="hasStatus" v-if="columns[5].visible" width="200">
-                 <template #default="scope">
-                    <el-button type="primary" text bg icon="Check">正常</el-button>
-                 </template>
-              </el-table-column>
-
-              <el-table-column label="添加时间" align="center" prop="addTime" v-if="columns[6].visible" width="160">
-                 <template #default="scope">
-                    <span>{{ parseTime(scope.row.addTime) }}</span>
-                 </template>
-              </el-table-column>
+              <el-table-column label="文档" align="left" key="domain" prop="domain" v-if="columns[3].visible" :show-overflow-tooltip="true" />
 
               <!-- 操作字段  -->
               <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
                  <template #default="scope">
-                    <el-tooltip content="修改" placement="top" v-if="scope.row.ApplicationId !== 1">
+                    <el-tooltip content="修改" placement="top" v-if="scope.row.DocumentId !== 1">
                        <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                          v-hasPermi="['system:Application:edit']"></el-button>
+                          v-hasPermi="['system:Document:edit']"></el-button>
                     </el-tooltip>
-                    <el-tooltip content="删除" placement="top" v-if="scope.row.ApplicationId !== 1">
+                    <el-tooltip content="删除" placement="top" v-if="scope.row.DocumentId !== 1">
                        <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                          v-hasPermi="['system:Application:remove']"></el-button>
+                          v-hasPermi="['system:Document:remove']"></el-button>
                     </el-tooltip>
                  </template>
 
@@ -134,21 +121,24 @@
   </div>
 </template>
 
-<script setup name="Application">
+<script setup name="Document">
 
 import {
-  listApplication,
-  delApplication,
-  getApplication,
-  updateApplication,
-  addApplication
-} from "@/api/base/search/application";
+  listDocument,
+  delDocument,
+  getDocument,
+  updateDocument,
+  addDocument
+} from "@/api/base/search/documents";
+
+import DocumentField from './field.vue'
+import SearchHits from './hits.vue'
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
 // 定义变量
-const ApplicationList = ref([]);
+const DocumentList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -194,9 +184,9 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询应用列表 */
 function getList() {
   loading.value = true;
-  listApplication(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
+  listDocument(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
      loading.value = false;
-     ApplicationList.value = res.rows;
+     DocumentList.value = res.rows;
      total.value = res.total;
   });
 };
@@ -217,9 +207,9 @@ function resetQuery() {
 };
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const ApplicationIds = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除应用编号为"' + ApplicationIds + '"的数据项？').then(function () {
-     return delApplication(ApplicationIds);
+  const DocumentIds = row.id || ids.value;
+  proxy.$modal.confirm('是否确认删除应用编号为"' + DocumentIds + '"的数据项？').then(function () {
+     return delDocument(DocumentIds);
   }).then(() => {
      getList();
      proxy.$modal.msgSuccess("删除成功");
@@ -238,7 +228,7 @@ function reset() {
   form.value = {
      id: undefined,
      deptId: undefined,
-     ApplicationName: undefined,
+     DocumentName: undefined,
      nickName: undefined,
      password: undefined,
      phonenumber: undefined,
@@ -263,8 +253,8 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const ApplicationId = row.id || ids.value;
-  getApplication(ApplicationId).then(response => {
+  const DocumentId = row.id || ids.value;
+  getDocument(DocumentId).then(response => {
      form.value = response.data;
      open.value = true;
      title.value = "修改应用";
@@ -276,13 +266,13 @@ function submitForm() {
   proxy.$refs["databaseRef"].validate(valid => {
      if (valid) {
         if (form.value.id != undefined) {
-           updateApplication(form.value).then(response => {
+           updateDocument(form.value).then(response => {
               proxy.$modal.msgSuccess("修改成功");
               open.value = false;
               getList();
            });
         } else {
-           addApplication(form.value).then(response => {
+           addDocument(form.value).then(response => {
               proxy.$modal.msgSuccess("新增成功");
               open.value = false;
               getList();
