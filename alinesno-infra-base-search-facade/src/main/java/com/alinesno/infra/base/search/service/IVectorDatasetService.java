@@ -41,4 +41,10 @@ public interface IVectorDatasetService extends IBaseService<VectorDatasetEntity>
      * @param shardsNum
      */
     void buildCreateCollectionParam(String collectionName, String description, int shardsNum);
+
+    /**
+     * 获取向量引擎
+     * @return
+     */
+    String getVectorEngine();
 }
