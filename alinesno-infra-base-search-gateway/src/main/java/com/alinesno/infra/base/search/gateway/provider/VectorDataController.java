@@ -89,7 +89,7 @@ public class VectorDataController {
             return AjaxResult.error(fileName + " 文档解析失败.") ;
         }
 
-        service.extracted(datasetId, sentenceList, fileName , fileType);
+        service.parserDocument(datasetId, sentenceList, fileName , fileType);
 
         return AjaxResult.success("上传成功",fileName) ;
     }
