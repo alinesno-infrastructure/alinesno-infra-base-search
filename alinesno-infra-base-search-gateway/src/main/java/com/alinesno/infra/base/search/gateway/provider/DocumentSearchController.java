@@ -1,9 +1,12 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
 
+import cn.hutool.json.JSONUtil;
+import com.alinesno.infra.base.search.api.SearchRequestDto;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +25,7 @@ public class DocumentSearchController {
     private IElasticsearchDocumentService elasticsearchService ;
 
     /**
-     * 将数据保存到Elasticsearch
+     * 将数据保存到ES
      *
      * @param jsonObject 要保存的JSON对象
      * @param indexBase  索引基础名称
@@ -30,37 +33,45 @@ public class DocumentSearchController {
      * @return 保存结果信息
      */
     @PostMapping("/save")
-    public AjaxResult saveToElasticSearch(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
-        elasticsearchService.saveJsonObject(indexBase , indexType) ;
+    public AjaxResult saveTo(@RequestBody String jsonObject, @RequestParam String indexBase, @RequestParam String indexType) {
+        indexType = StringUtils.isBlank(indexType) ? "daily":indexType ;
+
+        elasticsearchService.saveJsonObject(indexBase , indexType , jsonObject) ;
+        return AjaxResult.success("保存到Elasticsearch成功");
+    }
+
+    /**
+     * 保存多条数据到文档
+     */
+    @PostMapping("/saveBatch")
+    public AjaxResult saveToBatch(@RequestBody String objects , @RequestParam String indexBase, @RequestParam String indexType) {
+        indexType = StringUtils.isBlank(indexType) ? "daily":indexType ;
+
+        List<String> objectList = JSONUtil.toList(objects , String.class) ;
+
+        elasticsearchService.saveBatchJsonObject(indexBase , indexType , objectList) ;
         return AjaxResult.success("保存到Elasticsearch成功");
     }
 
     /**
      * 根据查询文本进行搜索
      *
-     * @param indexBase 索引基础名称
-     * @param indexType 索引类型
-     * @param queryText 查询文本
      * @return 搜索结果
      */
-    @GetMapping("/search")
-    public AjaxResult search(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String queryText) {
-        List<Map<String , Object>> data = elasticsearchService.search(indexBase , indexType , queryText)  ;
+    @PostMapping("/searchByPage")
+    public AjaxResult searchByPage(@RequestBody SearchRequestDto dto) {
+        List<Map<String , Object>> data = elasticsearchService.searchByPage(dto) ;
         return AjaxResult.success(data) ;
     }
 
     /**
      * 根据字段进行搜索
      *
-     * @param indexBase 索引基础名称
-     * @param indexType 索引类型
-     * @param fieldName 字段名称
-     * @param queryText 查询文本
      * @return 搜索结果
      */
-    @GetMapping("/searchByField")
-    public AjaxResult searchByField(@RequestParam String indexBase, @RequestParam String indexType, @RequestParam String fieldName, @RequestParam String queryText) {
-        List<Map<String , Object>> data = elasticsearchService.search(indexBase , indexType , fieldName , queryText)  ;
+    @PostMapping("/searchFieldByPage")
+    public AjaxResult searchFieldByPage(@RequestBody SearchRequestDto dto) {
+        List<Map<String , Object>> data = elasticsearchService.searchFieldByPage(dto)  ;
         return AjaxResult.success(data) ;
     }
 
@@ -72,7 +83,6 @@ public class DocumentSearchController {
      */
     @DeleteMapping("/delete")
     public AjaxResult deleteObject(@RequestParam String indexBase, @RequestParam Long documentId) {
-        // TODO 实现删除逻辑
         elasticsearchService.deleteDocument(indexBase, documentId);
         return AjaxResult.success("删除成功");
     }
@@ -96,9 +106,9 @@ public class DocumentSearchController {
      * @param indexName
      * @return
      */
-    @PostMapping("/createIndex")
-    public AjaxResult createIndex(@RequestParam String indexName) {
-        String indexType = "day";
+    @GetMapping("/createIndex")
+    public AjaxResult createIndex(@RequestParam(required = true) String indexName) {
+        String indexType = "daily";
         elasticsearchService.createDocumentIndex(indexName , indexType);
         return AjaxResult.success("创建索引成功");
     }
