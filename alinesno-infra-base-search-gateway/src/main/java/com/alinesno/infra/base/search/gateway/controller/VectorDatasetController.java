@@ -3,19 +3,26 @@ package com.alinesno.infra.base.search.gateway.controller;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
+import com.alinesno.infra.base.search.vector.DocumentVectorBean;
+import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
 import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
+import com.alinesno.infra.common.facade.response.R;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
 import io.swagger.annotations.Api;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 应用构建Controller
@@ -35,8 +42,8 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
     @Autowired
     private IVectorDatasetService service;
 
-    @Autowired
-    private IMilvusDataService milvusDataService;
+    @Resource
+    private IVectorDatasetService vectorDatasetService;
 
     /**
      * 获取ApplicationEntity的DataTables数据
@@ -51,6 +58,27 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
         return this.toPage(model, this.getFeign(), page);
+    }
+
+    /**
+     * 处理搜索Milvus集合的HTTP POST请求，并返回最近邻居的ID列表。
+     *
+     * @param dto 要搜索的集合名称。
+     * @return 包含最近邻居ID列表的ResponseEntity对象。
+     */
+    @PostMapping("/search")
+    public R<List<DocumentVectorBean>> search(@RequestBody @Valid VectorSearchDto dto) {
+
+        long datasetId = dto.getDatesetId() ;
+        VectorDatasetEntity datasetEntity = vectorDatasetService.getById(datasetId) ;
+        dto.setCollectionName(datasetEntity.getCollectionName());
+
+        List<DocumentVectorBean> topksList = vectorDatasetService.search(dto);
+
+        log.debug("topsList = {}" , topksList);
+
+        return R.ok(topksList);
+
     }
 
     @Override
@@ -68,7 +96,8 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
         entity.setAccessPermission("person");
         entity.setOwnerId(currentUserId);
         entity.setCollectionName(collectionName);
-        milvusDataService.buildCreateCollectionParam(collectionName, description, shardsNum);
+
+        vectorDatasetService.buildCreateCollectionParam(collectionName, description, shardsNum);
 
         log.debug("buildCreateCollectionParam = " + collectionName);
 
