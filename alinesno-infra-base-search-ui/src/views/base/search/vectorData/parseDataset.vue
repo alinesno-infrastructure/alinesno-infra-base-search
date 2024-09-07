@@ -39,16 +39,12 @@ const goBack = () => {
 }
 </script>
 
-<style lang="scss" scoped >
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
+<style lang="scss">
+
+.demo-tabs{
+    .el-tabs__nav-wrap::after{
+        height:0px !important;
+    }
 }
 
-.el-tabs--right .el-tabs__content,
-.el-tabs--left .el-tabs__content {
-  height: 100%;
-}
 </style>
