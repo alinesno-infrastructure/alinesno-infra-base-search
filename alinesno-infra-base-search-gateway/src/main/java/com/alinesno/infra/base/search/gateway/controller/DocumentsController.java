@@ -1,11 +1,14 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
+import com.alinesno.infra.base.search.api.SearchRequestDto;
 import com.alinesno.infra.base.search.entity.DocumentsEntity;
 import com.alinesno.infra.base.search.gateway.utils.search.DataGenerator;
 import com.alinesno.infra.base.search.gateway.utils.search.DocumentSearchUtils;
 import com.alinesno.infra.base.search.gateway.utils.search.TimeSplitBean;
 import com.alinesno.infra.base.search.service.IDocumentsService;
+import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
+import com.alinesno.infra.common.core.utils.DateUtils;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
@@ -21,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 处理与DocumentEntity相关的请求的Controller。
@@ -40,6 +44,9 @@ public class DocumentsController extends BaseController<DocumentsEntity, IDocume
     @Autowired
     private IDocumentsService service;
 
+    @Autowired
+    private IElasticsearchDocumentService elasticsearchService ;
+
     /**
      * 获取DocumentEntity的DataTables数据。
      *
@@ -52,7 +59,25 @@ public class DocumentsController extends BaseController<DocumentsEntity, IDocume
     @PostMapping("/datatables")
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
-        return this.toPage(model, this.getFeign(), page);
+
+        TableDataInfo tableDataInfo = this.toPage(model, this.getFeign(), page);
+
+        SearchRequestDto dto = new SearchRequestDto() ;
+        dto.setIndexBase("products");
+        dto.setFieldName("email");
+        dto.setQueryText("@example.com");
+        dto.setCurrentPage(page.getPageNum());
+        dto.setPageSize(10);
+
+        List<Map<String , Object>> data = elasticsearchService.searchFieldByPage(dto) ;
+        data.forEach(item -> {
+            item.put("timestamp", DateUtils.dateTimeNow()) ;
+        });
+
+        tableDataInfo.setRows(data); ;
+        tableDataInfo.setTotal(100); ;
+
+        return tableDataInfo;
     }
 
     /**
