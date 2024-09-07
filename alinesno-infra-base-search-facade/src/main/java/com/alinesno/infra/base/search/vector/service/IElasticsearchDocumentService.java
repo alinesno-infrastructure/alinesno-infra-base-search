@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.vector.service;
 
+import com.alinesno.infra.base.search.api.IndexInfoDto;
 import com.alinesno.infra.base.search.api.SearchRequestDto;
 
 import java.util.List;
@@ -11,11 +12,25 @@ import java.util.Map;
 public interface IElasticsearchDocumentService {
 
     /**
+     * 生成索引名称
+     *
+     * @param indexBase  索引基础名称
+     * @param indexType  索引类型
+     * @return 生成的索引名称
+     */
+    public String generateIndexName(String indexBase, String indexType) ;
+
+    /**
      * 创建文档索引
      * @param indexBase
      * @param indexType
      */
     void createDocumentIndex(String indexBase , String indexType) ;
+
+    /**
+     * 获取到索引当前信息
+     */
+    List<IndexInfoDto> getIndexInfo(String indexName);
 
     /**
      * 保存JSON对象
