@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
      <el-row :gutter="20">
-        <!--应用数据-->
+        <!--索引数据-->
         <el-col :span="24" :xs="24">
            <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
               <el-form-item label="索引基础名称" prop="indexBase">
@@ -26,21 +26,59 @@
 
            <el-table v-loading="loading" :data="DocumentIndexList" @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="50" align="center" />
+              <el-table-column type="expand" width="30px">
+                  <template #default="props">
+                  <div m="4" style="margin-left:100px">
+                     <el-table :data="props.row.infoList" border>
+                        <el-table-column type="index" label="序号" width="70" align="center" />
+                        <el-table-column label="索引名称" prop="indexName" />
+                        <el-table-column label="健康状态" align="center" prop="healthStatus" />
+                        <el-table-column label="文档数量" align="center" prop="docCount" />
+                        <el-table-column label="数据存储"  prop="storageSize">
+                           <template #default="scope">
+                              <span>{{ formatBytes(scope.row.storageSize ) }}</span>
+                           </template>
+                        </el-table-column>
+                        <el-table-column label="分片" align="center" prop="shardNum" />
+                     </el-table>
+                  </div>
+                  </template>
+               </el-table-column>
+               <el-table-column label="图标" align="center" width="70" key="icon" v-if="columns[5].visible">
+                  <template #default="scope">
+                     <span style="font-size:25px;color:#3b5998">
+                        <i class="fa-solid fa-file-word" />
+                     </span>
+                  </template>
+               </el-table-column>
               <el-table-column label="索引名称" align="left" key="indexBase" prop="indexBase" v-if="columns[0].visible">
                  <template #default="scope">
                     <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
-                       {{ scope.row.showName }}
+                       {{ scope.row.indexBase}}
                     </div>
                     <div style="font-size: 13px;color: #a5a5a5;">
-                       {{ scope.row.indexBase }}
+                       {{ scope.row.indexBaseDesc }}
                     </div>
                  </template>
               </el-table-column>
-              <el-table-column label="索引类型" align="center" key="indexType" prop="indexType" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-              <el-table-column label="分片数" align="center" key="shardNum" prop="shardNum" v-if="columns[4].visible" :show-overflow-tooltip="true" />
-              <el-table-column label="副本数" align="center" key="replicaNum" prop="replicaNum" v-if="columns[5].visible" :show-overflow-tooltip="true" />
+              <el-table-column label="索引类型" align="center" key="indexType" prop="indexType" v-if="columns[2].visible" :show-overflow-tooltip="true">
+                  <template #default="scope">
+                     <el-button v-if="scope.row.indexType == 'daily'" type="primary" text bg icon="Paperclip">按天</el-button>
+                     <el-button v-if="scope.row.indexType == 'month'" type="primary" text bg icon="Paperclip">按月</el-button>
+                  </template>
+              </el-table-column>   
+              <el-table-column label="索引数量" align="center" key="indexCount" prop="indexCount" v-if="columns[5].visible" :show-overflow-tooltip="true" />
               <el-table-column label="文档数量" align="center" key="docCount" prop="docCount" v-if="columns[6].visible" :show-overflow-tooltip="true" />
-              <el-table-column label="存储数据量" align="center" key="storageSize" prop="storageSize" v-if="columns[8].visible" :show-overflow-tooltip="true" />
+              <el-table-column label="存储数据量" align="center" key="storageSize" prop="storageSize" v-if="columns[8].visible" :show-overflow-tooltip="true">
+                  <template #default="scope">
+                     <span>{{ formatBytes(scope.row.storageSize ) }}</span>
+                  </template>
+              </el-table-column>
+               <el-table-column label="创建日期" align="center" prop="operTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+                  <template #default="scope">
+                     <span>{{ parseTime(scope.row.addTime ) }}</span>
+                  </template>
+               </el-table-column>
               <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
                  <template #default="scope">
                     <el-tooltip content="修改" placement="top" v-if="scope.row.DocumentIndexId !== 1">
@@ -56,69 +94,34 @@
         </el-col>
      </el-row>
 
-     <!-- 添加或修改应用配置对话框 -->
-     <el-dialog :title="title" v-model="open" width="900px" append-to-body>
+     <!-- 添加或修改索引配置对话框 -->
+     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
         <el-form :model="form" :rules="rules" ref="databaseRef" label-width="100px">
            <el-row>
               <el-col :span="24">
-                 <el-form-item label="索引基础名称" prop="indexBase">
+                 <el-form-item label="名称" prop="indexBase">
                     <el-input v-model="form.indexBase" placeholder="请输入索引基础名称" maxlength="255" />
                  </el-form-item>
               </el-col>
            </el-row>
+
            <el-row>
               <el-col :span="24">
-                 <el-form-item label="字段名称" prop="fieldName">
-                    <el-input v-model="form.fieldName" placeholder="请输入字段名称" maxlength="255" />
+                 <el-form-item label="生成策略" prop="indexType">
+                    <el-radio-group v-model="form.indexType" v-for="item in indexTypeOptions">
+                        <el-radio :value="item.value"
+                                 :key="item.value"
+                                 :label="item.value"
+                           >{{ item.label }}</el-radio> &nbsp;
+                     </el-radio-group>
                  </el-form-item>
               </el-col>
            </el-row>
+
            <el-row>
               <el-col :span="24">
-                 <el-form-item label="索引类型" prop="indexType">
-                    <el-input v-model="form.indexType" placeholder="请输入索引类型" maxlength="255" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="文档ID" prop="docId">
-                    <el-input v-model="form.docId" placeholder="请输入文档ID" maxlength="255" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="分片数" prop="shardNum">
-                    <el-input-number v-model="form.shardNum" controls-position="right" :min="1" :max="100" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="副本数" prop="replicaNum">
-                    <el-input-number v-model="form.replicaNum" controls-position="right" :min="0" :max="100" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="文档数量" prop="docCount">
-                    <el-input-number v-model="form.docCount" controls-position="right" :min="0" :max="9007199254740991" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="别名" prop="alias">
-                    <el-input v-model="form.alias" placeholder="请输入别名" maxlength="255" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="存储数据量" prop="storageSize">
-                    <el-input-number v-model="form.storageSize" controls-position="right" :min="0" :max="9007199254740991" />
+                 <el-form-item label="描述" prop="indexBaseDesc">
+                    <el-input v-model="form.indexBaseDesc" placeholder="请输入索引基础名称" maxlength="255" />
                  </el-form-item>
               </el-col>
            </el-row>
@@ -157,16 +160,19 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const postOptions = ref([]);
+const indexTypeOptions = ref([
+   { value:"daily", label:"按天"},
+   { value:"month", label:"按月"}
+]);
 const roleOptions = ref([]);
 
 // 列显隐信息
 const columns = ref([
-  { key: 0, label: `应用名称`, visible: true },
-  { key: 1, label: `应用描述`, visible: true },
+  { key: 0, label: `索引名称`, visible: true },
+  { key: 1, label: `索引描述`, visible: true },
   { key: 2, label: `表数据量`, visible: true },
   { key: 3, label: `类型`, visible: true },
-  { key: 4, label: `应用地址`, visible: true },
+  { key: 4, label: `索引地址`, visible: true },
   { key: 5, label: `状态`, visible: true },
   { key: 6, label: `更新时间`, visible: true },
   { key: 7, label: `更新时间`, visible: true },
@@ -193,7 +199,7 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 查询应用列表 */
+/** 查询索引列表 */
 function getList() {
   loading.value = true;
   listDocumentIndex(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
@@ -220,7 +226,7 @@ function resetQuery() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const DocumentIndexIds = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除应用编号为"' + DocumentIndexIds + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除索引编号为"' + DocumentIndexIds + '"的数据项？').then(function () {
      return delDocumentIndex(DocumentIndexIds);
   }).then(() => {
      getList();
@@ -234,6 +240,19 @@ function handleSelectionChange(selection) {
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 };
+
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
 
 /** 重置操作表单 */
 function reset() {
@@ -259,7 +278,7 @@ function cancel() {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加应用";
+  title.value = "添加索引";
 };
 
 /** 修改按钮操作 */
@@ -269,7 +288,7 @@ function handleUpdate(row) {
   getDocumentIndex(DocumentIndexId).then(response => {
      form.value = response.data;
      open.value = true;
-     title.value = "修改应用";
+     title.value = "修改索引";
   });
 };
 
