@@ -1,297 +1,247 @@
 <template>
   <div class="app-container">
-     <el-row :gutter="20">
-        <!--应用数据-->
-        <el-col :span="24" :xs="24">
-           <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
-              <el-form-item label="应用名称" prop="name">
-                 <el-input v-model="queryParams.name" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
-              </el-form-item>
-              <el-form-item label="应用名称" prop="name">
-                 <el-input v-model="queryParams['condition[name|like]']" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
-              </el-form-item>
-              <el-form-item>
-                 <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-                 <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-              </el-form-item>
-           </el-form>
+   <div class="label-title">
+     <div class="tip">知识库配置</div>
+     <div class="sub-tip">根据团队要求进行整体知识库配置管理</div>
+   </div>
+   <div class="form-container" >
+     <el-form
+       :model="form"
+       :rules="rules"
+       v-loading="loading"
+       ref="form"
+       label-width="180px"
+       class="demo-form"
+     >
 
-           <el-row :gutter="10" class="mb8">
+       <el-form-item label="品牌代码" prop="themeCode">
+         <el-input type="input" show-word-limit v-model="form.themeCode" readonly placeholder="请输入主题代码">
+           <el-button slot="append" @click="configTheme()" icon="el-icon-edit">配置品牌</el-button>
+         </el-input>
+       </el-form-item>
 
-              <el-col :span="1.5">
-                 <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                 <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate">修改</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                 <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
-              </el-col>
+       <el-form-item label="登录框版本选择" prop="loginStyle">
+         <el-row>
+           <el-col :span="7" v-for="(o, index) in loginStyle" :key="index" :offset="index > 0 ? 1 : 0">
 
-              <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
-           </el-row>
-
-           <el-table v-loading="loading" :data="ApplicationList" @selection-change="handleSelectionChange">
-              <el-table-column type="selection" width="50" align="center" />
-
-              <el-table-column label="图标" align="center" width="80px" prop="icon" v-if="columns[0].visible">
-                 <template #default="scope">
-                 <div class="role-icon">
-                    <img :src="'http://data.linesno.com/icons/dataset/dataset_' + (scope.$index + 8) + '.png'" style="width:40px;height:40px;border-radius: 50%;" />
+             <el-card :body-style="{ padding: '0px !important' }" :class="form.loginStyle == o.id?'select-card':''" shadow="never">
+               <img :src="'http://data.linesno.com/icons/login/style-0'+(index+1)+'.png'" class="image">
+               <div style="padding: 14px;">
+                 <span>{{ o.desc }}</span>
+                 <div class="bottom clearfix">
+                   <el-button @click="selectStyle(o)" type="text" class="button">选择</el-button>
                  </div>
-                 </template>
-              </el-table-column>
+               </div>
+             </el-card>
+           </el-col>
+         </el-row>
+       </el-form-item>
 
-              <!-- 业务字段-->
-              <el-table-column label="应用名称" align="left" key="name" prop="name" v-if="columns[0].visible" >
-                 <template #default="scope">
-                    <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
-                       {{ scope.row.showName }}
-                    </div>
-                    <div style="font-size: 13px;color: #a5a5a5;">
-                       {{ scope.row.name }}
-                    </div>
-                 </template>
-              </el-table-column>
-              <el-table-column label="所属领域" align="center" key="domain" prop="domain" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-              <el-table-column label="应用密钥" align="center" key="appKey" prop="appKey" v-if="columns[1].visible" :show-overflow-tooltip="true" >
-                 <template #default="scope">
-                    {{ scope.row.appKey }} &nbsp;&nbsp; <el-button type="primary" text bg icon="CopyDocument">复制</el-button>
-                 </template>
-              </el-table-column>
-              <el-table-column label="状态" align="center" key="hasStatus" v-if="columns[5].visible" width="200">
-                 <template #default="scope">
-                    <el-button type="primary" text bg icon="Check">正常</el-button>
-                 </template>
-              </el-table-column>
+       <el-form-item label="显示社会化登录">
+         <el-switch v-model="form.enableSociety"
+           :active-value="1"
+           :inactive-value="0"
+         ></el-switch>
+       </el-form-item>
 
-              <el-table-column label="添加时间" align="center" prop="addTime" v-if="columns[6].visible" width="160">
-                 <template #default="scope">
-                    <span>{{ parseTime(scope.row.addTime) }}</span>
-                 </template>
-              </el-table-column>
+       <el-form-item label="错误次数" prop="errorCount">
+         <el-input-number type="input" maxlength="500" :min="1" :max="10" show-word-limit v-model="form.errorCount" >
+             <template slot="append">次</template>
+         </el-input-number>
+       </el-form-item>
 
-              <!-- 操作字段  -->
-              <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
-                 <template #default="scope">
-                    <el-tooltip content="修改" placement="top" v-if="scope.row.ApplicationId !== 1">
-                       <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                          v-hasPermi="['system:Application:edit']"></el-button>
-                    </el-tooltip>
-                    <el-tooltip content="删除" placement="top" v-if="scope.row.ApplicationId !== 1">
-                       <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                          v-hasPermi="['system:Application:remove']"></el-button>
-                    </el-tooltip>
-                 </template>
+       <el-form-item label="锁定时长" prop="lockTime">
+         <el-input-number type="input" maxlength="500" show-word-limit v-model="form.lockTime" >
+             <template slot="append">分钟</template>
+         </el-input-number>
+       </el-form-item>
 
-              </el-table-column>
-           </el-table>
-           <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
-        </el-col>
-     </el-row>
+       <el-form-item label="显示忘记密码">
+         <el-switch v-model="form.enableFindPwd"
+           :active-value="1"
+           :inactive-value="0"
+         ></el-switch>
+       </el-form-item>
 
-     <!-- 添加或修改应用配置对话框 -->
-     <el-dialog :title="title" v-model="open" width="900px" append-to-body>
-        <el-form :model="form" :rules="rules" ref="databaseRef" label-width="100px">
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="应用全名" prop="name">
-                    <el-input v-model="form.name" placeholder="请输入应用名称" maxlength="50" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="简称" prop="showName">
-                    <el-input v-model="form.showName" placeholder="请输入类型" maxlength="50" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="所属领域" prop="domain">
-                    <el-input v-model="form.domain" placeholder="请输入所属领域" maxlength="128" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
-           <el-row>
-              <el-col :span="24">
-                 <el-form-item label="应用描述" prop="remark">
-                    <el-input v-model="form.remark" placeholder="请输入连接用户名" maxlength="30" />
-                 </el-form-item>
-              </el-col>
-           </el-row>
+       <el-form-item label="默认首页" prop="defaultIndex">
+         <el-input type="input" maxlength="500" show-word-limit v-model="form.defaultIndex" placeholder="请输入默认首页"></el-input>
+       </el-form-item>
 
-        </el-form>
-        <template #footer>
-           <div class="dialog-footer">
-              <el-button type="primary" @click="submitForm">确 定</el-button>
-              <el-button @click="cancel">取 消</el-button>
-           </div>
-        </template>
-     </el-dialog>
+       <el-form-item label="是否开启登陆验证码">
+         <el-switch v-model="form.enableValidate"
+           :active-value="1"
+           :inactive-value="0"
+         ></el-switch>
+       </el-form-item>
 
-  </div>
+       <br/>
+
+       <el-form-item>
+         <el-button type="primary" @click="submitForm('form')">
+           保存
+         </el-button>
+         <el-button @click="resetForm">
+           重置
+         </el-button>
+       </el-form-item>
+     </el-form>
+   </div>
+ </div>
 </template>
 
-<script setup name="Application">
+<script>
 
-import {
-  listApplication,
-  delApplication,
-  getApplication,
-  updateApplication,
-  addApplication
-} from "@/api/base/search/application";
+//   import {
+//     addLoginSetting,
+//     updateLoginSetting,
+//     getCurrentConfig } from "@/api/business/OauthLoginSetting";
 
-const router = useRouter();
-const { proxy } = getCurrentInstance();
+//   import ImageUpload from "alinesno-ui/packages/ImageUpload"
 
-// 定义变量
-const ApplicationList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
-const postOptions = ref([]);
-const roleOptions = ref([]);
+ export default {
 
-// 列显隐信息
-const columns = ref([
-  { key: 0, label: `应用名称`, visible: true },
-  { key: 1, label: `应用描述`, visible: true },
-  { key: 2, label: `表数据量`, visible: true },
-  { key: 3, label: `类型`, visible: true },
-  { key: 4, label: `应用地址`, visible: true },
-  { key: 5, label: `状态`, visible: true },
-  { key: 6, label: `更新时间`, visible: true }
-]);
+  //  components:{
+  //    ImageUpload
+  //  },
+   data() {
+     return {
+       loginStyle:[
+         {id:'1' , icon:'asserts/images/style-01.png' , desc:'经典版本的登陆UI，提供更加流畅的交互体验'} ,
+         {id:'2' , icon:'asserts/images/style-02.png' , desc:'简洁版的登陆，优化登录注册页面设计，PC视觉更简洁'} ,
+         {id:'3' , icon:'asserts/images/style-03.png' , desc:'平台版本的登陆界面，大气简洁的登陆界面，更贴近平台化'} ,
+       ],
+       theme: null ,
+       form: {
+         themeCode: null ,
+         loginStyle:'1' ,
+         enableSociety: '1' ,
+         enableFindPwd: '1' ,
+         logoImg: '' ,
+         lockTime: 250 ,
+         errorCount: 5,
+         defaultIndex: '' ,
+         enableValidate: '1',
+       },
+       // 表单参数
+       rules: {
+         logoTitle: [
+           { required: true, message: "请输入登陆标题", trigger: "blur" },
+         ],
+         logoTitle: [
+           { required: true, message: "请输入登陆标题", trigger: "blur" },
+         ],
+         loginDescription: [
+           { required: true, message: "请输入登陆描述", trigger: "blur" },
+         ],
+         loginLogo: [
+           { required: true, message: "请至少上传一张Logo图", trigger: "blur" },
+         ],
+         logoBackgroun: [
+           { required: true, message: "请至少上传一张背景图", trigger: "blur" },
+         ],
+         defaultIndex: [
+           { required: true, message: "请输入默认主页", trigger: "blur" },
+           { type: 'url',message: "请输入正确的链接地址",trigger: 'blur'},
+         ],
+       },
+       currentSiteId: null,
+       // 遮罩层
+       loading: false ,
+     };
+   },
+   created(){
+     // this.getSetting();
+   },
+   methods: {
+     // getSetting(){
+     //   getCurrentConfig().then(response => {
 
-const data = reactive({
-  form: {},
-  queryParams: {
-     pageNum: 1,
-     pageSize: 10,
-     name: undefined,
-     appKey: undefined
-  },
-  rules: {
-     name: [{ required: true, message: "名称不能为空", trigger: "blur" }] , 
-     domain: [{ required: true, message: "连接不能为空", trigger: "blur" }],
-     showName: [{ required: true, message: "类型不能为空", trigger: "blur" }] , 
-     remark: [{ required: true , message: "用户名不能为空", trigger: "blur"}],
-     appKey: [{ required: true, message: "备注不能为空", trigger: "blur" }] 
-  }
-});
+     //     if(response.theme.id != null){
+     //       this.form = response.data ;
+     //       this.theme = response.theme ;
 
-const { queryParams, form, rules } = toRefs(data);
+     //       if(this.theme){
+     //         this.form.themeCode = response.theme.themeCode ;
+     //       }
 
-/** 查询应用列表 */
-function getList() {
-  loading.value = true;
-  listApplication(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
-     loading.value = false;
-     ApplicationList.value = res.rows;
-     total.value = res.total;
-  });
-};
-
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
-};
-
-/** 重置按钮操作 */
-function resetQuery() {
-  dateRange.value = [];
-  proxy.resetForm("queryRef");
-  queryParams.value.deptId = undefined;
-  proxy.$refs.deptTreeRef.setCurrentKey(null);
-  handleQuery();
-};
-/** 删除按钮操作 */
-function handleDelete(row) {
-  const ApplicationIds = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除应用编号为"' + ApplicationIds + '"的数据项？').then(function () {
-     return delApplication(ApplicationIds);
-  }).then(() => {
-     getList();
-     proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => { });
-};
-
-/** 选择条数  */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-};
-
-/** 重置操作表单 */
-function reset() {
-  form.value = {
-     id: undefined,
-     deptId: undefined,
-     ApplicationName: undefined,
-     nickName: undefined,
-     password: undefined,
-     phonenumber: undefined,
-     status: "0",
-     remark: undefined,
-  };
-  proxy.resetForm("databaseRef");
-};
-/** 取消按钮 */
-function cancel() {
-  open.value = false;
-  reset();
-};
-
-/** 新增按钮操作 */
-function handleAdd() {
-  reset();
-  open.value = true;
-  title.value = "添加应用";
-};
-
-/** 修改按钮操作 */
-function handleUpdate(row) {
-  reset();
-  const ApplicationId = row.id || ids.value;
-  getApplication(ApplicationId).then(response => {
-     form.value = response.data;
-     open.value = true;
-     title.value = "修改应用";
-  });
-};
-
-/** 提交按钮 */
-function submitForm() {
-  proxy.$refs["databaseRef"].validate(valid => {
-     if (valid) {
-        if (form.value.id != undefined) {
-           updateApplication(form.value).then(response => {
-              proxy.$modal.msgSuccess("修改成功");
-              open.value = false;
-              getList();
-           });
-        } else {
-           addApplication(form.value).then(response => {
-              proxy.$modal.msgSuccess("新增成功");
-              open.value = false;
-              getList();
-           });
-        }
-     }
-  });
-};
-
-getList();
-
+     //     }
+     //   })
+     // },
+     // uploadImg(data){
+     //   console.log('data = ' + data) ;
+     // } ,
+     // selectStyle(item){
+     //   this.form.loginStyle = item.id;
+     //   console.log('item = ' + item.id) ;
+     // } ,
+     // copySuccess() {
+     //   this.$message.success("复制成功")
+     // },
+     // configTheme(){
+     //   this.$router.push('/business/theme/settings') ;
+     // },
+     // submitForm(formName) {
+     //   this.$refs[formName].validate((valid) => {
+     //     if (valid) {
+     //       this.loading = true ;
+     //       if (this.form.id != null) {
+     //         updateLoginSetting(this.form).then(response => {
+     //           this.msgSuccess("修改成功");
+     //           this.loading = false ;
+     //         });
+     //       } else {
+     //         addLoginSetting(this.form).then(response => {
+     //           this.msgSuccess("新增成功");
+     //           this.loading = false ;
+     //         });
+     //       }
+     //     }
+     //   });
+     // },
+     // resetForm() {
+     //   this.$refs["form"].resetFields();
+     //   this.getSetting();
+     // }
+   },
+ };
 </script>
+
+<style scoped lang="scss">
+ .form-container {
+   max-width: 960px;
+   margin-left: auto;
+   margin-right: auto;
+   margin-top: 20px;
+ }
+
+ .label-title {
+   text-align: center;
+   max-width: 960px;
+   margin-left: auto;
+   margin-right: auto;
+   margin-top: 10px;
+
+   .tip {
+     padding-bottom: 10px;
+     font-size: 26px;
+     font-weight: bold;
+   }
+
+   .sub-tip {
+     font-size: 13px;
+     text-align: center;
+     padding: 10px;
+   }
+ }
+
+ .image{
+   width:100%;
+   height: 120px ;
+ }
+
+ .select-card {
+   border: 1px solid rgb(0, 91, 212) ;
+ }
+</style>
+
+
