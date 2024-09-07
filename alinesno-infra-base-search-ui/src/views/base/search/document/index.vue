@@ -2,18 +2,33 @@
   <div class="app-container">
      <el-row :gutter="20">
           <!--类型数据-->
-         <el-col :span="4" :xs="24">
+         <el-col :span="3" :xs="24">
             <DocumentField /> 
          </el-col>
 
         <!--应用数据-->
-        <el-col :span="20" :xs="24">
+        <el-col :span="21" :xs="24">
            <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
               <el-form-item label="索引名称" prop="name">
-                 <el-input v-model="queryParams.name" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
-              </el-form-item>
-              <el-form-item label="应用名称" prop="name">
-                 <el-input v-model="queryParams['condition[name|like]']" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+                 <!-- <el-input v-model="queryParams.name" placeholder="请输入索引名称" clearable style="width: 540px" @keyup.enter="handleQuery" /> -->
+                  <el-select
+                     v-model="queryParams.name"
+                     filterable
+                     remote
+                     reserve-keyword
+                     placeholder="请输入索引关键字"
+                     remote-show-suffix
+                     :remote-method="remoteMethod"
+                     :loading="loadingIndexQuery"
+                     style="width: 540px"
+                     >
+                     <el-option
+                        v-for="item in indexOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                     />
+                  </el-select>
               </el-form-item>
               <el-form-item>
                  <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -24,39 +39,35 @@
                <SearchHits />
 
            <el-table v-loading="loading" :data="DocumentList" @selection-change="handleSelectionChange">
-              <el-table-column type="selection" width="50" align="center" />
+              <el-table-column type="index" label="序号" width="50" align="center" />
 
-              <el-table-column type="expand">
+              <el-table-column type="expand" width="30px">
                <template #default="props">
-                  <div m="4">
-                     <p m="t-0 b-2">State: {{ props.row.state }}</p>
-                     <p m="t-0 b-2">City: {{ props.row.city }}</p>
-                     <p m="t-0 b-2">Address: {{ props.row.address }}</p>
-                     <p m="t-0 b-2">Zip: {{ props.row.zip }}</p>
-                     <h3>Family</h3>
-                     <el-table :data="props.row.family" :border="childBorder">
-                        <el-table-column label="Name" prop="name" />
-                        <el-table-column label="State" prop="state" />
-                        <el-table-column label="City" prop="city" />
-                        <el-table-column label="Address" prop="address" />
-                        <el-table-column label="Zip" prop="zip" />
-                     </el-table>
+                  <div m="4" style="margin-left:100px">
+                     <json-viewer
+                        :value="props.row"
+                        :expand-depth=5
+                        copyable
+                        boxed
+                        sort>
+                     </json-viewer>
                   </div>
                   </template>
                </el-table-column>
 
               <!-- 业务字段-->
-              <el-table-column label="时间" align="left" width="200" key="name" prop="name" v-if="columns[0].visible" >
+              <el-table-column label="时间" align="left" width="150" key="timestamp" prop="timestamp" v-if="columns[0].visible">
                  <template #default="scope">
-                    <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
-                       {{ scope.row.showName }}
-                    </div>
-                    <div style="font-size: 13px;color: #a5a5a5;">
-                       {{ scope.row.name }}
-                    </div>
+                  <div>
+                     {{ scope.row.timestamp }}
+                  </div>
                  </template>
               </el-table-column>
-              <el-table-column label="文档" align="left" key="domain" prop="domain" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+              <el-table-column label="文档" align="left" key="domain" prop="domain" v-if="columns[3].visible">
+                 <template #default="scope">
+                  {{ scope.row }}
+                 </template>
+              </el-table-column>
 
               <!-- 操作字段  -->
               <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
@@ -123,6 +134,8 @@
 
 <script setup name="Document">
 
+import JsonViewer from 'vue-json-viewer'
+
 import {
   listDocument,
   delDocument,
@@ -162,6 +175,10 @@ const columns = ref([
   { key: 6, label: `更新时间`, visible: true }
 ]);
 
+// 搜索索引条件
+const indexOptions = ref([]);
+const loadingIndexQuery = ref(false);
+
 const data = reactive({
   form: {},
   queryParams: {
@@ -180,6 +197,69 @@ const data = reactive({
 });
 
 const { queryParams, form, rules } = toRefs(data);
+
+const states = [
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
+]
+const remoteMethod = () => {
+   loadingIndexQuery.value = true
+   setTimeout(() => {
+
+      indexOptions.value = states.map((item) => {
+         return { value: `value:${item}`, label: `label:${item}` }
+      }) 
+      loadingIndexQuery.value = false
+   })
+}
 
 /** 查询应用列表 */
 function getList() {
