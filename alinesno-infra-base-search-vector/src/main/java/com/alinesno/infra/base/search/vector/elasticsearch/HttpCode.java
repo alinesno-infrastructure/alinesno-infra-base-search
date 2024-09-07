@@ -26,4 +26,7 @@ public interface HttpCode {
     // 删除Elasticsearch索引时发生错误的代码
     String INDEX_DELETE_ERROR = "02";
 
+    // Elasticsearch索引不存在
+    String INDEX_NOT_EXISTS = "07";
+
 }
