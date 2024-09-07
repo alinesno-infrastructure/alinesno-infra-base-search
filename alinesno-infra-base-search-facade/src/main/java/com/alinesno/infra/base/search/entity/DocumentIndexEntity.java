@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.entity;
 
+import com.alinesno.infra.base.search.api.IndexInfoDto;
 import com.alinesno.infra.common.facade.mapper.entity.InfraBaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,6 +9,8 @@ import com.gitee.sunchenbin.mybatis.actable.annotation.ColumnType;
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * 功能名：文档索引
@@ -34,6 +37,11 @@ public class DocumentIndexEntity extends InfraBaseEntity {
     @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 255)
     private String indexBase;
 
+    @TableField(value = "index_base_desc")
+    @ColumnComment("索引基础描述")
+    @ColumnType(value = MySqlTypeConstant.VARCHAR)
+    private String indexBaseDesc ;
+
     /**
      * 字段名称
      * 用于标识文档中的字段
@@ -42,6 +50,14 @@ public class DocumentIndexEntity extends InfraBaseEntity {
     @ColumnComment("字段名称")
     @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 255)
     private String fieldName;
+
+    /**
+     * 健康状态
+     */
+    @TableField(value = "health_status")
+    @ColumnComment("健康状态")
+    @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 16)
+    private String healthStatus; // 健康状态
 
     /**
      * 索引类型
@@ -89,13 +105,12 @@ public class DocumentIndexEntity extends InfraBaseEntity {
     private long docCount;
 
     /**
-     * 别名
-     * 索引的别名
+     * 索引数量
      */
-    @TableField(value = "alias")
-    @ColumnComment("别名")
-    @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 255)
-    private String alias;
+    @TableField(value = "index_count")
+    @ColumnComment("索引数量")
+    @ColumnType
+    private long indexCount;
 
     /**
      * 存储数据量
@@ -107,4 +122,9 @@ public class DocumentIndexEntity extends InfraBaseEntity {
     private long storageSize;
 
 
+    /**
+     * 索引信息
+     */
+    @TableField(exist = false)
+    private List<IndexInfoDto> infoList ;
 }
