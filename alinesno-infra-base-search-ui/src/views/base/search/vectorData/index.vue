@@ -37,7 +37,7 @@
                 icon="Edit"
                 :disabled="single"
                 @click="handleUpdate"
-                v-hasPermi="['system:Application:edit']"
+                v-hasPermi="['system:Dataset:edit']"
             >修改
             </el-button>
           </el-col>
@@ -48,7 +48,7 @@
                 icon="Delete"
                 :disabled="multiple"
                 @click="handleDelete"
-                v-hasPermi="['system:Application:remove']"
+                v-hasPermi="['system:Dataset:remove']"
             >删除
             </el-button>
           </el-col>
@@ -66,7 +66,7 @@
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
 
-        <el-table v-loading="loading" :data="ApplicationList" @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" :data="DatasetList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
 
           <el-table-column label="图标" align="center" width="60px" prop="icon" v-if="columns[0].visible">
@@ -121,11 +121,11 @@
             <template #default="scope">
               <el-tooltip content="修改" placement="top" v-if="scope.row.applicationId !== 1">
                 <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                           v-hasPermi="['system:Application:edit']"></el-button>
+                           v-hasPermi="['system:Dataset:edit']"></el-button>
               </el-tooltip>
               <el-tooltip content="删除" placement="top" v-if="scope.row.applicationId !== 1">
                 <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                           v-hasPermi="['system:Application:remove']"></el-button>
+                           v-hasPermi="['system:Dataset:remove']"></el-button>
               </el-tooltip>
 
             </template>
@@ -143,7 +143,7 @@
 
     <!-- 添加或修改应用配置对话框 -->
     <el-dialog :title="title" v-model="open" width="900px" append-to-body>
-      <el-form :model="form" :rules="rules" ref="ApplicationRef" label-width="100px">
+      <el-form :model="form" :rules="rules" ref="DatasetRef" label-width="100px">
         <el-row>
           <el-col :span="24">
             <el-form-item  label="数据集名称" prop="name">
@@ -270,22 +270,22 @@
   </div>
 </template>
 
-<script setup name="Application">
+<script setup name="Dataset">
 import {getToken} from "@/utils/auth";
 import {
-  listApplication,
-  delApplication,
-  getApplication,
-  updateApplication,
-  addApplication,
+  listDataset,
+  delDataset,
+  getDataset,
+  updateDataset,
+  addDataset,
 } from "@/api/base/search/vectorDataset";
 import {reactive} from "vue";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
-// const { sys_normal_disable, sys_Application_sex } = proxy.useDict("sys_normal_disable", "sys_Application_sex");
+// const { sys_normal_disable, sys_Dataset_sex } = proxy.useDict("sys_normal_disable", "sys_Dataset_sex");
 
-const ApplicationList = ref([]);
+const DatasetList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -313,7 +313,7 @@ const upload = reactive({
   // 设置上传的请求头部
   headers: {Authorization: "Bearer " + getToken()},
   // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + "/system/Application/importData"
+  url: import.meta.env.VITE_APP_BASE_API + "/system/Dataset/importData"
 });
 // 列显隐信息
 const columns = ref([
@@ -334,7 +334,7 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    ApplicationName: undefined,
+    DatasetName: undefined,
     name: undefined,
     ownerId: undefined,
     status: undefined,
@@ -362,9 +362,9 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询应用列表 */
 function getList() {
   loading.value = true;
-  listApplication(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
+  listDataset(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
     loading.value = false;
-    ApplicationList.value = res.rows;
+    DatasetList.value = res.rows;
     total.value = res.total;
   });
 };
@@ -392,7 +392,7 @@ function handleDelete(row) {
   const applicationIds = row.id || ids.value;
 
   proxy.$modal.confirm('是否确认删除应用编号为"' + applicationIds + '"的数据项？').then(function () {
-    return delApplication(applicationIds);
+    return delDataset(applicationIds);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
@@ -418,7 +418,7 @@ function reset() {
     accessPermission: undefined,
     datasetSize: undefined,
   };
-  proxy.resetForm("ApplicationRef");
+  proxy.resetForm("DatasetRef");
 };
 
 /** 取消按钮 */
@@ -438,7 +438,7 @@ function handleAdd() {
 function handleUpdate(row) {
   reset();
   const applicationId = row.id || ids.value;
-  getApplication(applicationId).then(response => {
+  getDataset(applicationId).then(response => {
     form.value = response.data;
     form.value.applicationId = applicationId;
     open.value = true;
@@ -478,16 +478,16 @@ function submitFileForm() {
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["ApplicationRef"].validate(valid => {
+  proxy.$refs["DatasetRef"].validate(valid => {
     if (valid) {
       if (form.value.applicationId != undefined) {
-        updateApplication(form.value).then(response => {
+        updateDataset(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addApplication(form.value).then(response => {
+        addDataset(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
