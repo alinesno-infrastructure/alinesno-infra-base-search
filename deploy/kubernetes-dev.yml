@@ -53,7 +53,7 @@ spec:
                 -Dalinesno.base.search.dashscope.api-key=${QIANWEN_SK}
                 -Dalinesno.base.search.elasticsearch.host=${DB_ELASITCSEARCH_URL}
                 -Dalinesno.base.search.elasticsearch.username=${DB_ELASTICSEARCH_USERNAME}
-                -Dalinesno.base.search.elasticsearch.password=${DB_MYSQL_PASSWORD}
+                -Dalinesno.base.search.elasticsearch.password=${DEV_ELASTICSEARCH_PASSWORD}
 
                 -Dalinesno.base.search.pgvector.jdbc-url=jdbc:postgresql://${DB_PGVECTOR_URL}/dev_alinesno_infra_base_search_vector_v100
                 -Dalinesno.base.search.pgvector.username=${DB_PGVECTOR_USERNAME}
