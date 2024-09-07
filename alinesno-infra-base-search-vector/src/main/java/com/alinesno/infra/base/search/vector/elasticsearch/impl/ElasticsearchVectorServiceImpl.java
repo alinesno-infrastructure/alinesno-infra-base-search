@@ -13,7 +13,6 @@ import co.elastic.clients.elasticsearch.indices.ElasticsearchIndicesClient;
 import co.elastic.clients.json.JsonData;
 import com.alibaba.fastjson.JSON;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
-import com.alinesno.infra.base.search.vector.elasticsearch.ElasticsearchHandle;
 import com.alinesno.infra.base.search.vector.elasticsearch.EsConfiguration;
 import com.alinesno.infra.base.search.vector.elasticsearch.HttpCode;
 import com.alinesno.infra.base.search.vector.elasticsearch.exception.ExploException;
@@ -41,8 +40,8 @@ public class ElasticsearchVectorServiceImpl implements IElasticsearchVectorServi
     @Autowired
     private ElasticsearchClient client;
 
-    @Autowired
-    private ElasticsearchHandle elasticsearchHandle ;
+//    @Autowired
+//    private ElasticsearchHandle elasticsearchHandle ;
 
     @Override
     public List<DocumentVectorBean> queryDocument(String indexName, String fileName, String queryText, int top) {
