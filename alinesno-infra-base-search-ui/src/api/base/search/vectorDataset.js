@@ -14,12 +14,22 @@ var managerUrl = {
   detailUrl: prefix +"detail",
   removeUrl: prefix + "delete" ,
   exportUrl: prefix + "exportExcel",
+  search: prefix + "search",
   changeField: prefix + "changeField",
   downloadfile: prefix + "downloadfile"
 }
 
+// 搜索
+export function getSearch(data) {
+  return request({
+    url: managerUrl.search ,
+    method: 'post',
+    data: data 
+  })
+}
+
 // 查询应用列表
-export function listApplication(query) {
+export function listDataset(query) {
   return request({
     url: managerUrl.datatables ,
     method: 'post',
@@ -28,15 +38,15 @@ export function listApplication(query) {
 }
 
 // 查询应用详细
-export function getApplication(ApplicationId) {
+export function getDataset(DatasetId) {
   return request({
-    url: managerUrl.detailUrl + '/' + parseStrEmpty(ApplicationId),
+    url: managerUrl.detailUrl + '/' + parseStrEmpty(DatasetId),
     method: 'get'
   })
 }
 
 // 新增应用
-export function addApplication(data) {
+export function addDataset(data) {
   return request({
     url: managerUrl.saveUrl ,
     method: 'post',
@@ -45,7 +55,7 @@ export function addApplication(data) {
 }
 
 // 修改应用
-export function updateApplication(data) {
+export function updateDataset(data) {
   return request({
     url: managerUrl.updateUrl ,
     method: 'put',
@@ -54,17 +64,17 @@ export function updateApplication(data) {
 }
 
 // 删除应用
-export function delApplication(ApplicationId) {
+export function delDataset(DatasetId) {
   return request({
-    url: managerUrl.removeUrl + '/' + parseStrEmpty(ApplicationId),
+    url: managerUrl.removeUrl + '/' + parseStrEmpty(DatasetId),
     method: 'delete'
   })
 }
 
 // 应用密码重置
-export function resetApplicationPwd(ApplicationId, password) {
+export function resetDatasetPwd(DatasetId, password) {
   const data = {
-    ApplicationId,
+    DatasetId,
     password
   }
   return request({
@@ -75,9 +85,9 @@ export function resetApplicationPwd(ApplicationId, password) {
 }
 
 // 应用状态修改
-export function changeApplicationStatus(ApplicationId, status) {
+export function changeDatasetStatus(DatasetId, status) {
   const data = {
-    ApplicationId,
+    DatasetId,
     status
   }
   return request({
