@@ -5,16 +5,21 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
+import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import co.elastic.clients.json.JsonData;
+import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.alibaba.fastjson.JSONObject;
+import com.alinesno.infra.base.search.api.IndexInfoDto;
 import com.alinesno.infra.base.search.api.SearchRequestDto;
-import com.alinesno.infra.base.search.vector.elasticsearch.ElasticsearchHandle;
 import com.alinesno.infra.base.search.vector.elasticsearch.HttpCode;
 import com.alinesno.infra.base.search.vector.elasticsearch.exception.ExploException;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +28,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -33,13 +40,89 @@ public class ElasticsearchDocumentServiceImpl implements IElasticsearchDocumentS
     @Autowired
     private ElasticsearchClient client;
 
-    @Autowired
-    private ElasticsearchHandle elasticsearchHandle ;
-
     @Override
     public void createDocumentIndex(String indexBase, String indexType) {
-        String indexName = generateIndexName(indexBase, indexType) ;
-        elasticsearchHandle.createIndex(indexName) ;
+        String indexName = StringUtils.isBlank(indexType)?indexBase : generateIndexName(indexBase, indexType) ;
+
+        try {
+            if(!hasIndex(indexName)){
+                CreateIndexResponse indexResponse = client.indices().create(c -> c.index(indexName));
+                log.debug("索引创建成功：{}", indexResponse);
+            }
+        } catch (IOException e) {
+            log.error("索引创建失败：{}", e.getMessage());
+            throw new ExploException(HttpCode.INDEX_CREATE_ERROR, "创建索引失败");
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public List<IndexInfoDto> getIndexInfo(String indexName) {
+
+//        if(!hasIndex(indexName)){
+//            throw new ExploException(HttpCode.INDEX_NOT_EXISTS, "索引不存在");
+//        }
+
+        List<IndexInfoDto> result = new ArrayList<>() ;
+
+        // 获取索引的统计数据
+        IndicesStatsResponse statsResponse = client.indices().stats(s -> s.index(indexName+"*"));
+
+        // 获取到数量存储量大小/文档数量/副本/分片数/索引类型
+        Map<String, IndicesStats> stats = statsResponse.indices();
+
+        for (Map.Entry<String, IndicesStats> entry : stats.entrySet()) {
+
+            String indexName1 = entry.getKey();
+            IndicesStats indexStats = entry.getValue();
+
+            // 获取存储大小和文档数量
+            long storageSize = 0;
+            if (indexStats.total() != null && indexStats.total().store() != null) {
+                storageSize = indexStats.total().store().totalDataSetSizeInBytes();
+            }
+
+            long docCount = 0;
+            if (indexStats.total() != null && indexStats.total().docs() != null) {
+                docCount = indexStats.total().docs().count();
+            }
+
+            // 获取分片数和副本数
+            long shardNum = 0;
+            if (indexStats.total() != null && indexStats.total().shardStats() != null) {
+                shardNum = indexStats.total().shardStats().totalCount();
+            }
+
+            String healthStatus = null;
+            if (indexStats.health() != null) {
+                healthStatus = indexStats.health().jsonValue().toLowerCase();
+
+                switch (healthStatus) {
+                    case "green" -> log.info("索引健康状态为绿色，可以继续使用。");
+                    case "yellow" -> log.warn("索引健康状态为黄色，可能存在部分数据丢失。");
+                    case "red" -> log.error("索引健康状态为红色，存在严重问题，请尽快处理。");
+                    default -> log.error("未知的索引健康状态：" + healthStatus);
+                }
+            }
+
+            log.debug("索引名称: {}, 存储大小: {}, 文档数量: {}, 分片数: {}, 健康状态: {}" , indexName1, storageSize, docCount, shardNum, healthStatus);
+
+            result.add(new IndexInfoDto(indexName1, storageSize, (int) docCount, (int) shardNum, healthStatus));
+        }
+
+        return result ;
+    }
+
+    /**
+     * 判断索引是否存在
+     *
+     * @param indexName
+     * @return
+     * @throws IOException
+     */
+    public boolean hasIndex(String indexName) throws IOException {
+        BooleanResponse exists = client.indices().exists(d -> d.index(indexName));
+        return exists.value();
     }
 
     @SneakyThrows
@@ -152,7 +235,8 @@ public class ElasticsearchDocumentServiceImpl implements IElasticsearchDocumentS
      * @param indexType  索引类型
      * @return 生成的索引名称
      */
-    private String generateIndexName(String indexBase, String indexType) {
+    @Override
+    public String generateIndexName(String indexBase, String indexType) {
         String indexName = indexBase;
         DateTimeFormatter formatter;
         if ("daily".equalsIgnoreCase(indexType)) {
