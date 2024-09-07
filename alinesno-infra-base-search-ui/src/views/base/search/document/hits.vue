@@ -20,6 +20,17 @@ function drawBar(dataItems , timeSegments) {
   );
 
   var lineOption = {
+    title: {
+      text: "搜索量统计 76824 hits" , 
+      show: true  , 
+      x: 'right',
+      textStyle: {
+        color: '#222' , 
+        fontSize: 14,
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+      }
+    }, 
     tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -29,7 +40,7 @@ function drawBar(dataItems , timeSegments) {
     grid: {
         left: '1%',
         right: '1%',
-        top: '4%',
+        top: '20%',
         bottom: '3%',
         containLabel: true
     },
@@ -51,7 +62,7 @@ function drawBar(dataItems , timeSegments) {
         {
           name: 'Direct',
           type: 'bar',
-          barWidth: '70%',
+          barWidth: '60%',
           data: dataItems , 
         }
     ]
