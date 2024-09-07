@@ -49,7 +49,7 @@ public class DatasetKnowledgeController extends BaseController<DatasetKnowledgeE
     @Autowired
     private IDocumentParserService documentParserService ;
 
-    @Value("${alinesno.file.local.path:${java.io.tmpdir}")
+    @Value("${alinesno.file.local.path:${java.io.tmpdir}}")
     private String localPath  ;
 
     /**
