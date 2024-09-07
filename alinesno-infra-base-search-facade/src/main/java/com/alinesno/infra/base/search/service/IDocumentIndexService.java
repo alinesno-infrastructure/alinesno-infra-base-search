@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.service;
 
+import com.alinesno.infra.base.search.api.DocumentIndexDto;
 import com.alinesno.infra.base.search.entity.DocumentIndexEntity;
 import com.alinesno.infra.common.facade.services.IBaseService;
 
@@ -11,4 +12,11 @@ import com.alinesno.infra.common.facade.services.IBaseService;
  */
 
 public interface IDocumentIndexService extends IBaseService<DocumentIndexEntity> {
+
+    /**
+     * 创建文档索引
+     * @param documentIndexEntity
+     */
+    void createDocumentIndex(DocumentIndexDto documentIndexEntity);
+
 }
