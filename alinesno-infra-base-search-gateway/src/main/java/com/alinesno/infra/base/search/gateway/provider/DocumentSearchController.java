@@ -2,6 +2,7 @@ package com.alinesno.infra.base.search.gateway.provider;
 
 
 import cn.hutool.json.JSONUtil;
+import com.alinesno.infra.base.search.api.IndexInfoDto;
 import com.alinesno.infra.base.search.api.SearchRequestDto;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
@@ -38,6 +39,15 @@ public class DocumentSearchController {
 
         elasticsearchService.saveJsonObject(indexBase , indexType , jsonObject) ;
         return AjaxResult.success("保存到Elasticsearch成功");
+    }
+
+    /**
+     * 获取到索引的信息
+     */
+    @GetMapping("/getIndexInfo")
+    public AjaxResult getIndexInfo(@RequestParam String indexName) {
+        List<IndexInfoDto> indexInfo = elasticsearchService.getIndexInfo(indexName);
+        return AjaxResult.success(indexInfo);
     }
 
     /**
