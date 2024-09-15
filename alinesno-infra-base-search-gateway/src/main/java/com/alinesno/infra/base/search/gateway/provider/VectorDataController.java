@@ -2,14 +2,16 @@ package com.alinesno.infra.base.search.gateway.provider;
 
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.util.IdUtil;
+import com.alinesno.infra.base.search.api.RequestDatasetDto;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.enums.FileTypeEnums;
-import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.Gson;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -104,29 +106,72 @@ public class VectorDataController {
 
         log.debug("datasetName = {} , datasetDesc = {}" , datasetName , datasetDesc);
 
+        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
+        long datasetId = IdUtil.getSnowflakeNextId() ;
+
+        log.debug("currentUserId = {}" , currentUserId);
+
+        // 生成唯一的标识
+        String collectionName = IdUtil.nanoId(8) ;
+
+        VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, currentUserId , collectionName , datasetDesc);
+        return AjaxResult.success("创建数据集成功." , entity.getId()) ;
+    }
+
+    /**
+     * 创建数据集
+     * @return
+     */
+    @PostMapping("/createDatasetByRole")
+    public AjaxResult createDatasetByRole(@RequestBody RequestDatasetDto dto){
+
+        String datasetName = dto.getDatasetName() ;
+        String datasetDesc = dto.getDatasetDesc() ;
+        String collectionName = dto.getCollectionName() ;
+        long ownerId = dto.getOwnerId() ;
+
+        VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, ownerId , collectionName , datasetDesc);
+        return AjaxResult.success("创建数据集成功." , entity.getId()) ;
+    }
+
+    /**
+     * 获取到数据集
+     * @param datasetName
+     * @param ownerId
+     * @param collectionName
+     * @param datasetDesc
+     * @return
+     */
+    private VectorDatasetEntity getVectorDatasetEntity(String datasetName,
+                                                       long ownerId ,
+                                                       String collectionName ,
+                                                       String datasetDesc) {
+
+        LambdaQueryWrapper<VectorDatasetEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(VectorDatasetEntity::getCollectionName, collectionName);
+
+        // 如果已经存在则直接返回entity
+        if(vectorDatasetService.count(queryWrapper) > 0){
+            return vectorDatasetService.getOne(queryWrapper);
+        }
+
         VectorDatasetEntity entity = new VectorDatasetEntity() ;
         entity.setName(datasetName);
         entity.setDescription(datasetDesc);
 
-        // 生成唯一的标识
-        String collectionName = CollectionUtils.generateUniqueString() ;
         String description = entity.getDescription() ;
         int shardsNum = 1 ;
 
-        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
-        log.debug("currentUserId = {}" , currentUserId);
-
         entity.setDatasetSize(0);
         entity.setAccessPermission("person");
-        entity.setOwnerId(currentUserId);
+        entity.setOwnerId(ownerId);
         entity.setCollectionName(collectionName);
 
         vectorDatasetService.buildCreateCollectionParam(collectionName, description, shardsNum);
 
         log.debug("buildCreateCollectionParam = " + collectionName);
         vectorDatasetService.save(entity);
-
-        return AjaxResult.success("创建数据集成功." , entity.getId()) ;
+        return entity;
     }
 
 }
