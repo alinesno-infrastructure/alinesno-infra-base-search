@@ -65,11 +65,6 @@ public class VectorDatasetEntity extends InfraBaseEntity {
     @TableField(value = "dataset_size")
     private int datasetSize;
 
-//    @ColumnComment("数据集路径")
-//    @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 50)
-//    @TableField(value = "dataset_path")
-//    private String datasetPath;
-
     @ColumnComment("访问权限")
     @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 32)
     @TableField(value = "access_permission")
@@ -94,10 +89,5 @@ public class VectorDatasetEntity extends InfraBaseEntity {
     @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 256)
     @TableField(value = "preprocessing_info")
     private String preprocessingInfo;
-
-//    @ColumnComment("向量数据")
-//    @ColumnType(value = MySqlTypeConstant.VARCHAR, length = 50)
-//    @TableField(value = "vectors")
-//    private byte[] vectors;
 
 }
