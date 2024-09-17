@@ -1,6 +1,13 @@
 package com.alinesno.infra.base.search.service.vector;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alinesno.infra.base.search.adapter.consumer.RerankConsumer;
+import com.alinesno.infra.base.search.adapter.consumer.dto.Document;
+import com.alinesno.infra.base.search.adapter.consumer.dto.RerankOutput;
+import com.alinesno.infra.base.search.adapter.consumer.dto.Result;
+import com.alinesno.infra.base.search.adapter.consumer.dto.TextRerankRequest;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.mapper.VectorDatasetMapper;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
@@ -8,13 +15,19 @@ import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
 import com.alinesno.infra.base.search.vector.service.IPgVectorService;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 应用构建Service业务层处理
@@ -29,6 +42,18 @@ public class PgVectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEn
 
     @Autowired
     private IPgVectorService pgVectorService;
+
+    @Autowired
+    private RerankConsumer rerankConsumer;
+
+    @Value("${alinesno.base.search.dashscope.api-key:}")
+    private String apiKey;
+
+    @Value("${alinesno.base.search.dashscope.rerank-model-name:gte-rerank}")
+    private String modelName ;
+
+    private static final int MAX_RESULTS = 5; // 最大结果数量
+    private static final Gson gson = new Gson() ;
 
     @Async
     @Override
@@ -66,7 +91,10 @@ public class PgVectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEn
 
     @Override
     public List<DocumentVectorBean> search(VectorSearchDto dto) {
-        return pgVectorService.queryVectorDocument(dto.getCollectionName() , dto.getSearchText() , dto.getTopK()) ;
+        List<DocumentVectorBean> list =  pgVectorService.queryVectorDocument(dto.getCollectionName() , dto.getSearchText() , dto.getTopK()) ;
+
+        // 根据分数重新排序
+        return list.stream().sorted((o1, o2) -> Float.compare(o2.getScore(), o1.getScore())).collect(Collectors.toList());
     }
 
     @Override
@@ -77,6 +105,88 @@ public class PgVectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEn
     @Override
     public String getVectorEngine() {
         return "pgvector" ;
+    }
+
+    /**
+     * 重新排序搜索结果
+     * 此方法通过对初步搜索结果进行深度分析，重新排序文档，以提供更相关的文档在前
+     *
+     * @param dto 包含搜索参数的数据传输对象
+     * @return 重新排序后的文档列表，按相关性排序
+     */
+    @Override
+    public List<DocumentVectorBean> rerankSearch(VectorSearchDto dto) {
+        // 初始搜索，获取初步的搜索结果
+        List<DocumentVectorBean> topksList = search(dto);
+
+        // 获取查询文档，如果搜索结果为空，则为null
+        DocumentVectorBean queryDocument = topksList.isEmpty() ? null : topksList.get(0);
+
+        // 将搜索结果的文档内容转换为字符串列表
+        List<String> arrayDocument = topksList.stream()
+                    .map(DocumentVectorBean::getDocument_content)
+                    .toList();
+
+        // 记录调试信息，关于搜索结果的数量
+        log.debug("topsList size = {}", topksList.size());
+
+        // 准备重新排序请求
+        TextRerankRequest request = new TextRerankRequest();
+        request.setModel(modelName);
+        request.setInput(new TextRerankRequest.Input());
+        request.getInput().setQuery(dto.getSearchText());
+        request.getInput().setDocuments(arrayDocument);
+        request.setParameters(new TextRerankRequest.Parameters());
+        request.getParameters().setReturn_documents(true);
+        request.getParameters().setTop_n(MAX_RESULTS);
+
+        // 发起重新排序请求并处理响应
+        try {
+            String output = rerankConsumer.rerank(request, "Bearer " + apiKey);
+            RerankOutput rerankOutput = gson.fromJson(output, RerankOutput.class);
+
+            // 记录调试信息，关于输出内容和重新排序结果的数量
+            log.debug("output = {}", "[REDACTED]");
+            log.debug("rerankOutput size = {}", rerankOutput.getOutput().getResults().size());
+
+            // 构建重新排序后的文档列表
+            List<DocumentVectorBean> rerankTopksList = new ArrayList<>();
+            int pageCount = 1;
+            for (Result result : rerankOutput.getOutput().getResults()) {
+                if (pageCount > MAX_RESULTS) break;
+                DocumentVectorBean bean = createRerankedDocumentBean(queryDocument, result, pageCount++);
+                rerankTopksList.add(bean);
+            }
+
+            // 返回按相关性降序排列的重新排序后的文档列表
+            return rerankTopksList.stream()
+                    .sorted(Comparator.comparing(DocumentVectorBean::getScore).reversed())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            // 捕获并记录重新排序过程中的异常
+            log.error("Error during reranking: ", e);
+            throw e;
+        }
+    }
+
+    /**
+     * 创建重新排序后的文档对象
+     * 此方法复制查询文档的属性，并根据重新排序的结果更新特定字段
+     *
+     * @param queryDocument 查询文档，可能为null
+     * @param result 重新排序的结果项
+     * @param pageCount 当前结果项的页码
+     * @return 更新后的文档对象
+     */
+    private DocumentVectorBean createRerankedDocumentBean(DocumentVectorBean queryDocument, Result result, int pageCount) {
+        DocumentVectorBean bean = new DocumentVectorBean();
+        // 复制查询文档的属性到新的文档对象
+        BeanUtils.copyProperties(queryDocument, bean);
+        // 根据重新排序结果更新文档内容和分数
+        bean.setDocument_content(result.getDocument().getText());
+        bean.setScore((float) result.getRelevance_score());
+        bean.setPage(pageCount);
+        return bean;
     }
 
 }
