@@ -1,6 +1,5 @@
 package com.alinesno.infra.base.search.service.impl;
 
-import com.alinesno.infra.base.search.constants.SearchConstants;
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
 import com.alinesno.infra.base.search.mapper.DatasetKnowledgeMapper;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
@@ -9,6 +8,7 @@ import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.core.service.impl.IBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +23,9 @@ import java.util.List;
 @Service
 public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntity, DatasetKnowledgeMapper> implements IDatasetKnowledgeService {
 
+    @Value("${alinesno.base.search.document.max-segment-length:1024}")
+    private int maxSegmentLength ;
+
     @Autowired
     private IDocumentParserService documentParserService ;
 
@@ -33,8 +36,7 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
     public void parserDocument(Long datasetId, List<String> sentenceList, String fileName, String fileType) {
 
         // 从DataSet里面获取到长度
-
-        sentenceList = documentParserService.documentParser( sentenceList.get(0) , SearchConstants.MAX_SEGMENT_LENGTH) ;
+        sentenceList = documentParserService.documentParser(sentenceList.get(0) , maxSegmentLength) ;
 
         DatasetKnowledgeEntity e = new DatasetKnowledgeEntity() ;
         e.setDocumentName(fileName);
@@ -46,7 +48,10 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
 
         save(e) ;
 
-        // 保存到知识库中
-        vectorDatasetService.insertDatasetKnowledge(datasetId, sentenceList , fileName , fileType) ;
+        if(!sentenceList.isEmpty()){
+            sentenceList.forEach(s -> log.debug("sentence = {}" , s));
+            // 保存到知识库中
+            vectorDatasetService.insertDatasetKnowledge(datasetId, sentenceList , fileName , fileType) ;
+        }
     }
 }
