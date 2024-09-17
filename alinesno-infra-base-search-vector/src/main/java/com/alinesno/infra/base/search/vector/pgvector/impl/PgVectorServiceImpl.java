@@ -1,6 +1,8 @@
 package com.alinesno.infra.base.search.vector.pgvector.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.alinesno.infra.base.search.adapter.consumer.RerankConsumer;
+import com.alinesno.infra.base.search.adapter.consumer.dto.TextRerankRequest;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.service.IPgVectorService;
 import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
@@ -14,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +32,7 @@ public class PgVectorServiceImpl implements IPgVectorService {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private DashScopeEmbeddingUtils dashScopeEmbeddingUtils ;
+    private DashScopeEmbeddingUtils dashScopeEmbeddingUtils;
 
     @SneakyThrows
     @Override
@@ -110,7 +113,7 @@ public class PgVectorServiceImpl implements IPgVectorService {
             results.add(documentVectorBean);
         }
 
-        return results;
+          return results;
     }
 
     @Override
