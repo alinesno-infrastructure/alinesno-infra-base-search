@@ -85,4 +85,9 @@ public class MilvusVectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatas
         return "milvus" ;
     }
 
+    @Override
+    public List<DocumentVectorBean> rerankSearch(VectorSearchDto dto) {
+        return null;
+    }
+
 }
