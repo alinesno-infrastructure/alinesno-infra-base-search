@@ -1,11 +1,16 @@
 package com.alinesno.infra.base.search.service.impl;
 
 import com.alinesno.infra.base.search.service.IDocumentParserService;
-import com.alinesno.infra.base.search.utils.DocumentParser;
 import com.alinesno.infra.base.search.utils.parse.ExcelParser;
 import com.alinesno.infra.base.search.utils.parse.MarkdownParser;
 import com.alinesno.infra.base.search.utils.parse.PDFParser;
 import com.alinesno.infra.base.search.utils.parse.WordParser;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.openai.OpenAiTokenizer;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
@@ -13,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,7 +30,17 @@ public class DocumentParserServiceImpl implements IDocumentParserService {
 
     @Override
     public List<String> documentParser(String text, int maxLength) {
-        return DocumentParser.parseDocument(text , maxLength);
+
+        if(text == null || text.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        Document document = new Document(text);
+
+        DocumentSplitter splitter = DocumentSplitters.recursive(maxLength,10,new OpenAiTokenizer());
+        List<TextSegment> segments = splitter.split(document);
+
+        return segments.stream().map(TextSegment::text).toList();
     }
 
     /**
@@ -80,5 +96,11 @@ public class DocumentParserServiceImpl implements IDocumentParserService {
     public List<String> parseExcel(File file) {
         String text = ExcelParser.parse(file.getAbsolutePath()) ;
         return List.of(text);
+    }
+
+    @SneakyThrows
+    @Override
+    public List<String> parseTxt(File targetFile) {
+        return Collections.singletonList(FileUtils.readFileToString(targetFile, Charset.defaultCharset()));
     }
 }
