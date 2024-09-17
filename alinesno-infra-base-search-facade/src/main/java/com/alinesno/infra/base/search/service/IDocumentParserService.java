@@ -46,4 +46,11 @@ public interface IDocumentParserService {
      * 解析Excel文件并返回文本内容列表
      */
     List<String> parseExcel(File file);
+
+    /**
+     * 解析txt文本
+     * @param targetFile
+     * @return
+     */
+    List<String> parseTxt(File targetFile);
 }
