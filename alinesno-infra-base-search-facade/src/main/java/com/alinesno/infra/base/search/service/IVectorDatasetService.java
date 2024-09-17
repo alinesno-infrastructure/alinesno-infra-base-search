@@ -47,4 +47,11 @@ public interface IVectorDatasetService extends IBaseService<VectorDatasetEntity>
      * @return
      */
     String getVectorEngine();
+
+    /**
+     * 重新排序搜索
+     * @param dto
+     * @return
+     */
+    List<DocumentVectorBean> rerankSearch(VectorSearchDto dto);
 }
