@@ -44,11 +44,13 @@ sa-token:
 #-Dalinesno.base.search.pgvector.username=postgres
 #-Dalinesno.base.search.pgvector.password=123456
 
-alinesno:
-  base:
+alinesno.base:
     search:
+      document:
+        max-segment-length: 2048
       dashscope:
         api-key: xxxxx
+        rerank-model-name: xxxx
       elasticsearch:
         host: 192.168.101.18:9200
         username: elastic
