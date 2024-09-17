@@ -1,5 +1,7 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
+import com.alinesno.infra.base.search.adapter.consumer.RerankConsumer;
+import com.alinesno.infra.base.search.adapter.consumer.dto.TextRerankRequest;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
@@ -42,5 +44,21 @@ public class VectorSearchController {
         return R.ok(topksList);
 
     }
+
+    /**
+     * 使用rerank排序处理
+     */
+    @PostMapping("/rerankSearch")
+    public R<List<DocumentVectorBean>> rerankSearch(@RequestBody VectorSearchDto dto) {
+
+        long datasetId = dto.getDatesetId() ;
+        VectorDatasetEntity datasetEntity = datasetService.getById(datasetId) ;
+        dto.setCollectionName(datasetEntity.getCollectionName());
+
+        List<DocumentVectorBean> topksList = datasetService.rerankSearch(dto);
+        return R.ok(topksList);
+
+    }
+
 
 }
