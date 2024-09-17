@@ -4,6 +4,7 @@ import com.alibaba.dashscope.embeddings.*;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.alibaba.fastjson.JSON;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ import java.util.zip.GZIPInputStream;
 @Slf4j
 @NoArgsConstructor
 @Setter
+@Getter
 public class DashScopeEmbeddingUtils {
 
     private String apiKey ;
@@ -75,8 +77,7 @@ public class DashScopeEmbeddingUtils {
 
         List<TextEmbeddingResultItem> embeddingResultItems = embedding.getOutput().getEmbeddings() ;
         TextEmbeddingResultItem embeddingResultItem = embeddingResultItems.get(0) ;
-        List<Double> embeddingVector = embeddingResultItem.getEmbedding() ;
-        return embeddingVector;
+        return embeddingResultItem.getEmbedding();
     }
 
     /**
