@@ -77,4 +77,9 @@ public class EsVectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEn
         return "elasticsearch" ;
     }
 
+    @Override
+    public List<DocumentVectorBean> rerankSearch(VectorSearchDto dto) {
+        return null;
+    }
+
 }
