@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.api.RequestDatasetDto;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.enums.FileTypeEnums;
+import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
@@ -24,6 +25,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static io.netty.handler.codec.dns.DnsRecordType.TXT;
 
 /**
  * Milvus数据服务控制器，用于定义对Milvus数据库进行操作的REST API接口。
@@ -74,6 +77,7 @@ public class VectorDataController {
         assert constants != null;
 
         sentenceList = switch (constants) {
+            case TXT ->  documentParserService.parseTxt(targetFile);
             case PDF ->  documentParserService.parsePDF(targetFile);
             case MD -> documentParserService.parseMD(targetFile);
             case EXCEL -> documentParserService.parseExcel(targetFile);
@@ -107,12 +111,9 @@ public class VectorDataController {
         log.debug("datasetName = {} , datasetDesc = {}" , datasetName , datasetDesc);
 
         long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
-        long datasetId = IdUtil.getSnowflakeNextId() ;
-
         log.debug("currentUserId = {}" , currentUserId);
 
-        // 生成唯一的标识
-        String collectionName = IdUtil.nanoId(8) ;
+        String collectionName = CollectionUtils.getCollectionName() ;
 
         VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, currentUserId , collectionName , datasetDesc);
         return AjaxResult.success("创建数据集成功." , entity.getId()) ;
