@@ -1,11 +1,10 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
+import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
-import com.alinesno.infra.base.search.gateway.utils.CollectionUtils;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
-import com.alinesno.infra.base.search.vector.service.IMilvusDataService;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
@@ -85,7 +84,7 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
     public AjaxResult save(Model model, @RequestBody VectorDatasetEntity entity) throws Exception {
 
         // 生成唯一的标识
-        String collectionName = CollectionUtils.generateUniqueString() ;
+        String collectionName = IdUtil.nanoId(8) ; // CollectionUtils.generateUniqueString() ;
         String description = entity.getDescription() ;
         int shardsNum = 1 ;
 
