@@ -1,7 +1,5 @@
 package com.alinesno.infra.base.search.gateway.provider;
 
-import com.alinesno.infra.base.search.adapter.consumer.RerankConsumer;
-import com.alinesno.infra.base.search.adapter.consumer.dto.TextRerankRequest;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
