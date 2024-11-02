@@ -31,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -50,7 +49,7 @@ public class ElasticsearchDocumentServiceImpl implements IElasticsearchDocumentS
                 log.debug("索引创建成功：{}", indexResponse);
             }
         } catch (IOException e) {
-            log.error("索引创建失败：{}", e.getMessage());
+            log.error("索引创建失败", e);
             throw new ExploException(HttpCode.INDEX_CREATE_ERROR, "创建索引失败");
         }
     }
