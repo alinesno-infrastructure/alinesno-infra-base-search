@@ -26,4 +26,11 @@ public interface IDatasetKnowledgeService extends IBaseService<DatasetKnowledgeE
      * @param fileType 文件类型，影响解析方式或存储格式
      */
     void parserDocument(Long datasetId, List<String> sentenceList, String fileName, String fileType);
+
+    /**
+     * 批量保存到数据集
+     * @param datasetId
+     * @param sentenceList
+     */
+    void saveBatchToDataset(Long datasetId, List<String> sentenceList , String fileName);
 }
