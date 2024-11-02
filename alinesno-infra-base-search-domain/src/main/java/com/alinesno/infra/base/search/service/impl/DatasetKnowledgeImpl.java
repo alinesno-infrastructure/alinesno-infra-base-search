@@ -1,6 +1,7 @@
 package com.alinesno.infra.base.search.service.impl;
 
 import com.alinesno.infra.base.search.entity.DatasetKnowledgeEntity;
+import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.mapper.DatasetKnowledgeMapper;
 import com.alinesno.infra.base.search.service.IDatasetKnowledgeService;
 import com.alinesno.infra.base.search.service.IDocumentParserService;
@@ -10,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +26,7 @@ import java.util.List;
 @Service
 public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntity, DatasetKnowledgeMapper> implements IDatasetKnowledgeService {
 
-    @Value("${alinesno.base.search.document.max-segment-length:1024}")
+    @Value("${alinesno.base.search.document.max-segment-length:512}")
     private int maxSegmentLength ;
 
     @Autowired
@@ -53,5 +56,23 @@ public class DatasetKnowledgeImpl extends IBaseServiceImpl<DatasetKnowledgeEntit
             // 保存到知识库中
             vectorDatasetService.insertDatasetKnowledge(datasetId, sentenceList , fileName , fileType) ;
         }
+    }
+
+    @Override
+    public void saveBatchToDataset(Long datasetId, List<String> sentenceList , String fileName) {
+
+        // 查询datasetId是否存在数据库
+        VectorDatasetEntity entity = vectorDatasetService.getById(datasetId) ;
+        Assert.isTrue(entity != null , "datasetId is not exists");
+
+        // 处理文本长度问题
+        List<String> newSentenceList = new ArrayList<>() ;
+        sentenceList.forEach(s -> {
+            List<String> list = documentParserService.documentParser(s , maxSegmentLength) ;
+            newSentenceList.addAll(list) ;
+        }) ;
+
+        String fileType = "txt" ; // 文本格式
+        vectorDatasetService.insertDatasetKnowledge(datasetId, newSentenceList , fileName , fileType) ;
     }
 }
