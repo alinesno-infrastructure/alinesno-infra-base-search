@@ -1,4 +1,4 @@
-import { login, logout, getInfo , goSsoAuthUrl , doLoginByTicket , isSsoLogin } from '@/api/login'
+import { login, ssoLogout , logout, getInfo , goSsoAuthUrl , doLoginByTicket , isSsoLogin } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'
 
@@ -7,13 +7,16 @@ const useUserStore = defineStore(
   {
     state: () => ({
       token: getToken(),
+      nickName: '' ,
       name: '',
       avatar: '',
       roles: [],
+      org: {},
+      dept: [],
       permissions: []
     }),
     actions: {
-      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> sso_start >>>>>>>>>>>>>>>>.
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> sso_start >>>>>>>>>>>>>>>>.
       // 重定向至认证中心
       goSsoAuthUrl(clientLoginUrl) {
         return new Promise((resolve, reject) => {
@@ -65,6 +68,19 @@ const useUserStore = defineStore(
       getInfo() {
         return new Promise((resolve, reject) => {
           getInfo().then(res => {
+            // const user = res.user
+            // const avatar = (user.avatar == "" || user.avatar == null) ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
+
+            // if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+            //   this.roles = res.roles
+            //   this.permissions = res.permissions
+            // } else {
+            //   this.roles = ['ROLE_DEFAULT']
+            // }
+            // this.name = user.userName
+            // this.avatar = avatar;
+            // resolve(res)
+
             const user = res.user
             const avatar = (user.avatar == "" || user.avatar == null) ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
 
@@ -74,9 +90,16 @@ const useUserStore = defineStore(
             } else {
               this.roles = ['ROLE_DEFAULT']
             }
+
             this.name = user.userName
+            this.nickName = user.nickName
+
             this.avatar = avatar;
+            this.dept = user.dept
+            this.org = user.org
+
             resolve(res)
+
           }).catch(error => {
             reject(error)
           })
@@ -89,6 +112,17 @@ const useUserStore = defineStore(
             this.token = ''
             this.roles = []
             this.permissions = []
+            removeToken()
+            resolve()
+          }).catch(error => {
+            reject(error)
+          })
+        })
+      },
+      // 单点登陆退出
+      ssoLogOut() {
+        return new Promise((resolve, reject) => {
+          ssoLogout().then(() => {
             removeToken()
             resolve()
           }).catch(error => {
