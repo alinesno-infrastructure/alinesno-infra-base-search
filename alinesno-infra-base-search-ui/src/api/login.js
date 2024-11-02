@@ -1,44 +1,22 @@
 import request from '@/utils/request'
 
-// 登录方法
-export function login(username, password, code, uuid) {
-  const data = {
-    username,
-    password,
-    code,
-    uuid
-  }
-  return request({
-    url: '/login',
-    headers: {
-      isToken: false
-    },
-    method: 'post',
-    data: data
-  })
-}
-
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> sso_start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // 查询当前会话是否登录
 export function isSsoLogin(){
   return request({
     url: '/sso/isLogin',
-    headers: {
-      "satoken": "Bearer " + localStorage.getItem("satoken")
-    },
+    // headers: {
+    //   "satoken": "Bearer " + localStorage.getItem("satoken")
+    // },
     method: 'get'
   })
 }
 
 // 用户退出
-export function ssoLogout(satoken) {
+export function ssoLogout() {
   return request({
-    url: '/sso/logout',
-    headers: {
-      isToken: false
-    },
-    method: 'post',
-    data: { satoken}
+    url: '/sso/logout' ,
+    method: 'get'
   })
 }
 
@@ -59,6 +37,24 @@ export function goSsoAuthUrl(clientLoginUrl){
 }
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> sso_start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+
+// 登录方法
+export function login(username, password, code, uuid) {
+  const data = {
+    username,
+    password,
+    code,
+    uuid
+  }
+  return request({
+    url: '/login',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
 
 // 注册方法
 export function register(data) {
