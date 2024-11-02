@@ -2,6 +2,7 @@ package com.alinesno.infra.base.search.gateway.provider;
 
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONUtil;
 import com.alinesno.infra.base.search.api.RequestDatasetDto;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.enums.FileTypeEnums;
@@ -12,12 +13,12 @@ import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.Gson;
-import io.jsonwebtoken.lang.Assert;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static io.netty.handler.codec.dns.DnsRecordType.TXT;
 
 /**
  * Milvus数据服务控制器，用于定义对Milvus数据库进行操作的REST API接口。
@@ -98,6 +97,23 @@ public class VectorDataController {
         service.parserDocument(datasetId, sentenceList, fileName , fileType);
 
         return AjaxResult.success("上传成功",fileName) ;
+    }
+
+    /**
+     * 批量多条数据到向量库
+     */
+    @PostMapping("/saveBatch")
+    public AjaxResult saveToBatch(@RequestBody String objects ,
+                                  @RequestParam long datasetId ,
+                                  @RequestParam String fileName) {
+
+        Assert.isTrue(datasetId > 0 , "未获取到对象ID");
+        Assert.isTrue(objects != null , "未获取到对象数据");
+        Assert.isTrue(fileName != null , "未获取到文件名称");
+
+        List<String> objectList = JSONUtil.toList(objects , String.class) ;
+        service.saveBatchToDataset(datasetId , objectList , fileName) ;
+        return AjaxResult.success("保存到向量库"+datasetId+"成功");
     }
 
     /**
