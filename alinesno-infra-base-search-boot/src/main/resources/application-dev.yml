@@ -5,6 +5,7 @@ server:
 spring:
   application:
     name: alinesno-infra-base-search-boot
+    id: 452226530000
   datasource.dynamic:
     primary: mysql
     datasource:
@@ -24,7 +25,7 @@ spring:
 
 # sa-token配置
 sa-token:
-  token-name: satoken
+  token-name: Authorization
   host-path: http://alinesno-infra-base-identity-auth-application.beta.base.infra.linesno.com
   sso:
     auth-url: ${sa-token.host-path}/login
@@ -33,18 +34,21 @@ sa-token:
     slo-url: ${sa-token.host-path}/sso/signout
     get-data-url: ${sa-token.host-path}/sso/getData
   sign:
-    secret-key:
+    secret-key: kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
 
-#-Dalinesno.base.search.dashscope.api-key=xxxxx
-#-Dalinesno.base.search.elasticsearch.host=192.168.101.18
-#-Dalinesno.base.search.elasticsearch.port=9092
-#-Dalinesno.base.search.elasticsearch.username=elastic
-#-Dalinesno.base.search.elasticsearch.password=123456
-#-Dalinesno.base.search.pgvector.jdbc-url=jdbc:postgresql://192.168.101.18:5432/postgres
-#-Dalinesno.base.search.pgvector.username=postgres
-#-Dalinesno.base.search.pgvector.password=123456
-
-alinesno.base:
+# alinesno配置
+alinesno:
+  security:
+    # 排除路径
+    excludes:
+      - /sso/**
+      - /logout
+      - /api/base/search/**
+      - /v1/api/infra/base/im/chat/displayImage/*
+  infra:
+    gateway:
+      host: http://alinesno-infra-base-gateway-proxy-application.beta.base.infra.linesno.com
+  base:
     search:
       document:
         max-segment-length: 2048
