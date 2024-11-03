@@ -44,6 +44,7 @@ alinesno:
       - /sso/**
       - /logout
       - /api/base/search/**
+      - /api/infra/base/search/**
       - /v1/api/infra/base/im/chat/displayImage/*
   infra:
     gateway:
