@@ -28,11 +28,17 @@
     <modules>
         <!-- 应用服务 -->
         <module>alinesno-infra-base-search-facade</module>  <!-- 接口和引用 -->
-        <module>alinesno-infra-base-search-vector</module>  <!-- 向量数据库 -->
-        <module>alinesno-infra-base-search-domain</module>  <!-- 领域服务 -->
         <module>alinesno-infra-base-search-adapter</module> <!-- 适配层 -->
+
+        <module>alinesno-infra-base-search-vector</module>  <!-- 向量数据库 -->
+
+        <module>alinesno-infra-base-search-memory</module>  <!-- 数据记忆库 -->
+
+        <module>alinesno-infra-base-search-domain</module>  <!-- 领域服务 -->
+
         <module>alinesno-infra-base-search-gateway</module>  <!-- 接口服务 -->
         <module>alinesno-infra-base-search-client</module>  <!-- 对外引用 -->
+
         <module>alinesno-infra-base-search-boot</module>  <!-- 启动服务 -->
 
         <!-- 前端服务
