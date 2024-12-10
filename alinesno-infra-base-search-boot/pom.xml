@@ -41,6 +41,11 @@
 			<artifactId>alinesno-infra-base-search-gateway</artifactId>
 			<version>${revision}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.alinesno.infra.base</groupId>
+			<artifactId>alinesno-infra-base-search-memory</artifactId>
+			<version>${revision}</version>
+		</dependency>
 
 		<!-- 多数据库源支持 -->
 		<dependency>
@@ -51,11 +56,17 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
 
-	</dependencies>
+    </dependencies>
 
 </project>
