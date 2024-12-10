@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    include:
+    - base
+    - security
+    - mybatis
+    - sa-token
+    - contra_repeat_worker
+    - extract_time_worker
+    - get_observation_with_time_worker
+    - get_observation_worker
+    - get_reflection_subject_worker
+    - info_filter_worker
+    - long_contra_repeat_worker
+    - print_memory_worker
+    - update_insight_worker
+    active:
+    - dev
