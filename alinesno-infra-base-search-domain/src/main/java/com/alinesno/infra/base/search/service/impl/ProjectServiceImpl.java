@@ -21,13 +21,13 @@ public class ProjectServiceImpl extends IBaseServiceImpl<ProjectEntity, ProjectM
     private static final String DEFAULT_PROJECT_FIELD = "default" ;
 
     @Override
-    public void initDefaultApp(long userId) {
+    public void initDefaultApp(long orgId) {
 
         String code = IdUtil.nanoId(8);
 
         ProjectEntity project = new ProjectEntity() ;
 
-        project.setOperatorId(userId);
+        project.setOrgId(orgId);
         project.setFieldProp(DEFAULT_PROJECT_FIELD);
 
         project.setProjectName("默认应用");
