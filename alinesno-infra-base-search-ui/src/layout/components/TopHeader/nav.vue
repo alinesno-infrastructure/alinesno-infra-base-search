@@ -34,7 +34,10 @@
           </el-icon>
         </a>
         <a class="header-label-text" target="_blank">
+          <!--
           <img src="http://data.linesno.com/switch_header.png" class="su70ez-0 CB-gLgKdv" alt="" />
+          -->
+          <img :src="userStore.avatar" class="su70ez-0 CB-gLgKdv" alt="" />
         </a>
       </div>
 
