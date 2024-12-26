@@ -4,6 +4,7 @@ import com.alinesno.infra.base.search.memory.prompt.ContraRepeatWorkerPrompt;
 import com.alinesno.infra.base.search.memory.prompt.GetObservationWithTimeWorkerPrompt;
 import com.alinesno.infra.base.search.memory.prompt.UpdateInsightWorkerPrompt;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
+import com.alinesno.infra.common.extend.datasource.enable.EnableInfraDataScope;
 import com.alinesno.infra.common.facade.enable.EnableActable;
 import com.alinesno.infra.common.web.adapter.sso.enable.EnableInfraSsoApi;
 import com.alinesno.infra.common.web.log.aspect.LogAspect;
@@ -22,6 +23,7 @@ import org.springframework.util.unit.DataSize;
 
 @Slf4j
 @EnableScheduling
+@EnableInfraDataScope
 @EnableActable
 @EnableInfraSsoApi
 @MapperScan("com.alinesno.infra.base.search.mapper")
