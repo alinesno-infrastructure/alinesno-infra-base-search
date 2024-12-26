@@ -40,10 +40,10 @@ public class MemoryNode {
     private String content;
 
     // 记忆的键(有多个key存在)
-    private String key;
+    private String keys;
 
     // 记忆的向量表示，用于向量搜索和相似度计算
-    private List<Double> keyVector = new ArrayList<>();
+    private List<Double> keysVector = new ArrayList<>();
 
     // 记忆的值
     private String value;
@@ -67,7 +67,7 @@ public class MemoryNode {
     private String storeStatus = "valid";
 
     // 记忆的向量表示，可能与keyVector有区别，具体视业务逻辑而定
-    private List<Double> vector = new ArrayList<>();
+    private List<Double> contentVector = new ArrayList<>();
 
     // 记忆的时间戳，使用原子长整型生成，确保每个记忆节点的时间戳唯一
     private long timestamp = timestampGenerator.getAndIncrement();
