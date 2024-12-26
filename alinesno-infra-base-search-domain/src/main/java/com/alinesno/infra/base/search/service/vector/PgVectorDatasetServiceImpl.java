@@ -55,7 +55,6 @@ public class PgVectorDatasetServiceImpl extends IBaseServiceImpl<VectorDatasetEn
     private static final int MAX_RESULTS = 5; // 最大结果数量
     private static final Gson gson = new Gson() ;
 
-    @Async
     @Override
     public void insertDatasetKnowledge(Long datasetId, List<String> sentenceList, String fileName, String fileType) {
 
