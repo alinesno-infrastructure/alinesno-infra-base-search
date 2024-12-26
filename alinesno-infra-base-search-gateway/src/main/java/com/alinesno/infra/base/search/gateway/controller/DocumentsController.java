@@ -60,10 +60,16 @@ public class DocumentsController extends BaseController<DocumentsEntity, IDocume
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
 
+        String indexName = request.getParameter("indexName");
+
+        if(indexName == null){
+            return this.toPage(model, this.getFeign(), page);
+        }
+
         TableDataInfo tableDataInfo = this.toPage(model, this.getFeign(), page);
 
         SearchRequestDto dto = new SearchRequestDto() ;
-        dto.setIndexBase("products");
+        dto.setIndexBase(indexName);
         dto.setFieldName("email");
         dto.setQueryText("@example.com");
         dto.setCurrentPage(page.getPageNum());
