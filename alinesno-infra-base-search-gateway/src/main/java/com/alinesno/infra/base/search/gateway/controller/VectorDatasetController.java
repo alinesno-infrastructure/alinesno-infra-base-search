@@ -1,14 +1,18 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.dto.VectorSearchDto;
+import com.alinesno.infra.common.extend.datasource.annotation.DataPermissionSave;
+import com.alinesno.infra.common.extend.datasource.annotation.DataPermissionScope;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.alinesno.infra.common.facade.response.R;
+import com.alinesno.infra.common.web.adapter.login.account.CurrentAccountJwt;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
 import io.swagger.annotations.Api;
 import jakarta.annotation.Resource;
@@ -52,6 +56,7 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
      * @param page DatatablesPageBean对象
      * @return 包含DataTables数据的TableDataInfo对象
      */
+    @DataPermissionScope
     @ResponseBody
     @PostMapping("/datatables")
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
@@ -80,15 +85,14 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
 
     }
 
+    @DataPermissionSave
     @Override
     public AjaxResult save(Model model, @RequestBody VectorDatasetEntity entity) throws Exception {
 
         // 生成唯一的标识
-        String collectionName = IdUtil.nanoId(8) ; // CollectionUtils.generateUniqueString() ;
-        String description = entity.getDescription() ;
-        int shardsNum = 1 ;
+        String collectionName = IdUtil.nanoId(8) ;
 
-        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
+        long currentUserId = CurrentAccountJwt.getUserId();
         log.debug("currentUserId = {}" , currentUserId);
 
         entity.setDatasetSize(0);
@@ -96,9 +100,10 @@ public class VectorDatasetController extends BaseController<VectorDatasetEntity,
         entity.setOwnerId(currentUserId);
         entity.setCollectionName(collectionName);
 
-        vectorDatasetService.buildCreateCollectionParam(collectionName, description, shardsNum);
-
-        log.debug("buildCreateCollectionParam = " + collectionName);
+        // String description = entity.getDescription() ;
+        // int shardsNum = 1 ;
+        // vectorDatasetService.buildCreateCollectionParam(collectionName, description, shardsNum);
+        // log.debug("buildCreateCollectionParam = " + collectionName);
 
         return super.save(model, entity);
     }
