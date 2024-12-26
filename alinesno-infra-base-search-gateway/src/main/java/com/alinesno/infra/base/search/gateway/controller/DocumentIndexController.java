@@ -6,6 +6,7 @@ import com.alinesno.infra.base.search.entity.DocumentIndexEntity;
 import com.alinesno.infra.base.search.service.IDocumentIndexService;
 import com.alinesno.infra.base.search.vector.service.IElasticsearchDocumentService;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
+import com.alinesno.infra.common.extend.datasource.annotation.DataPermissionScope;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
 import com.alinesno.infra.common.facade.response.AjaxResult;
@@ -49,6 +50,7 @@ public class DocumentIndexController extends BaseController<DocumentIndexEntity,
      * @param page DatatablesPageBean对象。
      * @return 包含DataTables数据的TableDataInfo对象。
      */
+    @DataPermissionScope
     @ResponseBody
     @PostMapping("/datatables")
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
