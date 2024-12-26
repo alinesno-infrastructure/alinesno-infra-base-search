@@ -38,8 +38,8 @@ import OperationWorkspaceApps from './operation-workspace/apps.vue'
 import OperationWorkspaceService from './operation-workspace/service.vue'
 
 const currentEnvClusterObj = ref({
-  appName:'分布式全文检索服务',
-  clusterName: '海量全文检索和向量检索服务，数据资产和知识库管理'  , 
+  appName:'向量库全文检索服务',
+  clusterName: '海量全文检索和向量检索服务，提供智能体记忆记录能力，整合数据资产和知识库管理'  , 
   apiServerUrl: 'http://portal.infra.linesno.com'
 }) 
 
