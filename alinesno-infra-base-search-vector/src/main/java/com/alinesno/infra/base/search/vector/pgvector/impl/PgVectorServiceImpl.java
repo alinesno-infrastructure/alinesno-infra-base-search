@@ -1,6 +1,7 @@
 package com.alinesno.infra.base.search.vector.pgvector.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.service.IPgVectorService;
 import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.lang.exception.RpcServiceRuntimeException;
+import java.security.KeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,9 @@ import java.util.Map;
 @Component
 public class PgVectorServiceImpl implements IPgVectorService {
 
+    // 变量转换成大写
+    private static final String ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME = "alinesno_search_vector_document";
+
     @Resource(name = "pgvectorJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
@@ -34,19 +40,21 @@ public class PgVectorServiceImpl implements IPgVectorService {
     @SneakyThrows
     @Override
     public List<DocumentVectorBean> queryDocument(String indexName, String fileName, String queryText, int size) {
+
         // 获取查询向量
         List<Double> embeddingVector = dashScopeEmbeddingUtils.getEmbeddingDoubles(queryText);
-        Object[] queryParams = new Object[] { indexName, fileName, new PGvector(embeddingVector), size };
+
+        // Object[] queryParams = new Object[] { indexName, fileName, new PGvector(embeddingVector), size };
 
         // 查询语句
         String querySql = "SELECT *, 1 - (document_embedding <=> ?) AS cosine_similarity " +
-                "FROM " + indexName +
-                " WHERE source_file = ? AND (document_title ILIKE ? OR document_content ILIKE ?) " +
+                "FROM " + ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME +
+                " WHERE index_name=? AND source_file = ? AND (document_title ILIKE ? OR document_content ILIKE ?) " +
                 "ORDER BY cosine_similarity DESC LIMIT ?";
 
         // 构建查询条件中的 LIKE 语句
         String likeCondition = "%" + queryText + "%";
-        queryParams = new Object[] { indexName, fileName, likeCondition, likeCondition, new PGvector(embeddingVector), size };
+        Object[] queryParams = new Object[] { indexName, fileName, likeCondition, likeCondition, new PGvector(embeddingVector), size };
 
         // 执行查询
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(querySql, queryParams);
@@ -82,9 +90,13 @@ public class PgVectorServiceImpl implements IPgVectorService {
     public List<DocumentVectorBean> queryVectorDocument(String indexName, String queryText, int size) {
 
         List<Double> embeddingVector = dashScopeEmbeddingUtils.getEmbeddingDoubles(queryText);
-        Object[] neighborParams = new Object[] { new PGvector(embeddingVector) , size };
+        Object[] neighborParams = new Object[] { new PGvector(embeddingVector) , indexName , size };
 
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * , 1 - (document_embedding <=> ?) AS cosine_similarity FROM "+indexName+" ORDER BY cosine_similarity DESC LIMIT ?", neighborParams );
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "SELECT * , 1 - (document_embedding <=> ?) AS cosine_similarity " +
+                        "FROM "+ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME+" " +
+                        "WHERE index_name=? " +
+                        "ORDER BY cosine_similarity DESC LIMIT ?", neighborParams );
 
         // 将查询结果转换为 DocumentVectorBean 对象列表
         List<DocumentVectorBean> results = new ArrayList<>();
@@ -115,9 +127,10 @@ public class PgVectorServiceImpl implements IPgVectorService {
 
     @Override
     public void createVectorIndex(String indexName) {
-        jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS vector");
 
-        String ddl = "CREATE TABLE IF NOT EXISTS "+indexName+" (\n" +
+        // 调整为只为一个向量库
+        jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS vector");
+        String ddl = "CREATE TABLE IF NOT EXISTS "+ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME+" (\n" +
                 "    id BIGSERIAL PRIMARY KEY,\n" +
                 "    dataset_id BIGINT NOT NULL,\n" +
                 "    index_name VARCHAR(255) NOT NULL,\n" +
@@ -136,7 +149,7 @@ public class PgVectorServiceImpl implements IPgVectorService {
                 ");"  ;
 
         jdbcTemplate.execute(ddl) ;
-        jdbcTemplate.execute("CREATE INDEX ON "+indexName+" USING ivfflat (document_embedding vector_cosine_ops) WITH (lists = 100);");
+        jdbcTemplate.execute("CREATE INDEX ON "+ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME+" USING ivfflat (document_embedding vector_cosine_ops) WITH (lists = 100);");
     }
 
     @SneakyThrows
@@ -151,8 +164,24 @@ public class PgVectorServiceImpl implements IPgVectorService {
 
         // 执行插入操作
         int count = jdbcTemplate.update(
-                "INSERT INTO "+indexName+" " +
-                        "(id, dataset_id, index_name, document_title, document_desc, document_content, document_embedding, token_size, doc_chunk, score, page, source_file, source_url, source_type, author) " +
+                "INSERT INTO "+ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME+" " +
+                        "(" +
+                            "id, " +
+                            "dataset_id, " +
+                            "index_name, " +
+                            "document_title, " +
+                            "document_desc, " +
+                            "document_content, " +
+                            "document_embedding, " +
+                            "token_size, " +
+                            "doc_chunk, " +
+                            "score, " +
+                            "page, " +
+                            "source_file, " +
+                            "source_url, " +
+                            "source_type, " +
+                            "author" +
+                        ") " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 insertParams
         );
@@ -193,7 +222,7 @@ public class PgVectorServiceImpl implements IPgVectorService {
         Object[] updateParams = getObjects(documentVectorBean, embeddingVector);
 
         int count = jdbcTemplate.update(
-                "UPDATE " + indexName + " SET " +
+                "UPDATE " + ALINESNO_SEARCH_VECTOR_DOCUMENT_INDEX_NAME + " SET " +
                         "dataset_id = ?, " +
                         "index_name = ?, " +
                         "document_title = ?, " +
