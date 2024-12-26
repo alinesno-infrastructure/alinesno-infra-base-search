@@ -89,7 +89,13 @@ export const constantRoutes = [
         path: '/base/search/vectorData/parseDataset',
         component: () => import('@/views/base/search/vectorData/parseDataset'),
         name: '/base/search/vectorData/parseDataset',
-        meta: { title: '编辑库管理', icon: 'dashboard', affix: true }
+        meta: { title: '解析向量库管理', icon: 'dashboard', affix: true }
+      },
+      {
+        path: '/base/search/memoryData/index',
+        component: () => import('@/views/base/search/memory/index'),
+        name: '/base/search/memoryData/index',
+        meta: { title: '记忆库管理', icon: 'dashboard', affix: true }
       },
       {
         path: '/base/search/document/index',
