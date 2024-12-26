@@ -24,10 +24,11 @@ const router = useRouter();
 // 菜单列表
 const menuItems = ref([
   {id:'2' , icon:'fa-solid fa-feather' , link:'/base/search/project/index' , desc:'项目管理'},
+  {id:'8' , icon:'fa-solid fa-file-pdf' , link:'/base/search/vectorData/index' , desc:'知识库管理'},
+  {id:'10' , icon:'fa-solid fa-user-ninja' , link:'/base/search/memoryData/index' , desc:'记忆库管理'},
+  {id:'4' , icon:'fa-brands fa-skype' , link:'/base/search/configuration/index' , desc:'服务配置管理'},
   {id:'3' , icon:'fa-solid fa-masks-theater' , link:'/base/search/document/index' , desc:'全文检索查询'},
   {id:'5' , icon:'fa-brands fa-wordpress' , link:'/base/search/indexes/index' , desc:'数据索引管理'},
-  {id:'8' , icon:'fa-solid fa-file-pdf' , link:'/base/search/vectorData/index' , desc:'知识库管理'},
-  {id:'4' , icon:'fa-brands fa-skype' , link:'/base/search/configuration/index' , desc:'服务配置管理'},
   {id:'7' , icon:'fa-solid fa-computer' , link:'/base/search/analyse/index' , desc:'监控管理'},
   {id:'9' , icon:'fa-solid fa-code-pull-request' , link:'/base/search/apiRecord/index' , desc:'请求记录'},
 ]);
