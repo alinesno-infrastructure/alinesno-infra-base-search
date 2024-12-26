@@ -90,4 +90,9 @@ public class VectorDatasetEntity extends InfraBaseEntity {
     @TableField(value = "preprocessing_info")
     private String preprocessingInfo;
 
+    @ColumnComment("是否为记忆库(0知识库|1记忆库)")
+    @ColumnType(value = MySqlTypeConstant.SMALLINT, length = 1)
+    @TableField(value = "is_memory")
+    private int isMemory = 0;
+
 }
