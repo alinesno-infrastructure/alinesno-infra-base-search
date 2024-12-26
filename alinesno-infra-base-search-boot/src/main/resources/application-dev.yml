@@ -5,7 +5,7 @@ server:
 spring:
   application:
     name: alinesno-infra-base-search-boot
-    id: 452226530000
+    id: 1865936259484930048
   datasource.dynamic:
     primary: mysql
     datasource:
