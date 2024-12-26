@@ -69,7 +69,7 @@
         <el-table v-loading="loading" :data="DatasetList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
 
-          <el-table-column label="图标" align="center" width="60px" prop="icon" v-if="columns[0].visible">
+          <el-table-column label="图标" align="center" width="50px" prop="icon" v-if="columns[0].visible">
             <template #default="scope">
               <div class="role-icon">
                 <img :src="'http://data.linesno.com/icons/dataset/dataset_' + (scope.$index + 2) + '.png'" />
@@ -77,7 +77,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="数据集名称" align="left" width="200" key="name" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true">
+          <el-table-column label="数据集名称" align="left" width="250" key="name" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true">
             <template #default="scope">
               <div style="font-size: 15px;font-weight: 500;color: #3b5998;">
                 <router-link :to="'/base/search/vectorData/parseDataset?datasetId=' + scope.row.id" >
@@ -89,14 +89,10 @@
                </div>
             </template>
           </el-table-column>
-          <el-table-column label="所有者" align="center" width="130" key="ownerId" prop="ownerId" v-if="columns[2].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="描述信息" align="left" key="description" prop="description" v-if="columns[3].visible" :show-overflow-tooltip="true">
             <template #default="scope">
               <div>
                 {{ scope.row.description }}
-              </div>
-              <div style="font-size: 13px;color: #a5a5a5;">
-                会话次数: 12734 有效沟通:198312
               </div>
             </template>
           </el-table-column>
@@ -142,7 +138,7 @@
     </el-row>
 
     <!-- 添加或修改应用配置对话框 -->
-    <el-dialog :title="title" v-model="open" width="900px" append-to-body>
+    <el-dialog :title="title" v-model="open" width="600px" append-to-body>
       <el-form :model="form" :rules="rules" ref="DatasetRef" label-width="100px">
         <el-row>
           <el-col :span="24">
@@ -334,6 +330,7 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    isMemory: 0,
     DatasetName: undefined,
     name: undefined,
     ownerId: undefined,
@@ -502,10 +499,15 @@ getList();
 
 <style lang="scss" scoped>
 .role-icon {
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   img {
-    width:45px;
-    height:45px;
-    border-radius: 5px;
+    width:30px;
+    height:30px;
+    border-radius: 50%;
   }
 }
 </style>
