@@ -14,6 +14,7 @@ import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,17 +122,20 @@ public class VectorDataController {
      * @return
      */
     @PostMapping("/createDataset")
-    public AjaxResult createDataset(@RequestParam String datasetName ,
-                                    @RequestParam String datasetDesc){
+    public AjaxResult createDataset(HttpServletRequest request , @RequestParam String datasetName , @RequestParam String datasetDesc){
 
         log.debug("datasetName = {} , datasetDesc = {}" , datasetName , datasetDesc);
 
-        long currentUserId = 1L ; //  StpUtil.getLoginIdAsLong() ;
-        log.debug("currentUserId = {}" , currentUserId);
+        String orgIdStr = request.getParameter("orgId");
+        String operatorIdStr = request.getParameter("operatorId");
+
+        if(orgIdStr == null || operatorIdStr == null){
+            log.warn("参数orgId组织或者operatorId个人信息");
+        }
 
         String collectionName = CollectionUtils.getCollectionName() ;
 
-        VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, currentUserId , collectionName , datasetDesc);
+        VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, collectionName , datasetDesc , orgIdStr , operatorIdStr);
         return AjaxResult.success("创建数据集成功." , entity.getId()) ;
     }
 
@@ -140,29 +144,36 @@ public class VectorDataController {
      * @return
      */
     @PostMapping("/createDatasetByRole")
-    public AjaxResult createDatasetByRole(@RequestBody RequestDatasetDto dto){
+    public AjaxResult createDatasetByRole(HttpServletRequest request , @RequestBody RequestDatasetDto dto){
 
         String datasetName = dto.getDatasetName() ;
         String datasetDesc = dto.getDatasetDesc() ;
         String collectionName = dto.getCollectionName() ;
-        long ownerId = dto.getOwnerId() ;
 
-        VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, ownerId , collectionName , datasetDesc);
+        String orgIdStr = request.getParameter("orgId");
+        String operatorIdStr = request.getParameter("operatorId");
+
+        if(orgIdStr == null || operatorIdStr == null){
+            log.warn("参数orgId组织或者operatorId个人信息");
+        }
+
+        VectorDatasetEntity entity = getVectorDatasetEntity(datasetName, collectionName , datasetDesc, orgIdStr, operatorIdStr);
         return AjaxResult.success("创建数据集成功." , entity.getId()) ;
     }
 
     /**
      * 获取到数据集
+     *
      * @param datasetName
-     * @param ownerId
      * @param collectionName
      * @param datasetDesc
+     * @param orgIdStr
+     * @param operatorIdStr
      * @return
      */
     private VectorDatasetEntity getVectorDatasetEntity(String datasetName,
-                                                       long ownerId ,
                                                        String collectionName ,
-                                                       String datasetDesc) {
+                                                       String datasetDesc, String orgIdStr, String operatorIdStr) {
 
         LambdaQueryWrapper<VectorDatasetEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(VectorDatasetEntity::getCollectionName, collectionName);
@@ -181,8 +192,12 @@ public class VectorDataController {
 
         entity.setDatasetSize(0);
         entity.setAccessPermission("person");
-        entity.setOwnerId(ownerId);
         entity.setCollectionName(collectionName);
+
+        long ownerId = operatorIdStr == null ? 0L : Long.parseLong(operatorIdStr);
+        entity.setOrgId(orgIdStr == null?0L:Long.parseLong(orgIdStr));
+        entity.setOwnerId(ownerId);
+        entity.setOperatorId(ownerId);
 
         vectorDatasetService.buildCreateCollectionParam(collectionName, description, shardsNum);
 
