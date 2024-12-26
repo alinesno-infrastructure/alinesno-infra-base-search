@@ -14,9 +14,11 @@
                 <el-tab-pane label="向量性测试">
                     <DatasetSearch />
                 </el-tab-pane>
+                <!--
                 <el-tab-pane label="知识库配置">
                     <DatasetConfig />
                 </el-tab-pane>
+                -->
             </el-tabs>
         </div>
     </div>
