@@ -1,6 +1,5 @@
 package com.alinesno.infra.base.search.gateway.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alinesno.infra.base.search.entity.VectorDatasetEntity;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
