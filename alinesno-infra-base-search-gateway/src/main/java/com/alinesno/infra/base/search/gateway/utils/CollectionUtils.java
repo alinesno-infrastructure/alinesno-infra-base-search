@@ -5,7 +5,7 @@ import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.web.log.utils.SpringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
-import java.util.*;
+import java.util.Random;
 
 public class CollectionUtils {
 
