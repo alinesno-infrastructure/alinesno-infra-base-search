@@ -1,7 +1,6 @@
 package com.alinesno.infra.base.search.adapter.consumer;
 
 
-import com.alinesno.infra.base.search.adapter.consumer.dto.RerankOutput;
 import com.alinesno.infra.base.search.adapter.consumer.dto.TextRerankRequest;
 import com.dtflys.forest.annotation.BaseRequest;
 import com.dtflys.forest.annotation.Body;
