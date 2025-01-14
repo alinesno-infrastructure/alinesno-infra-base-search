@@ -58,5 +58,23 @@ public class VectorSearchController {
 
     }
 
+    /**
+     * 记忆关联模块(记忆片断信息+知识库信息)
+     * @param dto
+     * @return
+     */
+    @PostMapping("/roleMemory")
+    public R<String> roleMemory(@RequestBody VectorSearchDto dto) {
+
+        log.debug("memoryQueryDto = {}" , dto);
+
+        long datasetId = dto.getDatesetId() ;
+        String information = dto.getSearchText() ;
+
+        List<DocumentVectorBean> topksList = datasetService.rerankSearch(dto);
+
+        return R.ok("ok");
+    }
+
 
 }
