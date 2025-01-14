@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
  * 重新排序输出数据传输对象
  * 用于封装重新排序操作的输出，包括结果列表、使用情况和请求ID
