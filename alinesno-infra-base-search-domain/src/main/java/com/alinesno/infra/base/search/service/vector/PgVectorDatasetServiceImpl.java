@@ -1,10 +1,7 @@
 package com.alinesno.infra.base.search.service.vector;
 
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.alinesno.infra.base.search.adapter.consumer.RerankConsumer;
-import com.alinesno.infra.base.search.adapter.consumer.dto.Document;
 import com.alinesno.infra.base.search.adapter.consumer.dto.RerankOutput;
 import com.alinesno.infra.base.search.adapter.consumer.dto.Result;
 import com.alinesno.infra.base.search.adapter.consumer.dto.TextRerankRequest;
@@ -21,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
