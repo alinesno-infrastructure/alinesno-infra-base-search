@@ -1,7 +1,6 @@
 package com.alinesno.infra.base.search.service.impl;
 
 import com.alinesno.infra.base.search.api.DocumentIndexDto;
-import com.alinesno.infra.base.search.api.IndexInfoDto;
 import com.alinesno.infra.base.search.entity.DocumentIndexEntity;
 import com.alinesno.infra.base.search.mapper.DocumentIndexMapper;
 import com.alinesno.infra.base.search.service.IDocumentIndexService;
@@ -11,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 文档向量Service业务层处理
