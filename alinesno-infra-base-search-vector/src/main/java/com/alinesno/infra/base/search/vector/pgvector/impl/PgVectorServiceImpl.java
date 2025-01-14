@@ -1,7 +1,6 @@
 package com.alinesno.infra.base.search.vector.pgvector.impl;
 
 import cn.hutool.core.util.IdUtil;
-import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.alinesno.infra.base.search.vector.DocumentVectorBean;
 import com.alinesno.infra.base.search.vector.service.IPgVectorService;
 import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.lang.exception.RpcServiceRuntimeException;
-import java.security.KeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
