@@ -18,6 +18,9 @@ public class MemoryReflectionJob {
     public void execute() {
         // TODO: 执行记忆反思任务
         log.debug("执行记忆反思任务");
+
+        // TODO：记忆执行更新任务
+        log.debug("记忆执行更新任务");
     }
 
 }
