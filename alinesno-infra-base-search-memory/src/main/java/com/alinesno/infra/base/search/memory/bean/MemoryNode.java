@@ -1,7 +1,9 @@
 package com.alinesno.infra.base.search.memory.bean;
 
 import cn.hutool.core.util.IdUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * 它包含了记忆的元数据、内容、向量表示以及记忆的状态等信息
  */
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @ToString
 public class MemoryNode {
@@ -28,7 +32,10 @@ public class MemoryNode {
     private String memoryId = IdUtil.getSnowflakeNextIdStr() ;
 
     // 用户名，表示记忆所属的用户
-    private String userName;
+    private long agentId ;
+
+    // 用户名，表示记忆所属的用户
+    private String agentName;
 
     // 目标名称，表示记忆的目标或对象
     private String targetName;
