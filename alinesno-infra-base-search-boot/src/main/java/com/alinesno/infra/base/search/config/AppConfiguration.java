@@ -1,8 +1,5 @@
 package com.alinesno.infra.base.search.config;
 
-import com.alinesno.infra.base.search.memory.prompt.ContraRepeatWorkerPrompt;
-import com.alinesno.infra.base.search.memory.prompt.GetObservationWithTimeWorkerPrompt;
-import com.alinesno.infra.base.search.memory.prompt.UpdateInsightWorkerPrompt;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.extend.datasource.enable.EnableInfraDataScope;
 import com.alinesno.infra.common.facade.enable.EnableActable;
@@ -18,10 +15,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.unit.DataSize;
 
 @Slf4j
+@EnableAsync
 @EnableScheduling
 @EnableInfraDataScope
 @EnableActable
@@ -37,15 +36,6 @@ public class AppConfiguration implements CommandLineRunner {
 
     @Autowired
     private IVectorDatasetService vectorDatasetService ;
-
-    @Autowired
-    private UpdateInsightWorkerPrompt updateInsightWorkerProperties ;
-
-    @Autowired
-    private GetObservationWithTimeWorkerPrompt getObservationWithTimeWorkerPrompt;
-
-    @Autowired
-    private ContraRepeatWorkerPrompt contraRepeatWorkerPrompt ;
 
     /**
      * 配置上传文件大小
@@ -69,8 +59,5 @@ public class AppConfiguration implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.info("当前向量存储引擎:{}" , vectorDatasetService.getVectorEngine());
-        log.info("updateInsightWorkerProperties 更新提示语配置:{}" , updateInsightWorkerProperties);
-        log.info("contraRepeatWorkerPrompt 更新提示语配置:{}" , contraRepeatWorkerPrompt);
-        log.info("getObservationWithTimeWorkerPrompt 更新提示语配置:{}" , getObservationWithTimeWorkerPrompt);
     }
 }
