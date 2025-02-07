@@ -1,5 +1,9 @@
 package com.alinesno.infra.base.search.memory;
 
+import com.alinesno.infra.base.search.memory.bean.MemoryNode;
+
+import java.util.List;
+
 /**
  * 定义了处理记忆节点（MemoryNode）的记忆存储接口。
  * 它概述了基本操作，如检索、更新、刷新和关闭记忆范围。
@@ -27,14 +31,14 @@ public interface BaseMemoryStore {
 //     * @return 匹配标准的最多 topK 个 MemoryNode 对象列表
 //     */
 //    CompletableFuture<List<MemoryNode>> aRetrieveMemories(String query, int topK, Map<String, List<String>> filterDict);
-//
-//    /**
-//     * 批量插入记忆节点。
-//     *
-//     * @param nodes 要插入的记忆节点列表
-//     */
-//    void batchInsert(List<MemoryNode> nodes);
-//
+
+    /**
+     * 批量插入记忆节点。
+     *
+     * @param nodes 要插入的记忆节点列表
+     */
+    void batchInsert(List<MemoryNode> nodes);
+
 //    /**
 //     * 批量更新记忆节点。
 //     *
