@@ -1,12 +1,15 @@
 package com.alinesno.infra.base.search.memory.storage;
 
 import com.alinesno.infra.base.search.memory.BaseMemoryStore;
+import com.alinesno.infra.base.search.memory.bean.MemoryNode;
 import com.alinesno.infra.base.search.vector.utils.DashScopeEmbeddingUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 记忆库处理
@@ -74,6 +77,11 @@ public class PgVectorMemoryStore implements BaseMemoryStore {
             jdbcTemplate.execute("COMMENT ON COLUMN "+ALINESNO_SEARCH_VECTOR_MEMORY_DOCUMENT+".obs_updated IS '观察到的更新次数，用于记录记忆被更新的次数'");
 
         jdbcTemplate.execute(ddl) ;
+    }
+
+    @Override
+    public void batchInsert(List<MemoryNode> nodes) {
+
     }
 
 }
