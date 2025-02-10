@@ -13,8 +13,11 @@ import lombok.*;
 @AllArgsConstructor
 public class InformationBean {
 
+    @JSONField(name = "reflection")
+    public String reflection;
+
     @JSONField(name = "sentence_id")
-    public int sentenceId;
+    public String sentenceId;
 
     @JSONField(name = "time_info")
     public String timeInfo;
@@ -24,4 +27,8 @@ public class InformationBean {
 
     @JSONField(name = "keywords")
     public String keywords;
+
+    @JSONField(name = "timestamp")
+    private String timestamp ;
+
 }
