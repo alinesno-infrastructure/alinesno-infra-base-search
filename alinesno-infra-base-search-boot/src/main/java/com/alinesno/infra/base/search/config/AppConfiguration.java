@@ -1,5 +1,6 @@
 package com.alinesno.infra.base.search.config;
 
+import com.alinesno.infra.base.search.memory.BaseMemoryStore;
 import com.alinesno.infra.base.search.service.IVectorDatasetService;
 import com.alinesno.infra.common.extend.datasource.enable.EnableInfraDataScope;
 import com.alinesno.infra.common.facade.enable.EnableActable;
@@ -37,6 +38,9 @@ public class AppConfiguration implements CommandLineRunner {
     @Autowired
     private IVectorDatasetService vectorDatasetService ;
 
+    @Autowired
+    private BaseMemoryStore baseMemoryStore ;
+
     /**
      * 配置上传文件大小
      * @return
@@ -58,6 +62,7 @@ public class AppConfiguration implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        baseMemoryStore.createMemoryVectorIndex();
         log.info("当前向量存储引擎:{}" , vectorDatasetService.getVectorEngine());
     }
 }
