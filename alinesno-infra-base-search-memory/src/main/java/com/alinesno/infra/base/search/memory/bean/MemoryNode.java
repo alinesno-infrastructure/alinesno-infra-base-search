@@ -37,6 +37,9 @@ public class MemoryNode {
     // 用户名，表示记忆所属的用户
     private String agentName;
 
+    // 目标Id，表示记忆的目标或对象
+    private String targetId ;
+
     // 目标名称，表示记忆的目标或对象
     private String targetName;
 
