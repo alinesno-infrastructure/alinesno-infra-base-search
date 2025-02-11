@@ -2,6 +2,7 @@ package com.alinesno.infra.base.search.memory.provider;
 
 import com.alinesno.infra.base.search.memory.IMemoryBase;
 import com.alinesno.infra.base.search.memory.bean.AgentMemoryDto;
+import com.alinesno.infra.base.search.memory.bean.MemoryNodeWithScore;
 import com.alinesno.infra.base.search.memory.service.IAgentMemoryService;
 import com.alinesno.infra.common.facade.response.R;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,11 @@ public class MemoryDataController {
      * 查询记忆库
      */
     @RequestMapping("/query")
-    public R<String> queryMemoryData(String memoryId) {
-
-        return R.ok("数据查询成功");
+    public R<List<MemoryNodeWithScore>> queryMemoryData(@RequestParam String agentId ,
+                                                        @RequestParam String targetId ,
+                                                        @RequestParam String memoryText) {
+        List<MemoryNodeWithScore> memoryData = agentMemoryService.queryMemoryData(agentId , targetId , memoryText) ;
+        return R.ok(memoryData , "数据查询成功");
     }
 
     /**
